@@ -1,0 +1,38 @@
+{% from _self import element %}
+
+
+{{ element(tree, project.config('default_opened_level'), 0)|replace({"'": "\\'", "\n": ''})|raw }}
+
+
+{% macro element(tree, opened, depth) %}
+    {% from _self import element %}
+
+    {%- for element in tree -%}
+
+
+        {% if element[0] != 'ObjectivePHP' %}
+            <ul>
+                {% if element[2] %}
+                    <li data-name="" {% if depth < opened %}class="opened"{% endif %}>
+                        <div style="padding-left:{{ (depth * 18)|raw }}px" class="hd">
+                            <i class="fas fa-angle-right fa-lg"></i>{% if not project.config('simulate_namespaces') %}<a
+                                    href="{{ namespace_path(element[1]) }}">{% endif %}{{ element[0]|raw }}{% if not project.config('simulate_namespaces') %}</a>{% endif %}
+                        </div>
+                        <div class="bd">
+                            {{ element(element[2], opened, depth + 1) -}}
+                        </div>
+                    </li>
+                {% else %}
+                    <li data-name=""
+                        {% if depth < opened %}class="opened"{% endif %}>
+                        <div style="padding-left:{{ 8 + (depth * 18) }}px" class="hd leaf">
+                            <a href="{{ class_path(element[1]) }}">{{ element[0] }}</a>
+                        </div>
+                    </li>
+                {% endif %}
+            </ul>
+        {% else %}
+            {{ element(element[2], opened, depth + 1) -}}
+        {% endif %}
+    {%- endfor %}
+{% endmacro %}

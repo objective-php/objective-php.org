@@ -1,0 +1,16 @@
+{
+  "components": {
+    "louis-cuny/application": {
+      "host": "github",
+      "minVersion": "2.0.0"
+    },
+    "louis-cuny/config": {
+      "host": "github",
+      "minVersion": "2.0.0"
+    },
+    "louis-cuny/services-factory": {
+      "host": "github",
+      "minVersion": "2.0.0"
+    }
+  }
+}

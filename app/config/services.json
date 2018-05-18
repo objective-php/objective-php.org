@@ -1,0 +1,10 @@
+{
+  "services":{
+    "manager.repository": {
+      "class": "Project\\Manager\\RepositoryManager"
+    },
+    "manager.index": {
+      "class": "Project\\Manager\\IndexManager"
+    }
+  }
+}

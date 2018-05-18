@@ -1,0 +1,226 @@
+$primary: #515A91;
+$secondary: #D3A168;
+$tertiary: #D3C668;
+
+$theme-colors: (
+        "tertiary": $tertiary
+);
+
+@import "~bootstrap/scss/bootstrap";
+@import "~github-markdown-css/github-markdown";
+
+// Start
+$main-contrast-color: $secondary;
+$rezozero-header-color: #4d4d4d;
+$alt-color: #eaeaea;
+$linked-color: #e24337;
+$selected-color: #ff7b6d;
+
+$headerHeight: 56px;
+$controlsHeight: 60px;
+$header-height: $headerHeight;
+$rz-header-height: $headerHeight;
+
+/* Site columns */
+#right-column {
+  margin-left: 25vw;
+  padding-top: $headerHeight + $controlsHeight;
+}
+
+#page-content {
+  padding: 30px;
+}
+
+#left-column {
+  width: 25vw;
+  position: fixed;
+  line-height: 20px;
+  font-size: 15px;
+  top: $headerHeight + $controlsHeight;
+  height: calc(100% - #{$headerHeight + $controlsHeight});
+}
+
+@media (max-width: 767px) {
+  #left-column {
+    display: none;
+  }
+  #right-column {
+    width: 100%;
+    margin-left: 0;
+    padding-top: $headerHeight;
+  }
+  #site-nav.navbar-default {
+    position: relative;
+    top: 0;
+  }
+}
+
+/* API Tree */
+
+#api-tree {
+  background-size: 100% 56px;
+  overflow: auto;
+  height: 100%;
+  background: #f2f2f2 local;
+}
+
+#api-tree ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+#api-tree ul li {
+  padding: 0;
+  margin: 0;
+}
+
+#api-tree > ul > li {
+  margin-top: 10px;
+}
+
+.breadcrumb > li + li:before {
+  padding: 0 5px;
+  color: #ccc;
+  content: "";
+}
+
+#api-tree ul li .hd {
+  padding: 5px 5px 5px 20px;
+}
+
+#api-tree ul li .hd a {
+  font-weight: bold;
+}
+
+#api-tree li .hd:nth-child(even) {
+  background-color: $alt-color;
+}
+
+#api-tree ul li.opened > .hd i, ul li.nojs:hover > .hd i {
+  -webkit-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  transform: rotate(90deg);
+}
+
+#api-tree .bd {
+  display: none;
+}
+
+#api-tree li.opened > .bd, li.nojs:hover > .bd {
+  display: block !important;
+}
+
+#api-tree li .hd:hover {
+  background-color: #eee;
+}
+
+#api-tree li.active > .hd {
+  background-color: $selected-color;
+}
+
+#api-tree li.active > .hd a {
+  color: #fff;
+}
+
+#api-tree a {
+  text-transform: capitalize;
+  color: #222;
+}
+
+#api-tree div.leaf a {
+  margin-left: 20px;
+  padding-left: 44px;
+}
+
+#api-tree .hd i {
+  padding: 2px 8px;
+}
+
+/* Control panel, search form, version drop-down */
+
+#control-panel {
+  background: $main-contrast-color;
+  padding: 12px;
+  box-sizing: border-box;
+  width: 25vw;
+  height: $controlsHeight;
+
+  display: flex;
+  display: -ms-flex;
+  display: -moz-flex;
+  display: -webkit-flex;
+  align-items: center;
+  justify-content: space-around;
+
+  @media (max-width: 767px) {
+    width: 100vw;
+  }
+}
+
+#control-panel form {
+  margin: 4px 4px 5px 4px;
+}
+
+#search-form {
+  position: relative;
+}
+
+#search-form input {
+  width: 100%;
+  padding-left: 28px;
+  border-radius: 34px;
+  border: 0 none;
+}
+
+#search-form i.fa-search {
+  position: absolute;
+  left: 12px;
+  top: 10px;
+  font-size: 14px;
+  z-index: 2;
+}
+
+/* Site menu */
+
+.control-nav-bar-cont {
+  display: flex;
+  height: $controlsHeight;
+  line-height: $controlsHeight;
+  text-transform: capitalize;
+  vertical-align: middle;
+  font-size: 30px;
+  font-weight: bold;
+}
+
+#version-select {
+  margin: auto;
+  line-height: 25px;
+}
+
+#version-dropdown {
+  width: 120px;
+  text-align: center;
+}
+
+#site-nav.navbar-default {
+  margin: 0;
+  padding: 0;
+  border-radius: 0;
+  background-color: #f2f2f2;
+  box-shadow: none;
+  box-sizing: border-box;
+  height: $controlsHeight;
+  position: fixed;
+  top: $headerHeight;
+  left: 0;
+  right: 0;
+  z-index: 99;
+}
+
+//
+//#control-panel + .navbar-nav {
+//  padding-left: 30px;
+//}

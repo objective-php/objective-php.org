@@ -1,0 +1,36 @@
+{
+    "application": {
+        "2.0": {
+            "quick start": "01.quick-start.html",
+            "detailed usage": "02.detailed-usage.html",
+            "config directives": "03.config-directives.html",
+            "api doc": "04.api-doc.html",
+            "faq": "05.faq.html"
+        }
+    },
+    "config": {
+        "2.1": {
+            "quick start": "01.quick-start.html",
+            "detailed usage": "02.detailed-usage.html",
+            "config directives": "03.config-directives.html",
+            "api doc": "04.api-doc.html",
+            "faq": "05.faq.html"
+        },
+        "2.0": {
+            "quick start": "01.quick-start.html",
+            "detailed usage": "02.detailed-usage.html",
+            "config directives": "03.config-directives.html",
+            "api doc": "04.api-doc.html",
+            "faq": "05.faq.html"
+        }
+    },
+    "services-factory": {
+        "2.0": {
+            "quick start": "01.quick-start.html",
+            "detailed usage": "02.detailed-usage.html",
+            "config directives": "03.config-directives.html",
+            "api doc": "04.api-doc.html",
+            "faq": "05.faq.html"
+        }
+    }
+}

@@ -1,0 +1,47 @@
+{
+  "name": "objective-php/objective-php.org",
+  "description": "Objective PHP Project Documentation Website",
+  "type": "website",
+  "keywords": [
+    "documentation",
+    "framework",
+    "objective php"
+  ],
+  "homepage": "https://github.com/objective-php/objective-php.org",
+  "license": "GPL-3.0",
+  "authors": [
+    {
+      "name": "Louis Cuny",
+      "email": "louis-cuny@gmx.fr",
+      "role": "Intern"
+    }
+  ],
+  "repositories": [
+    {
+      "type": "path",
+      "url": "../rest-action"
+    }
+  ],
+  "require": {
+    "php": ">=7.0",
+    "objective-php/application": "^2.0",
+    "objective-php/phtml-action": "^2.0",
+    "objective-php/rest-action": "^2.0",
+    "objective-php/services-factory": "dev-master as v2.0.0",
+    "symfony/finder": "^4.0",
+    "league/commonmark": "^0.17.5",
+    "guzzlehttp/guzzle": "^6.3",
+    "knplabs/github-api": "^2.8",
+    "php-http/guzzle6-adapter": "^1.1",
+    "webuni/commonmark-table-extension": "^0.8.0",
+    "algolia/algoliasearch-client-php": "^1.25"
+  },
+  "autoload": {
+    "psr-4": {
+      "Project\\": "app/src"
+    }
+  },
+  "require-dev": {
+    "symfony/var-dumper": "*"
+  }
+}
