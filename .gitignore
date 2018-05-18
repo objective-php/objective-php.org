@@ -4,6 +4,8 @@ node_modules/
 tmp/
 app/src/Manager/roadiz-sami/
 app/src/Manager/Renderer/
+app/theme/scss/theme.css
+
 packages/
 public/assets/style.css
 public/assets/theme.js

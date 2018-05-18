@@ -7,6 +7,14 @@ This is the source of the official Objective-PHP.org website.
 The website contains all the documentation about Objective-Php and its components.  
 
 ## How to make it work
+The website is build with composer:
+```
+composer install
+```
+And yarn :
+```
+yarn install
+```
 
 The website use Server Side Includes, to work perfectly it should be hosted on an Nginx or Apache server with ngx_http_ssi_module or mod_include activated.
 

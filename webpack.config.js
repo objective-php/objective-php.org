@@ -2,6 +2,7 @@ const path = require('path');
 
 const dev = process.env.NODE_ENV === "development";
 
+const webpack = require("webpack");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const extractSass = new ExtractTextPlugin({
     filename: "style.css",
@@ -18,18 +19,18 @@ let cssLoaders = [
     }
 ];
 
-if (!dev) {
+if (dev) {
     cssLoaders.push({
         loader: 'postcss-loader',
         options: {
             plugins: (loader) => [
-            require('autoprefixer')({
-                browsers: ['last 2 versions', 'ie > 8']
-            })
-        ],
-        sourceMap: true
-    }
-});
+                require('autoprefixer')({
+                    browsers: ['last 2 versions', 'ie > 8']
+                })
+            ],
+            sourceMap: true
+        }
+    });
 }
 
 cssLoaders.push({
@@ -70,6 +71,11 @@ module.exports = {
         ]
     },
     plugins: [
-        extractSass
+        extractSass,
+        new webpack.ProvidePlugin({
+            "$": "jquery",
+            "jQuery": "jquery",
+            "Popper": "popper.js"
+        })
     ]
 };

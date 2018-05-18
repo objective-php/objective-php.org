@@ -1,11 +1,17 @@
+//4 color, 90° on the nuancier
 $primary: #515A91;
-$secondary: #D3A168;
-$tertiary: #D3C668;
+//$secondary: #D3A168;
+//$tertiary: #D3C668;
+$tertiary: #B55980;
+//$tertiary: #D3C668;
+$secondary : #94C05F;
+$quaternary: #D3B568;
 
 $theme-colors: (
         "tertiary": $tertiary
 );
 
+//@import "~font-awesome/scss/font-awesome";
 @import "~bootstrap/scss/bootstrap";
 @import "~github-markdown-css/github-markdown";
 
