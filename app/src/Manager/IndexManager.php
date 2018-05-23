@@ -8,7 +8,6 @@ use Symfony\Component\Finder\Finder;
 class IndexManager
 {
     public const DOC_DIR = __DIR__ . '/../../../public/doc/';
-    public const DOCAPI_DIR = __DIR__ . '/../../../public/docapi/';
     public const HTML_DIR = __DIR__ . '/../../layouts/html/';
 
     public $base_url;

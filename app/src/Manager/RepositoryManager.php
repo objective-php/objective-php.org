@@ -58,7 +58,7 @@ class RepositoryManager
         return $res;
     }
 
-    public function operateAll() : void
+    public function operateAll(): void
     { //only works for github repos
         $this->packages = [];
         foreach ($this->fetchTags() as $key => $versions) {
@@ -103,7 +103,7 @@ class RepositoryManager
                 if (!\is_dir($pathToDoc = $pathToDocs . $componentName . '/' . $tag . '/') && !\mkdir($pathToDoc, 0755, true) && !\is_dir($pathToDoc)) {
                     throw new \RuntimeException(sprintf('Directory "%s" was not created', $pathToDoc));
                 }
-                \file_put_contents($pathToDoc . $htmlName = $file->getBasename('.md') . '.html', $this->renderDoc($file->getContents(), ucfirst($componentName),  $tag));
+                \file_put_contents($pathToDoc . $htmlName = $file->getBasename('.md') . '.html', $this->renderDoc($file->getContents(), ucfirst($componentName), $tag));
                 if (!($file->getFilename() === 'index.md')) {
                     $niceName = preg_replace('([0-9]*\.)', '', $file->getBasename('.md'), 1);
                     $niceName = str_replace(['-', '_'], ' ', $niceName);
@@ -153,6 +153,10 @@ class RepositoryManager
                     $docMenu .= '<a href="/doc/' . $compoName . '/' . $minorVersion . '/' . $raw . '">' . $nice . '</a>';
                     $docMenu .= '</div></li>';
                 }
+                ////////////   API   //////////
+//                $path =self::PUBLIC_DIR . 'doc/' . $compoName . '/' . $minorVersion . '/api/';
+//                $docMenu .= $this->menuApi($path);
+                $docMenu .= '<li><div class="hb leaf"><a href="/doc/'. $compoName .'/'. $minorVersion .'/api/index.html">API</a></div></li>';
                 $docMenu .= '</ul></div></li>';
             }
             $docMenu .= '</ul></div></li>';
@@ -165,10 +169,39 @@ class RepositoryManager
         \file_put_contents(__DIR__ . '/packages.json', $json);
     }
 
+    public function menuApi(string $path): string
+    {
+        $finder = new Finder();
+        $res = '<ul>';
+        foreach ($finder->in($path)->directories()->depth('== 0') as $element) {
+            $res .= '<li class="nojs">
+                    <div class="hd"><i class="fas fa-angle-right fa-lg"></i>
+                        <a href="link bleu">' . $element->getFilename() . '</a>
+                    </div>
+                    <div class="bd">';
+            $res .= $this->menuApi($element->getPathname());
+            $res .= '</div>
+                </li>';
+        }
+        foreach ($finder->files()->name('*.html') as $element) {
+
+            $res .= ' <li>
+                    <div class="hd leaf">
+                        <a href="link bleu">' . $element->getFilename() . '</a>
+                    </div>
+                </li>';
+        }
+
+        $res .= '</ul>';
+
+        return $res;
+    }
+
     /**
      * @param string $dir The directory to empty
      */
-    public function rmAll(string $dir): void
+    public
+    function rmAll(string $dir): void
     {
         if (\is_dir($dir)) {
             $objects = \scandir($dir, SCANDIR_SORT_NONE);

@@ -15,8 +15,8 @@ $iterator = Finder::create()
 return new Sami($iterator, [
     'theme'                => 'objectivephp-sami',
     'versions'             => $infos->version,
-    'title'                => 'API_test',
-    'build_dir'            =>  __DIR__ . '/../../../public/docapi/' .$infos->compoName. '/%version%',
+    'title'                => ucfirst($infos->compoName),
+    'build_dir'            =>  __DIR__ . '/../../../public/doc/' .$infos->compoName. '/%version%/api',
     'cache_dir'            => $tmpDir . '/cache/' . $infos->compoName . '/%version%',
     'template_dirs'        => [__DIR__ . '/' . 'objectivephp-sami'],
     'default_opened_level' => 1
