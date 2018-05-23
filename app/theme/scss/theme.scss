@@ -261,7 +261,6 @@ $right-width: 75vw;
 #navbar-elements {
   height: $controlsHeight;
   line-height: $controlsHeight;
-  font-weight: bold;
   padding: 0;
   margin: 0;
 }
@@ -275,13 +274,6 @@ $right-width: 75vw;
   //text-align: center;
   padding: 0;
   margin: 0;
-
-  //@media (min-width: 1200px) {
-  //width: $right-width / 6;
-  //}
-  //@media (max-width: 1200px) {
-  //  margin: 0 5px !important;
-  //}
 }
 
 #api-nav.navbar-default .navbar-nav > li > a {
@@ -290,7 +282,6 @@ $right-width: 75vw;
 
   color: #333333;
   font-size: 20px;
-  font-weight: bold;
   text-transform: uppercase;
   padding: 6px 12px;
   background-color: #f7f7f7;
@@ -308,9 +299,9 @@ $right-width: 75vw;
 #api-nav.navbar-default .navbar-nav > li.spacer {
   min-width: 5px;
   @media (max-width: 767px) {
-    width: calc((100vw - 600px) / 6);
+    width: calc((100vw - 580px) / 6);
   }
-  width: calc((#{$right-width} - 600px) / 6);
+  width: calc((#{$right-width} - 580px) / 6);
 }
 
 //#control-panel + .navbar-nav {
