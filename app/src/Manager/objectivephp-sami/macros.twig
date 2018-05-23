@@ -1,5 +1,5 @@
 {% macro namespace_link(namespace) -%}
-    <a href="{{ namespace_path(namespace) }}">{{ namespace|raw }}</a>
+    <a href="{{ namespace_path(namespace) }}">{{ namespace|raw }}</a><br/>
 {%- endmacro %}
 
 {% macro class_link(class, absolute) -%}

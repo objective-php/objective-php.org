@@ -315,5 +315,32 @@ $right-width: 75vw;
 //
 //
 //#control-panel + .navbar-nav {
-//  padding-left: 30px;
+//  padding-left: 30px;®®
 //}
+
+.label {
+  padding: .2em .6em .3em;
+  font-weight: 700;
+  color: #fff;
+  vertical-align: text-top;
+  border-radius: .25em;
+}
+.label-default {
+  background-color: $primary;
+}
+
+.markdown-body table td, .markdown-body table th {
+  border:initial;
+}
+
+div.method-item > h3 {
+  font-weight: initial;
+}
+
+code {
+  color: initial;
+}
+
+.location {
+  float: right;
+}
