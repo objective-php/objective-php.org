@@ -20,9 +20,6 @@ class Home extends PhtmlAction
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-
-
-
-        return $this->render(['uuid' => uniqid('', true)]);
+        return $this->render();
     }
 }

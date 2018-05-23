@@ -8,8 +8,8 @@ global:
     'classes.twig':    'classes.html'
     'interfaces.twig': 'interfaces.html'
     'traits.twig':     'traits.html'
-    'opensearch.twig': 'opensearch.xml'
-    'search.twig':     'search.html'
+#    'opensearch.twig': 'opensearch.xml'
+#    'search.twig':     'search.html'
     'sami.js.twig':    'sami.js'
 
 namespace:

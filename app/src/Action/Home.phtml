@@ -1,97 +1,35 @@
-<?php
-
-use ObjectivePHP\Html\Tag\Tag;
-
-?>
-
 <section class="jumbotron text-center">
     <div class="container">
         <h1 class="jumbotron-heading"><?= $this->get('page.title') ?></h1>
         <p class="lead text-muted"><?= $this->get('page.subtitle') ?></p>
         <p>
-            <a href="/doc/" class="btn btn-tertiary my-2" target="_blank">view documentation</a>
-<!--            <a href="/docapi/" class="btn btn-secondary my-2" target="_blank">browse the api doc</a>-->
+            <a href="/doc/index.html" class="btn btn-tertiary my-2">view documentation</a>
         </p>
     </div>
 </section>
 <main class="container">
     <div class="row">
-        <div class="col-sm-12">
-        <h2>Welcome !</h2>
-            <p>This is Objective PHP official documentation website</p>
+        <div class="col-sm-12 markdown-body">
+            <h1 id="introduction">Introduction</h1>
+            <h2 id="what">What?</h2>
+            <p>Objective PHP is a lightweight framework written in PHP7 with OOP in mind. This is why it's called that - there is other reason, except a pun on Objective C of course :)</p>
+            <p>Is Objective PHP a fullstack framework? Is it a micro-framework? Actually, neither. We use to call it a mini-framework, meaning that it's somewhere in between: it provides the developers with much more than a micro-framework does, but also less than a fullstack.</p>
+            <p>Objective PHP aims at handling applicative workflows, then let the developer do their work. No more, no less.</p>
+            <p>For higher level components, like Forms generators or ORMs for instance, we thought that it would be more efficient to let developers bring their usual tools in Objective rather than forcing them to use our own alternatives.</p>
+            <h2 id="why">Why?</h2>
+            <p>You may ask yourself: why did those guys bothered with another PHP framework? The answer is quite simple: we're bored with spending more times understanding and masterizing the framework itself than with working on the actual applications features.</p>
+            <p><strong>productivity</strong> is the main target of Objective PHP</p>
+            <p>On top of that, we thought that working on a new framework would also be an opportunity to consider performances in a different way. Most frameworks rely on cache to offer decent performances. Well, cache can help. A bit. But once you cached the poor performing components, what more can you do? Nothing.</p>
+            <p><strong>performance</strong> is the second major concern of Objective PHP</p>
+            <h2 id="how">How?</h2>
+            <p>The key idea to help developers getting efficient and comfortable with Objective PHP is to reduce as much as possible the number of different mechanism to achieve essential tasks the framework has to handle.</p>
+            <p>After many tries, we came down to a combination of two central concepts:</p>
+            <ul>
+                <li><em>Middlewares</em> to set up a workflow</li>
+                <li><em>Events</em> to ease the connexion between the application components</li>
+            </ul>
+            <br/>
         </div>
     </div>
-
-
-<!--    <div class="row homepage-tools">-->
-<!--        <div class="col-sm-12">-->
-<!--            <h2>This starter kit come with helpful tools</h2>-->
-<!--        </div>-->
-<!--        <div class="col-sm-4 text-center">-->
-<!--            <img class="homepage-tools-inside" src="/img/codeception.jpg">-->
-<!--            <h5><strong>Codeception</strong></h5>-->
-<!--            <p class="text-muted">Codeception collects and shares best practices and solutions for testing PHP web-->
-<!--                applications. With a flexible set of included modules tests are easy to write, easy to use and easy to-->
-<!--                maintain.</p>-->
-<!--        </div>-->
-<!--        <div class="col-sm-7 offset-sm-1">-->
-<!--            <div class="terminal">-->
-<!--                <p class="m-b-md">-->
-<!--                    <span class="text-muted">&gt; $ vendor/bin/codecept bootstrap</span><br>-->
-<!--                    Codeception is installed for acceptance, functional, and unit testing-->
-<!--                </p>-->
-<!--                <p class="m-b-md">-->
-<!--                    <span class="text-muted">&gt; $ phpdbg -qrr vendor/bin/codecept run unit --coverage</span><br>-->
-<!--                    Codeception PHP Testing Framework v2.3.7<br>-->
-<!--                    Powered by PHPUnit 6.4.4 by Sebastian Bergmann and contributors.<br>-->
-<!--                    <br>-->
-<!--                    Unit Tests (0) -------------------------------<br>-->
-<!--                    ----------------------------------------------<br>-->
-<!--                    <br>-->
-<!--                    Time: 180 ms, Memory: 8.00MB<br>-->
-<!--                    <br>-->
-<!--                    No tests executed!<br>-->
-<!--                    <br>-->
-<!--                    Code Coverage Report:<br>-->
-<!--                    2018-01-25 15:23:24<br>-->
-<!--                    <br>-->
-<!--                    Summary:<br>-->
-<!--                    Classes: (0/0)<br>-->
-<!--                    Methods: (0/0)<br>-->
-<!--                    Lines: (0/0)<br>-->
-<!--                </p>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-<!---->
-<!--    <div class="row homepage-tools">-->
-<!--        <div class="col-sm-4 text-center">-->
-<!--            <img class="homepage-tools-inside" src="/img/webpack.png">-->
-<!--            <h5><strong>Webpack</strong></h5>-->
-<!--            <p class="text-muted">Webpack is a static module bundler for modern JavaScript applications. When webpack-->
-<!--                processes your application, it includes every module your application needs, then packages all of those-->
-<!--                modules.</p>-->
-<!--        </div>-->
-<!--        <div class="col-sm-7 offset-sm-1">-->
-<!--            <div class="terminal">-->
-<!--                <p class="m-b-md">-->
-<!--                    <span class="text-muted">&gt; $ yarn install</span><br>-->
-<!--                    Done in 0.43s.-->
-<!--                </p>-->
-<!--                <p class="m-b-md">-->
-<!--                    <span class="text-muted">&gt; $ yarn run dev</span><br>-->
-<!--                    Webpack is watching the files…<br>-->
-<!--                    <br>-->
-<!--                    Hash: 93bdfaf6e1f1cf658db3<br>-->
-<!--                    Version: webpack 3.10.0<br>-->
-<!--                    Time: 4835ms<br>-->
-<!--                    Asset&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Size&nbsp;&nbsp;&nbsp;Chunks&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Chunk-->
-<!--                    Names<br>-->
-<!--                    theme.js&nbsp;&nbsp;472 kB 0 [emitted] main<br>-->
-<!--                    style.css&nbsp;188 kB 0 [emitted] main<br>-->
-<!--                </p>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
 </main>
 

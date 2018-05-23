@@ -29,7 +29,6 @@ $rz-header-height: $headerHeight;
 $left-width: 25vw;
 $right-width: 75vw;
 
-
 /* Site columns */
 #right-column {
   margin-left: $left-width;
@@ -277,9 +276,9 @@ $right-width: 75vw;
   padding: 0;
   margin: 0;
 
-  @media (min-width: 1200px) {
-    //width: $right-width / 6;
-  }
+  //@media (min-width: 1200px) {
+  //width: $right-width / 6;
+  //}
   //@media (max-width: 1200px) {
   //  margin: 0 5px !important;
   //}
@@ -297,7 +296,6 @@ $right-width: 75vw;
   background-color: #f7f7f7;
   border: 1px solid #afafaf;
   border-radius: 5px;
-  //border-radius: 34px;
   vertical-align: top;
 
   text-decoration: none;
@@ -309,11 +307,12 @@ $right-width: 75vw;
 
 #api-nav.navbar-default .navbar-nav > li.spacer {
   min-width: 5px;
-  width: calc((#{$right-width} - 710px) / 7);
+  @media (max-width: 767px) {
+    width: calc((100vw - 600px) / 6);
+  }
+  width: calc((#{$right-width} - 600px) / 6);
 }
 
-//
-//
 //#control-panel + .navbar-nav {
 //  padding-left: 30px;®®
 //}
@@ -325,12 +324,13 @@ $right-width: 75vw;
   vertical-align: text-top;
   border-radius: .25em;
 }
+
 .label-default {
   background-color: $primary;
 }
 
 .markdown-body table td, .markdown-body table th {
-  border:initial;
+  border: initial;
 }
 
 div.method-item > h3 {

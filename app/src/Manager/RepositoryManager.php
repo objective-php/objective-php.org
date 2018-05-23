@@ -2,7 +2,6 @@
 
 namespace Project\Manager;
 
-use Github\Exception\RuntimeException;
 use GuzzleHttp\Client;
 use League\CommonMark\Converter;
 use League\CommonMark\DocParser;
@@ -29,8 +28,15 @@ class RepositoryManager
      */
     public function __construct()
     {
-        $this->packages = \json_decode(\file_get_contents(__DIR__ . '/packages.json'), true);
-        $this->components = \json_decode(\file_get_contents(__DIR__ . '/components.json'))->components;
+        if (!\is_dir(self::TMP_DIR) && !\mkdir(self::TMP_DIR, 0755, true) && !\is_dir(self::TMP_DIR)) {
+            throw new \RuntimeException(sprintf('Directory "%s" was not created', self::TMP_DIR));
+        }
+        if (!\is_dir(self::PUBLIC_DIR . 'doc') && !\mkdir(self::PUBLIC_DIR . 'doc', 0755, true) && !\is_dir(self::PUBLIC_DIR . 'doc')) {
+            throw new \RuntimeException(sprintf('Directory "%s" was not created', self::PUBLIC_DIR . 'doc'));
+        }
+
+        $this->packages = \json_decode(\file_get_contents(__DIR__ . '/../../configs/packages.json'), true);
+        $this->components = \json_decode(\file_get_contents(__DIR__ . '/../../../components.json'))->components;
     }
 
 
@@ -83,7 +89,8 @@ class RepositoryManager
     public function fetchRepo(string $tarUrl, string $componentName, string $version): string
     {
         $this->rmAll(self::TMP_DIR);
-        if (!\copy($tarUrl, $targz = ($path = self::TMP_DIR . $componentName . '-' . $version) . '.tar.gz')) {
+        $md5 = \md5($tarUrl);
+        if (!\copy($tarUrl, $targz = ($path = self::TMP_DIR . $componentName . '-' . $md5) . '.tar.gz')) {
             $error = error_get_last();
             throw new \RuntimeException(
                 sprintf('[%s] Unable to copy file : %s', $error['type'], $error['message'])
@@ -172,7 +179,7 @@ class RepositoryManager
 
         $js = 'dataMenu = ' . $json = \json_encode($this->packages, JSON_PRETTY_PRINT);
         \file_put_contents($outputFile, $js);
-        \file_put_contents(__DIR__ . '/packages.json', $json);
+        \file_put_contents(__DIR__ . '/../../configs/packages.json', $json);
     }
 
     public function menuApi(string $path): string

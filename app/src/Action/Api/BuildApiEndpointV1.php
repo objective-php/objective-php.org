@@ -5,8 +5,8 @@ namespace Project\Action\Api;
 use ObjectivePHP\Middleware\Action\RestAction\AbstractEndpoint;
 use ObjectivePHP\ServicesFactory\Annotation\Inject;
 use ObjectivePHP\ServicesFactory\Specification\InjectionAnnotationProvider;
-use Project\Manager\RepositoryManager;
 use Project\Manager\IndexManager;
+use Project\Manager\RepositoryManager;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
@@ -49,7 +49,7 @@ class BuildApiEndpointV1 extends AbstractEndpoint implements InjectionAnnotation
 
                     $this->getRepositoryManager()->operate($repoPath, $body->repository->name, $o[1]);
                     $this->getRepositoryManager()->dataMenu();
-                    return "Code 4xx Bro !";
+                    return "It worked";
                 }
                 throw new \Exception('Unable to fetch targz file or to decompress it');
             }
