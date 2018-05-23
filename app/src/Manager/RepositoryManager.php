@@ -2,6 +2,7 @@
 
 namespace Project\Manager;
 
+use Github\Exception\RuntimeException;
 use GuzzleHttp\Client;
 use League\CommonMark\Converter;
 use League\CommonMark\DocParser;
@@ -82,7 +83,9 @@ class RepositoryManager
     public function fetchRepo(string $tarUrl, string $componentName, string $version): string
     {
         $this->rmAll(self::TMP_DIR);
-        \copy($tarUrl, $targz = ($path = self::TMP_DIR . $componentName . '-' . $version) . '.tar.gz');
+        if (!\copy($tarUrl, $targz = ($path = self::TMP_DIR . $componentName . '-' . $version) . '.tar.gz')) {
+            throw new \RuntimeException('Unable to copy targz');
+        }
         $repoPath = (new \PharData($targz))->decompress();
         (new \PharData($path . '.tar'))->extractTo(self::TMP_DIR);
         return $repoPath;
@@ -105,8 +108,8 @@ class RepositoryManager
                 }
                 \file_put_contents($pathToDoc . $htmlName = $file->getBasename('.md') . '.html', $this->renderDoc($file->getContents(), ucfirst($componentName), $tag));
                 if (!($file->getFilename() === 'index.md')) {
-                    $niceName = preg_replace('([0-9]*\.)', '', $file->getBasename('.md'), 1);
-                    $niceName = str_replace(['-', '_'], ' ', $niceName);
+                    $niceName = \preg_replace('([0-9]*\.)', '', $file->getBasename('.md'), 1);
+                    $niceName = \str_replace(['-', '_'], ' ', $niceName);
                     $this->packages[$componentName][$tag][$niceName] = $htmlName;
                 }
             }
@@ -154,9 +157,9 @@ class RepositoryManager
                     $docMenu .= '</div></li>';
                 }
                 ////////////   API   //////////
-//                $path =self::PUBLIC_DIR . 'doc/' . $compoName . '/' . $minorVersion . '/api/';
-//                $docMenu .= $this->menuApi($path);
-                $docMenu .= '<li><div class="hb leaf"><a href="/doc/'. $compoName .'/'. $minorVersion .'/api/index.html">API</a></div></li>';
+                //                $path =self::PUBLIC_DIR . 'doc/' . $compoName . '/' . $minorVersion . '/api/';
+                //                $docMenu .= $this->menuApi($path);
+                $docMenu .= '<li><div class="hb leaf"><a href="/doc/' . $compoName . '/' . $minorVersion . '/api/index.html">API</a></div></li>';
                 $docMenu .= '</ul></div></li>';
             }
             $docMenu .= '</ul></div></li>';
@@ -184,7 +187,6 @@ class RepositoryManager
                 </li>';
         }
         foreach ($finder->files()->name('*.html') as $element) {
-
             $res .= ' <li>
                     <div class="hd leaf">
                         <a href="link bleu">' . $element->getFilename() . '</a>
