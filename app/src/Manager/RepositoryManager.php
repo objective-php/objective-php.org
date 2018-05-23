@@ -84,7 +84,10 @@ class RepositoryManager
     {
         $this->rmAll(self::TMP_DIR);
         if (!\copy($tarUrl, $targz = ($path = self::TMP_DIR . $componentName . '-' . $version) . '.tar.gz')) {
-            throw new \RuntimeException('Unable to copy targz');
+            $error = error_get_last();
+            throw new \RuntimeException(
+                sprintf('[%s] Unable to copy file : %s', $error['type'], $error['message'])
+            );
         }
         $repoPath = (new \PharData($targz))->decompress();
         (new \PharData($path . '.tar'))->extractTo(self::TMP_DIR);
