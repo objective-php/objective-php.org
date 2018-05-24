@@ -1,9 +1,0 @@
-{
-    "auths": {
-        "objective-php": {
-            "host": "github",
-            "client_id": "client_id_to_change",
-            "client_secret": "client_secret_to_change"
-        }
-    }
-}

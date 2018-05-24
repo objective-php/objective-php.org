@@ -5,6 +5,7 @@ tmp/
 app/src/Manager/roadiz-sami/
 app/src/Manager/Renderer/
 app/theme/scss/theme.css
+app/config/auths.json
 
 packages/
 public/assets/style.css
