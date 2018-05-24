@@ -24,7 +24,7 @@ class ComponentsConfig extends AbstractMultiComplexDirective implements IgnoreDe
     /**
      * Component repository host
      *
-     * Define here the name of the the host where your components is stored. ( github... )
+     * Define here the name of the host where your components is stored. ( github... )
      *
      * @config-attribute
      * @config-example-value github

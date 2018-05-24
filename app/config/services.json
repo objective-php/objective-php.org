@@ -4,7 +4,8 @@
       "class": "App\\Manager\\RepositoryManager",
       "setters": {
         "setPaths": "param(paths)",
-        "setComponents": "param(components)"
+        "setComponents": "param(components)",
+        "setAuths": "param(auths)"
       }
     },
     "manager.index": {

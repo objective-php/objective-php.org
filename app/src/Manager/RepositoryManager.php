@@ -2,6 +2,7 @@
 
 namespace App\Manager;
 
+use App\Config\AuthsConfig;
 use App\Config\ComponentsConfig;
 use App\Config\PathsConfig;
 use GuzzleHttp\Client;
@@ -16,8 +17,6 @@ use Webuni\CommonMark\TableExtension\TableExtension;
 class RepositoryManager
 {
 
-    public $githubAuth = 'client_id=2b90f3380f225b1e4ead&client_secret=2d5b1cc12a0bdda9a3e8d50b1bc08b543f2751bc';
-
     protected $packages;
 
     /**
@@ -31,11 +30,22 @@ class RepositoryManager
     protected $paths;
 
     /**
+     * @var AuthsConfig[]
+     */
+    protected $auths;
+
+    /**
      * RepositoryManager constructor.
      */
     public function __construct()
     {
-        $this->packages = \json_decode(\file_get_contents(__DIR__ . '/../../keep/packages.json'), true);
+        try {
+            $this->packages = \json_decode(\file_get_contents(__DIR__ . '/../../data/packages.json'), true);
+        } catch (\Exception $e) {
+            if (!\is_dir(__DIR__ . '/../../data/packages.json') && !\mkdir(__DIR__ . '/../../data/packages.json', 0755, true) && !\is_dir(__DIR__ . '/../../data/packages.json')) {
+                throw new \RuntimeException(sprintf('Directory "%s" was not created', __DIR__ . '/../../data/packages.json'));
+            }
+        }
     }
 
 
@@ -47,7 +57,7 @@ class RepositoryManager
         foreach ($this->components as $key => $package) {
             if ($package->getHost() === 'github') {
                 $versions = [];
-                $tags = \GuzzleHttp\json_decode($client->get('https://api.github.com/repos/' . $key . '/git/refs/tags?' . $this->githubAuth)->getBody()->getContents());
+                $tags = \GuzzleHttp\json_decode($client->get('https://api.github.com/repos/' . $key . '/git/refs/tags?client_id=' . $this->getAuths()[explode('/', $key)[0]]->getClientId() . '&client_secret=' . $this->getAuths()[explode('/', $key)[0]]->getClientSecret())->getBody()->getContents());
                 foreach ($tags as $tag) {
                     // x.x.x
                     $v = \ltrim(\str_replace('refs/tags/', '', $tag->ref), 'v');
@@ -68,11 +78,6 @@ class RepositoryManager
     public function operateAll(): void
     { //only works for github repos
 
-        echo '<pre>';
-        print_r($this->getPaths());
-        echo '</pre>';
-        die();
-
         $this->packages = [];
         foreach ($this->fetchTags() as $key => $versions) {
             foreach ($versions as $minor => $version) {
@@ -86,7 +91,7 @@ class RepositoryManager
                 }
             }
         }
-        $this->dataMenu($_SERVER['DOCUMENT_ROOT'] . '/assets/dataMenu.js');
+        $this->dataMenu($this->getPaths()['public'] . 'assets/dataMenu.js');
     }
 
     //https://github.com/louis-cuny/application/archive/v2.0.1.tar.gz
@@ -190,7 +195,7 @@ class RepositoryManager
 
         $js = 'dataMenu = ' . $json = \json_encode($this->packages, JSON_PRETTY_PRINT);
         \file_put_contents($outputFile, $js);
-        \file_put_contents($this->getPaths()['app'] . 'keep/packages.json', $json);
+        \file_put_contents($this->getPaths()['app'] . 'data/packages.json', $json);
     }
 
     public function menuApi(string $path): string
@@ -223,8 +228,7 @@ class RepositoryManager
     /**
      * @param string $dir The directory to empty
      */
-    public
-    function rmAll(string $dir): void
+    public function rmAll(string $dir): void
     {
         if (\is_dir($dir)) {
             $objects = \scandir($dir, SCANDIR_SORT_NONE);
@@ -282,5 +286,22 @@ class RepositoryManager
         return $this;
     }
 
+    /**
+     * @return AuthsConfig[]
+     */
+    public function getAuths(): array
+    {
+        return $this->auths;
+    }
+
+    /**
+     * @param AuthsConfig[] $auths
+     * @return RepositoryManager
+     */
+    public function setAuths(array $auths): RepositoryManager
+    {
+        $this->auths = $auths;
+        return $this;
+    }
 
 }

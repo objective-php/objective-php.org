@@ -9,6 +9,7 @@ namespace App;
  * renaming operation painless
  */
 
+use App\Config\AuthsConfig;
 use App\Config\ComponentsConfig;
 use App\Config\PathsConfig;
 use ObjectivePHP\Application\AbstractHttpApplication;
@@ -34,6 +35,7 @@ class Application extends AbstractHttpApplication
 
         $this->getConfig()->registerDirective(new PathsConfig());
         $this->getConfig()->registerDirective(new ComponentsConfig());
+        $this->getConfig()->registerDirective(new AuthsConfig());
 
     }
 }
