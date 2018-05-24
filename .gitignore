@@ -2,19 +2,14 @@
 vendor/
 node_modules/
 tmp/
-app/src/Manager/roadiz-sami/
 app/src/Manager/Renderer/
 app/theme/scss/theme.css
-app/config/auths.json
 
 packages/
 public/assets/style.css
 public/assets/theme.js
 public/assets/dev.js
 public/assets/dataMenu.js
-public/css/
 public/doc/
-public/docapi/
-public/doctree.html
 
 yarn-error.log
