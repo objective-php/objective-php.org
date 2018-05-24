@@ -1,6 +1,6 @@
 <?php
 
-namespace Project\Exception;
+namespace App\Exception;
 
 class ComponentStructureException extends \Exception
 {

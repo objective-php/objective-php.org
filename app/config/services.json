@@ -1,10 +1,17 @@
 {
   "services":{
     "manager.repository": {
-      "class": "Project\\Manager\\RepositoryManager"
+      "class": "App\\Manager\\RepositoryManager",
+      "setters": {
+        "setPaths": "param(paths)",
+        "setComponents": "param(components)"
+      }
     },
     "manager.index": {
-      "class": "Project\\Manager\\IndexManager"
+      "class": "App\\Manager\\IndexManager",
+      "setters": {
+        "setPaths": "param(paths)"
+      }
     }
   }
 }

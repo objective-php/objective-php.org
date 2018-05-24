@@ -1,0 +1,8 @@
+{
+    "paths": {
+        "app": "app/",
+        "tmp": "app/tmp/",
+        "html": "app/layouts/html/",
+        "doc": "public/doc/"
+    }
+}

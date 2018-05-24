@@ -1,6 +1,6 @@
 <?php
 
-namespace Project\Action\Api;
+namespace App\Action\Api;
 
 use ObjectivePHP\Middleware\Action\RestAction\AbstractRestAction;
 use ObjectivePHP\Middleware\Action\RestAction\Serializer\JsonSerializer;
@@ -8,7 +8,7 @@ use ObjectivePHP\Middleware\Action\RestAction\Serializer\JsonSerializer;
 /**
  * Class BuildApi
  *
- * @package Project\Action\DocApi
+ * @package App\Action\DocApi
  */
 class BuildApi extends AbstractRestAction
 {

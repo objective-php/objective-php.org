@@ -1,6 +1,6 @@
 <?php
 
-namespace Project;
+namespace App;
 
 /**
  * The AppNamespace namespace should be changed to whatever fit your project
@@ -9,6 +9,8 @@ namespace Project;
  * renaming operation painless
  */
 
+use App\Config\ComponentsConfig;
+use App\Config\PathsConfig;
 use ObjectivePHP\Application\AbstractHttpApplication;
 use ObjectivePHP\Middleware\Action\PhtmlAction\ExceptionHandler\DefaultExceptionRenderer;
 use ObjectivePHP\Middleware\Action\PhtmlAction\PhtmlActionPackage;
@@ -27,6 +29,11 @@ class Application extends AbstractHttpApplication
 
         // register Phtml action package
         $this->registerPackage(new PhtmlActionPackage());
-/*        $this->registerPackage(new ExamplePackage());*/
+//        $this->registerPackage(new ExamplePackage());
+
+
+        $this->getConfig()->registerDirective(new PathsConfig());
+        $this->getConfig()->registerDirective(new ComponentsConfig());
+
     }
 }

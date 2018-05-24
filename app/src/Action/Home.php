@@ -1,6 +1,6 @@
 <?php
 
-namespace Project\Action;
+namespace App\Action;
 
 use ObjectivePHP\Middleware\Action\PhtmlAction\PhtmlAction;
 use Psr\Http\Message\ResponseInterface;

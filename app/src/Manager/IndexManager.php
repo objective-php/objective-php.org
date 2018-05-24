@@ -1,23 +1,32 @@
 <?php
 
-namespace Project\Manager;
+namespace App\Manager;
 
-use ObjectivePHP\Primitives\String\Camel;
-use Symfony\Component\Finder\Finder;
+use App\Config\PathsConfig;
 
+/**
+ * Class IndexManager
+ * @package App\Manager
+ */
 class IndexManager
 {
-    public const DOC_DIR = __DIR__ . '/../../../public/doc/';
-    public const HTML_DIR = __DIR__ . '/../../layouts/html/';
+//    public const DOC_DIR = __DIR__ . '/../../../public/doc/';
+//    public const HTML_DIR = __DIR__ . '/../../layouts/html/';
 
-    public $base_url;
+//    public $base_url;
+
+    /**
+     * @var PathsConfig[]
+     */
+    protected $paths;
 
     /**
      * IndexManager constructor.
      */
     public function __construct()
     {
-        $this->base_url = 'http://' . $_SERVER['HTTP_HOST'];
+//        $this->base_url = 'http://' . $_SERVER['HTTP_HOST'];
+
     }
 
 
@@ -28,7 +37,7 @@ class IndexManager
 
     public function docIndex(): string
     {
-        $content = file_get_contents(self::HTML_DIR . 'doclayout.html');
+        $content = file_get_contents($this->getPaths()['html'] . 'doclayout.html');
         $pageContent = '<h1>Welcome to Objective PHP user documentation</h1><br/><br/>
 <p>You can navigate through it from the left menu.</p><br/>
 <p>Please take attention on the versions you are using</p>';
@@ -40,4 +49,23 @@ class IndexManager
         return $content;
     }
 
+    /**
+     * @return PathsConfig[]
+     */
+    public function getPaths(): array
+    {
+        return $this->paths;
+    }
+
+    /**
+     * @param PathsConfig[] $paths
+     *
+     * @return $this
+     */
+    public function setPaths($paths): IndexManager
+    {
+        $this->paths = $paths;
+
+        return $this;
+    }
 }

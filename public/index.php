@@ -1,6 +1,6 @@
 <?php
 
-use Project\Application;
+use App\Application;
 
     $autoloader = require '../vendor/autoload.php';
 

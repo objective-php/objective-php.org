@@ -1,42 +1,41 @@
 <?php
 
-namespace Project\Manager;
+namespace App\Manager;
 
+use App\Config\ComponentsConfig;
+use App\Config\PathsConfig;
 use GuzzleHttp\Client;
 use League\CommonMark\Converter;
 use League\CommonMark\DocParser;
 use League\CommonMark\Environment;
 use League\CommonMark\HtmlRenderer;
-use Project\Exception\ComponentStructureException;
+use App\Exception\ComponentStructureException;
 use Symfony\Component\Finder\Finder;
 use Webuni\CommonMark\TableExtension\TableExtension;
 
 class RepositoryManager
 {
-    public const TMP_DIR = __DIR__ . '/../../tmp/';
-    public const PUBLIC_DIR = __DIR__ . '/../../../public/';
-    public const HTML_DIR = __DIR__ . '/../../layouts/html/';
 
     public $githubAuth = 'client_id=2b90f3380f225b1e4ead&client_secret=2d5b1cc12a0bdda9a3e8d50b1bc08b543f2751bc';
 
+    protected $packages;
+
+    /**
+     * @var ComponentsConfig[]
+     */
     protected $components;
 
-    protected $packages;
+    /**
+     * @var PathsConfig[]
+     */
+    protected $paths;
 
     /**
      * RepositoryManager constructor.
      */
     public function __construct()
     {
-        if (!\is_dir(self::TMP_DIR) && !\mkdir(self::TMP_DIR, 0755, true) && !\is_dir(self::TMP_DIR)) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', self::TMP_DIR));
-        }
-        if (!\is_dir(self::PUBLIC_DIR . 'doc') && !\mkdir(self::PUBLIC_DIR . 'doc', 0755, true) && !\is_dir(self::PUBLIC_DIR . 'doc')) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', self::PUBLIC_DIR . 'doc'));
-        }
-
-        $this->packages = \json_decode(\file_get_contents(__DIR__ . '/../../configs/packages.json'), true);
-        $this->components = \json_decode(\file_get_contents(__DIR__ . '/../../../components.json'))->components;
+        $this->packages = \json_decode(\file_get_contents(__DIR__ . '/../../keep/packages.json'), true);
     }
 
 
@@ -44,8 +43,9 @@ class RepositoryManager
     {
         $client = new Client();
         $res = [];
+
         foreach ($this->components as $key => $package) {
-            if ($package->host === 'github') {
+            if ($package->getHost() === 'github') {
                 $versions = [];
                 $tags = \GuzzleHttp\json_decode($client->get('https://api.github.com/repos/' . $key . '/git/refs/tags?' . $this->githubAuth)->getBody()->getContents());
                 foreach ($tags as $tag) {
@@ -53,7 +53,7 @@ class RepositoryManager
                     $v = \ltrim(\str_replace('refs/tags/', '', $tag->ref), 'v');
 
                     //On verifie que le tag est superieur a la minVersion et que ce n'est pas une version dev,alpha, etc
-                    if (!\preg_match('/[a-z]/i', $v) && \version_compare($v, $this->components->$key->minVersion, '>=')) {
+                    if (!\preg_match('/[a-z]/i', $v) && \version_compare($v, $this->components[$key]->getMinVersion(), '>=')) {
                         \preg_match("/(.*\..*)\./", $v, $o);
                         $versions[$o[1]] = $v;
                     }
@@ -67,10 +67,16 @@ class RepositoryManager
 
     public function operateAll(): void
     { //only works for github repos
+
+        echo '<pre>';
+        print_r($this->getPaths());
+        echo '</pre>';
+        die();
+
         $this->packages = [];
         foreach ($this->fetchTags() as $key => $versions) {
             foreach ($versions as $minor => $version) {
-                $this->rmAll(self::TMP_DIR);
+                $this->rmAll($this->getPaths()['tmp']);
                 $tarUrl = 'https://github.com/' . $key . '/archive/v' . $version . '.tar.gz';
                 $repoPath = $this->fetchRepo($tarUrl, $repoName = \explode('/', $key)[1], $version);
                 try {
@@ -80,7 +86,7 @@ class RepositoryManager
                 }
             }
         }
-        $this->dataMenu();
+        $this->dataMenu($_SERVER['DOCUMENT_ROOT'] . '/assets/dataMenu.js');
     }
 
     //https://github.com/louis-cuny/application/archive/v2.0.1.tar.gz
@@ -88,16 +94,16 @@ class RepositoryManager
     //2.0.0
     public function fetchRepo(string $tarUrl, string $componentName, string $version): string
     {
-        $this->rmAll(self::TMP_DIR);
+        $this->rmAll($this->getPaths()['tmp']);
         $md5 = \md5($tarUrl);
-        if (!\copy($tarUrl, $targz = ($path = self::TMP_DIR . $componentName . '-' . $md5) . '.tar.gz')) {
+        if (!\copy($tarUrl, $targz = ($path = $this->getPaths()['tmp'] . $componentName . '-' . $md5) . '.tar.gz')) {
             $error = error_get_last();
             throw new \RuntimeException(
                 sprintf('[%s] Unable to copy file : %s', $error['type'], $error['message'])
             );
         }
         $repoPath = (new \PharData($targz))->decompress();
-        (new \PharData($path . '.tar'))->extractTo(self::TMP_DIR);
+        (new \PharData($path . '.tar'))->extractTo($this->getPaths()['tmp']);
         return $repoPath;
     }
 
@@ -106,14 +112,19 @@ class RepositoryManager
     //2.0
     public function operate(string $repoPath, string $componentName, string $tag)
     {
-        if (\is_dir($docsPath = self::TMP_DIR . $repoPath . '/docs')) {
+        if (!\is_dir($this->getPaths()['tmp']) && !\mkdir($this->getPaths()['tmp'], 0755, true) && !\is_dir($this->getPaths()['tmp'])) {
+            throw new \RuntimeException(sprintf('Directory "%s" was not created', $this->getPaths()['tmp']));
+        }
+        if (!\is_dir($this->getPaths()['doc']) && !\mkdir($this->getPaths()['doc'], 0755, true) && !\is_dir($this->getPaths()['doc'])) {
+            throw new \RuntimeException(sprintf('Directory "%s" was not created', $this->getPaths()['doc']));
+        }
+
+        if (\is_dir($docsPath = $this->getPaths()['tmp'] . $repoPath . '/docs')) {
             $finder = new Finder();
             $finder->files()->in($docsPath)->name('*.md');
 
-            $pathToDocs = self::PUBLIC_DIR . 'doc/';
-
             foreach ($finder as $file) {
-                if (!\is_dir($pathToDoc = $pathToDocs . $componentName . '/' . $tag . '/') && !\mkdir($pathToDoc, 0755, true) && !\is_dir($pathToDoc)) {
+                if (!\is_dir($pathToDoc = $this->getPaths()['doc'] . $componentName . '/' . $tag . '/') && !\mkdir($pathToDoc, 0755, true) && !\is_dir($pathToDoc)) {
                     throw new \RuntimeException(sprintf('Directory "%s" was not created', $pathToDoc));
                 }
                 \file_put_contents($pathToDoc . $htmlName = $file->getBasename('.md') . '.html', $this->renderDoc($file->getContents(), ucfirst($componentName), $tag));
@@ -129,14 +140,14 @@ class RepositoryManager
         $json = \json_encode(['repoPath'  => $repoPath,
                               'compoName' => $componentName,
                               'version'   => $tag]);
-        \file_put_contents(self::TMP_DIR . '/infos.json', $json, JSON_PRETTY_PRINT);
+        \file_put_contents($this->getPaths()['tmp'] . '/infos.json', $json, JSON_PRETTY_PRINT);
 
         return print_r(\exec('php ' . __DIR__ . '/sami.phar update -v ' . __DIR__ . '/sami-config.php --force'));
     }
 
     public function renderDoc(string $pageContent, $title, $version): string
     {
-        $content = file_get_contents(self::HTML_DIR . 'doclayout.html');
+        $content = file_get_contents($this->getPaths()['html'] . 'doclayout.html');
         $environment = Environment::createCommonMarkEnvironment();
         $environment->addExtension(new TableExtension());
         //$environment->addBlockRenderer(Table::class, new OpTableRenderer());
@@ -149,7 +160,7 @@ class RepositoryManager
         return $content;
     }
 
-    public function dataMenu(string $outputFile = self::PUBLIC_DIR . 'assets/dataMenu.js'): void
+    public function dataMenu(string $outputFile): void
     {
         $docMenu = '<ul>';
         foreach ($this->packages as $compoName => $package) {
@@ -175,11 +186,11 @@ class RepositoryManager
             $docMenu .= '</ul></div></li>';
         }
         $docMenu .= '<ul>';
-        \file_put_contents(self::PUBLIC_DIR . 'doctree.html', $docMenu);
+        \file_put_contents($this->getPaths()['doc'] . 'doctree.html', $docMenu);
 
         $js = 'dataMenu = ' . $json = \json_encode($this->packages, JSON_PRETTY_PRINT);
         \file_put_contents($outputFile, $js);
-        \file_put_contents(__DIR__ . '/../../configs/packages.json', $json);
+        \file_put_contents($this->getPaths()['app'] . 'keep/packages.json', $json);
     }
 
     public function menuApi(string $path): string
@@ -227,9 +238,49 @@ class RepositoryManager
                 }
             }
             \reset($objects);
-            if (self::TMP_DIR !== $dir) {
+            if ($this->getPaths()['tmp'] !== $dir) {
                 \rmdir($dir);
             }
         }
     }
+
+    /**
+     * @return PathsConfig[]
+     */
+    public function getPaths(): array
+    {
+        return $this->paths;
+    }
+
+    /**
+     * @param PathsConfig[] $paths
+     * @return $this
+     */
+    public function setPaths($paths): RepositoryManager
+    {
+        $this->paths = $paths;
+
+        return $this;
+    }
+
+    /**
+     * @return ComponentsConfig[]
+     */
+    public function getComponents(): array
+    {
+        return $this->components;
+    }
+
+    /**
+     * @param array $components
+     * @return RepositoryManager
+     */
+    public function setComponents($components): RepositoryManager
+    {
+        $this->components = $components;
+
+        return $this;
+    }
+
+
 }

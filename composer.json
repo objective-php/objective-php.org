@@ -38,7 +38,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Project\\": "app/src"
+      "App\\": "app/src"
     }
   },
   "require-dev": {
