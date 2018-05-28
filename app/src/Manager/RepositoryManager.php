@@ -117,13 +117,6 @@ class RepositoryManager
     //2.0
     public function operate(string $repoPath, string $componentName, string $tag)
     {
-        if (!\is_dir($this->getPaths()['tmp']) && !\mkdir($this->getPaths()['tmp'], 0755, true) && !\is_dir($this->getPaths()['tmp'])) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $this->getPaths()['tmp']));
-        }
-        if (!\is_dir($this->getPaths()['doc']) && !\mkdir($this->getPaths()['doc'], 0755, true) && !\is_dir($this->getPaths()['doc'])) {
-            throw new \RuntimeException(sprintf('Directory "%s" was not created', $this->getPaths()['doc']));
-        }
-
         if (\is_dir($docsPath = $this->getPaths()['tmp'] . $repoPath . '/docs')) {
             $finder = new Finder();
             $finder->files()->in($docsPath)->name('*.md');
@@ -147,7 +140,13 @@ class RepositoryManager
                               'version'   => $tag]);
         \file_put_contents($this->getPaths()['tmp'] . '/infos.json', $json, JSON_PRETTY_PRINT);
 
-        return print_r(\exec('php ' . __DIR__ . '/sami.phar update -v ' . __DIR__ . '/sami-config.php --force'));
+        print_r(\exec('php ' . __DIR__ . '/sami.phar update -v ' . __DIR__ . '/sami-config.php --force'));
+//        $client = new \AlgoliaSearch\Client('JIIVBNDTOY', '18388ac4ec83253c7f8bc636218b7882');
+        //$index = $client->initIndex('getstarted_actors');
+//        $index = $client->initIndex('objective_php');
+//        $objects = json_decode(file_get_contents($pathToDoc . '/api/sami.json'), false);
+
+//        $index->addObjects($objects);
     }
 
     public function renderDoc(string $pageContent, $title, $version): string

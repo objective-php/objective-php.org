@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "719f2c761c90ec740e4535ec482ef675",
+    "content-hash": "701894cf939ff698fcc60c915dfeccde",
     "packages": [
         {
             "name": "algolia/algoliasearch-client-php",
@@ -722,6 +722,67 @@
             "time": "2018-03-23T16:42:55+00:00"
         },
         {
+            "name": "league/climate",
+            "version": "3.4.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/thephpleague/climate.git",
+                "reference": "d657a19837c1f79a891381fb128b755aa3386381"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/thephpleague/climate/zipball/d657a19837c1f79a891381fb128b755aa3386381",
+                "reference": "d657a19837c1f79a891381fb128b755aa3386381",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.6|^7.0",
+                "psr/log": "^1.0",
+                "seld/cli-prompt": "^1.0"
+            },
+            "require-dev": {
+                "mikey179/vfsstream": "^1.4",
+                "mockery/mockery": "^1.0",
+                "phpunit/phpunit": "^5.7.16"
+            },
+            "suggest": {
+                "ext-mbstring": "If ext-mbstring is not available you MUST install symfony/polyfill-mbstring"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "League\\CLImate\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Craig Duncan",
+                    "email": "git@duncanc.co.uk",
+                    "homepage": "https://github.com/duncan3dc",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Joe Tannenbaum",
+                    "email": "hey@joe.codes",
+                    "homepage": "http://joe.codes/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "PHP's best friend for the terminal. CLImate allows you to easily output colored text, special formats, and more.",
+            "keywords": [
+                "cli",
+                "colors",
+                "command",
+                "php",
+                "terminal"
+            ],
+            "time": "2018-04-29T16:43:54+00:00"
+        },
+        {
             "name": "league/commonmark",
             "version": "0.17.5",
             "source": {
@@ -792,16 +853,16 @@
         },
         {
             "name": "objective-php/application",
-            "version": "v2.0.1",
+            "version": "v2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/objective-php/application.git",
-                "reference": "16b930ddcc9ecbd34046c9ccc621ddc16b942e62"
+                "reference": "9a42689ff4277c4a983ec621452f0ea0b35ddfb5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/objective-php/application/zipball/16b930ddcc9ecbd34046c9ccc621ddc16b942e62",
-                "reference": "16b930ddcc9ecbd34046c9ccc621ddc16b942e62",
+                "url": "https://api.github.com/repos/objective-php/application/zipball/9a42689ff4277c4a983ec621452f0ea0b35ddfb5",
+                "reference": "9a42689ff4277c4a983ec621452f0ea0b35ddfb5",
                 "shasum": ""
             },
             "require": {
@@ -844,7 +905,54 @@
                 "framework",
                 "objective php"
             ],
-            "time": "2018-05-11T12:43:03+00:00"
+            "time": "2018-05-24T12:44:23+00:00"
+        },
+        {
+            "name": "objective-php/cli",
+            "version": "V2.0.0-BETA1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/objective-php/cli.git",
+                "reference": "7f6f825ef01f801921dd58f6d60de269c8c9c3cf"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/objective-php/cli/zipball/7f6f825ef01f801921dd58f6d60de269c8c9c3cf",
+                "reference": "7f6f825ef01f801921dd58f6d60de269c8c9c3cf",
+                "shasum": ""
+            },
+            "require": {
+                "league/climate": "^3.2",
+                "objective-php/application": "^2.0.2"
+            },
+            "require-dev": {
+                "codeception/codeception": "^2.4"
+            },
+            "bin": [
+                "bin/op"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "ObjectivePHP\\Cli\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "Gauthier 'Rusty' Delamarre",
+                    "email": "gauthier@objective-php.org"
+                }
+            ],
+            "description": "Cli commands handling library",
+            "keywords": [
+                "cli",
+                "objective php"
+            ],
+            "time": "2018-05-24T13:03:20+00:00"
         },
         {
             "name": "objective-php/config",
@@ -1338,19 +1446,19 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/objective-php/rest-action.git",
-                "reference": "19eb28843156e578a28593c3ca7278e2fc7ecb70"
+                "reference": "39ea126d2f3078d524d0ad347854c470d279ad7e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/objective-php/rest-action/zipball/19eb28843156e578a28593c3ca7278e2fc7ecb70",
-                "reference": "19eb28843156e578a28593c3ca7278e2fc7ecb70",
+                "url": "https://api.github.com/repos/objective-php/rest-action/zipball/39ea126d2f3078d524d0ad347854c470d279ad7e",
+                "reference": "39ea126d2f3078d524d0ad347854c470d279ad7e",
                 "shasum": ""
             },
             "require": {
                 "aura/accept": "^2.2",
                 "composer/semver": "^1.4",
                 "objective-php/http-action": "^1.0",
-                "objective-php/services-factory": "dev-master as v2.0.0",
+                "objective-php/services-factory": "^2.0",
                 "php": "~7.0"
             },
             "require-dev": {
@@ -1380,7 +1488,7 @@
                 "psr-15",
                 "rest"
             ],
-            "time": "2018-04-30T14:26:38+00:00"
+            "time": "2018-05-24T13:14:11+00:00"
         },
         {
             "name": "objective-php/router",
@@ -1434,7 +1542,7 @@
         },
         {
             "name": "objective-php/services-factory",
-            "version": "dev-master",
+            "version": "v2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/objective-php/services-factory.git",
@@ -2356,17 +2464,112 @@
             "time": "2018-01-22T17:08:31+00:00"
         },
         {
-            "name": "symfony/finder",
-            "version": "v4.0.9",
+            "name": "psr/log",
+            "version": "1.0.2",
             "source": {
                 "type": "git",
-                "url": "https://github.com/symfony/finder.git",
-                "reference": "ca27c02b7a3fef4828c998c2ff9ba7aae1641c49"
+                "url": "https://github.com/php-fig/log.git",
+                "reference": "4ebe3a8bf773a19edfe0a84b6585ba3d401b724d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/finder/zipball/ca27c02b7a3fef4828c998c2ff9ba7aae1641c49",
-                "reference": "ca27c02b7a3fef4828c998c2ff9ba7aae1641c49",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/4ebe3a8bf773a19edfe0a84b6585ba3d401b724d",
+                "reference": "4ebe3a8bf773a19edfe0a84b6585ba3d401b724d",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Psr\\Log\\": "Psr/Log/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "PHP-FIG",
+                    "homepage": "http://www.php-fig.org/"
+                }
+            ],
+            "description": "Common interface for logging libraries",
+            "homepage": "https://github.com/php-fig/log",
+            "keywords": [
+                "log",
+                "psr",
+                "psr-3"
+            ],
+            "time": "2016-10-10T12:19:37+00:00"
+        },
+        {
+            "name": "seld/cli-prompt",
+            "version": "1.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Seldaek/cli-prompt.git",
+                "reference": "a19a7376a4689d4d94cab66ab4f3c816019ba8dd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Seldaek/cli-prompt/zipball/a19a7376a4689d4d94cab66ab4f3c816019ba8dd",
+                "reference": "a19a7376a4689d4d94cab66ab4f3c816019ba8dd",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Seld\\CliPrompt\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jordi Boggiano",
+                    "email": "j.boggiano@seld.be"
+                }
+            ],
+            "description": "Allows you to prompt for user input on the command line, and optionally hide the characters they type",
+            "keywords": [
+                "cli",
+                "console",
+                "hidden",
+                "input",
+                "prompt"
+            ],
+            "time": "2017-03-18T11:32:45+00:00"
+        },
+        {
+            "name": "symfony/finder",
+            "version": "v4.0.10",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/finder.git",
+                "reference": "8c633f5a815903a1fe6e3fc135f207267a8a79af"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/finder/zipball/8c633f5a815903a1fe6e3fc135f207267a8a79af",
+                "reference": "8c633f5a815903a1fe6e3fc135f207267a8a79af",
                 "shasum": ""
             },
             "require": {
@@ -2402,20 +2605,20 @@
             ],
             "description": "Symfony Finder Component",
             "homepage": "https://symfony.com",
-            "time": "2018-04-04T05:10:37+00:00"
+            "time": "2018-05-16T09:05:32+00:00"
         },
         {
             "name": "symfony/options-resolver",
-            "version": "v4.0.9",
+            "version": "v4.0.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/options-resolver.git",
-                "reference": "371532a2cfe932f7a3766dd4c45364566def1dd0"
+                "reference": "ac1c3a814ddcad9d0cc2d0382e215d3bff8ae2d2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/options-resolver/zipball/371532a2cfe932f7a3766dd4c45364566def1dd0",
-                "reference": "371532a2cfe932f7a3766dd4c45364566def1dd0",
+                "url": "https://api.github.com/repos/symfony/options-resolver/zipball/ac1c3a814ddcad9d0cc2d0382e215d3bff8ae2d2",
+                "reference": "ac1c3a814ddcad9d0cc2d0382e215d3bff8ae2d2",
                 "shasum": ""
             },
             "require": {
@@ -2456,7 +2659,7 @@
                 "configuration",
                 "options"
             ],
-            "time": "2018-01-18T22:19:33+00:00"
+            "time": "2018-05-11T15:58:37+00:00"
         },
         {
             "name": "webmozart/assert",
@@ -2736,7 +2939,7 @@
         },
         {
             "name": "symfony/var-dumper",
-            "version": "v4.0.9",
+            "version": "v4.0.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/var-dumper.git",
@@ -2804,17 +3007,10 @@
             "time": "2018-04-26T16:12:06+00:00"
         }
     ],
-    "aliases": [
-        {
-            "alias": "v2.0.0",
-            "alias_normalized": "2.0.0.0",
-            "version": "9999999-dev",
-            "package": "objective-php/services-factory"
-        }
-    ],
+    "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "objective-php/services-factory": 20
+        "objective-php/cli": 10
     },
     "prefer-stable": false,
     "prefer-lowest": false,

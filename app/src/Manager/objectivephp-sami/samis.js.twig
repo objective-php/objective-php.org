@@ -1,0 +1,24 @@
+[
+    {% block search_index %}
+    {% from _self import add_class_methods_index %}
+
+    {% for ns in namespaces -%}
+    {"type": "Namespace", "link": "{{ namespace_path(ns) }}", "name": "{{ ns|replace({'\\': '\\\\'})|raw }}", "doc": "Namespace {{ ns|replace({'\\': '\\\\'})|raw }}"},
+    {%- endfor %}
+
+    {% for class in interfaces -%}
+    {"type": "Interface", {% if class.namespace %} "fromName": "{{ class.namespace|replace({'\\': '\\\\'})|raw }}", "fromLink": "{{ namespace_path(class.namespace)|raw }}",{% endif %} "link": "{{ class_path(class) }}", "name": "{{ class.name|replace({'\\': '\\\\'})|raw }}", "doc": "{{ class.shortdesc|desc(class)|json_encode }}"},
+    {{ add_class_methods_index(class) }}
+    {% endfor %}
+
+    {#{% for class in classes -%}#}
+    {#{"type": {% if class.isTrait %} "Trait" {% else %} "Class" {% endif %}, {% if class.namespace %} "fromName": "{{ class.namespace|replace({'\\': '\\\\'})|raw }}", "fromLink": "{{ namespace_path(class.namespace) }}",{% endif %} "link": "{{ class_path(class) }}", "name": "{{ class.name|replace({'\\': '\\\\'})|raw }}", "doc": "{{ class.shortdesc|desc(class)|json_encode }}"},#}
+    {#{{ add_class_methods_index(class) }}#}
+    {#{% endfor %}#}
+
+    {# Override this block, search_index_extra, to add custom search entries! #}
+    {% block search_index_extra '' %}
+    {% endblock %}
+    // Fix trailing commas in the index
+    {}
+]

@@ -1,0 +1,71 @@
+[
+    {% block search_index %}
+    {% from _self import add_class_methods_index %}
+
+    {% for ns in namespaces -%}
+    {
+        "type": "Namespace",
+        "link": "/doc/{{ project.config('title')|lower }}/{{ project.versions | first }}/api/{{ namespace_path(ns) }}",
+        "name": "{{ ns|replace({'\\': '\\\\'})|raw }}",
+        "doc": "Namespace {{ ns|replace({'\\': '\\\\'})|raw }}",
+        "version": "{{ project.versions | first }}",
+        "component": "{{ project.config('title')|lower}}"
+    },
+    {%- endfor %}
+
+    {% for class in interfaces -%}
+    {
+        "type": "Interface",
+        {% if class.namespace %}
+        "fromName": "{{ class.namespace|replace({'\\': '\\\\'})|raw }}",
+        "fromLink": "{{ namespace_path(class.namespace)|raw }}",
+        {% endif %}
+        "link": "/doc/{{ project.config('title')|lower}}/{{ project.versions | first }}/api/{{ class_path(class) }}",
+        "name": "{{ class.name|replace({'\\': '\\\\'})|raw }}",
+        "doc": {{ class.shortdesc|desc(class)|json_encode|raw }},
+        "version": "{{ project.versions | first }}",
+        "component": "{{ project.config('title')|lower}}"
+    },
+    {{ add_class_methods_index(class) }}
+    {% endfor %}
+
+    {% for class in classes -%}
+    {
+        "type": {% if class.isTrait %} "Trait"{% else %} "Class"{% endif %},
+        {% if class.namespace %}
+        "fromName": "{{ class.namespace|replace({'\\': '\\\\'})|raw }}",
+        "fromLink": "{{ namespace_path(class.namespace) }}",
+        {% endif %}
+        "link": "/doc/{{ project.config('title')|lower }}/{{ project.versions | first }}/api/{{ class_path(class) }}",
+        "name": "{{ class.name|replace({'\\': '\\\\'})|raw }}",
+        "doc": {{ class.shortdesc|desc(class)|json_encode|raw }},
+        "version": "{{ project.versions | first }}",
+        "component": "{{ project.config('title')|lower}}"
+    },
+    {{ add_class_methods_index(class) }}
+    {% endfor %}
+
+    {# Override this block, search_index_extra, to add custom search entries! #}
+    {% block search_index_extra '' %}
+    {% endblock %}
+    {}
+]
+
+{% macro add_class_methods_index(class) %}
+{% if class.methods %}
+{% set from_name = class.name|replace({'\\': '\\\\'}) %}
+{% set from_link = class_path(class) %}
+{% for meth in class.methods %}
+{
+    "type": "Method",
+    "fromName": "{{ from_name|raw }}",
+    "fromLink": "{{ from_link|raw }}",
+    "link": "/doc/{{ project.config('title')|lower }}/{{ project.versions | first }}/api/{{ method_path(meth) }}",
+    "name": "{{ meth|replace({'\\': '\\\\'})|raw }}",
+    "doc": {{ meth.shortdesc|desc(class)|json_encode|raw }},
+    "version": "{{ project.versions | first }}",
+    "component": "{{ project.config('title')|lower}}"
+},
+{% endfor %}
+{% endif %}
+{% endmacro %}

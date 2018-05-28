@@ -10,6 +10,7 @@ global:
     'traits.twig':     'traits.html'
 #    'opensearch.twig': 'opensearch.xml'
 #    'search.twig':     'search.html'
+    'sami.json.twig':  'sami.json'
     'sami.js.twig':    'sami.js'
 
 namespace:

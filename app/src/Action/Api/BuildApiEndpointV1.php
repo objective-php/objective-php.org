@@ -30,8 +30,9 @@ class BuildApiEndpointV1 extends AbstractEndpoint implements InjectionAnnotation
 
     public function get(ServerRequestInterface $request)
     {
-        $this->getIndexManager()->generateAll();
-        return $this->getRepositoryManager()->operateAll();
+
+            $this->getIndexManager()->generateAll();
+            $this->getRepositoryManager()->operateAll();
     }
 
 

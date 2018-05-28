@@ -32,7 +32,14 @@ class IndexManager
 
     public function generateAll(): void
     {
-        file_put_contents(__DIR__ . '/../../../public/doc/index.html', $this->docIndex());
+        if (!\is_dir($this->getPaths()['tmp']) && !\mkdir($this->getPaths()['tmp'], 0755, true) && !\is_dir($this->getPaths()['tmp'])) {
+            throw new \RuntimeException(sprintf('Directory "%s" was not created', $this->getPaths()['tmp']));
+        }
+        if (!\is_dir($this->getPaths()['doc']) && !\mkdir($this->getPaths()['doc'], 0755, true) && !\is_dir($this->getPaths()['doc'])) {
+            throw new \RuntimeException(sprintf('Directory "%s" was not created', $this->getPaths()['doc']));
+        }
+
+        file_put_contents($this->getPaths()['doc'] . 'index.html', $this->docIndex());
     }
 
     public function docIndex(): string
