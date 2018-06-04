@@ -9,7 +9,9 @@
         "name": "{{ ns|replace({'\\': '\\\\'})|raw }}",
         "doc": "Namespace {{ ns|replace({'\\': '\\\\'})|raw }}",
         "version": "{{ project.versions | first }}",
-        "component": "{{ project.config('title')|lower}}"
+        "component": "{{ project.config('title')|lower}}",
+        "hierarchical_versions": {"lvl0": "{{ project.config('title')|lower}}", "lvl1": "{{ project.config('title')|lower}}>{{ project.versions | first }}" }
+
     },
     {%- endfor %}
 
@@ -24,7 +26,9 @@
         "name": "{{ class.name|replace({'\\': '\\\\'})|raw }}",
         "doc": {{ class.shortdesc|desc(class)|json_encode|raw }},
         "version": "{{ project.versions | first }}",
-        "component": "{{ project.config('title')|lower}}"
+        "component": "{{ project.config('title')|lower}}",
+        "hierarchical_versions": {"lvl0": "{{ project.config('title')|lower}}", "lvl1": "{{ project.config('title')|lower}}>{{ project.versions | first }}" }
+
     },
     {{ add_class_methods_index(class) }}
     {% endfor %}
@@ -40,7 +44,8 @@
         "name": "{{ class.name|replace({'\\': '\\\\'})|raw }}",
         "doc": {{ class.shortdesc|desc(class)|json_encode|raw }},
         "version": "{{ project.versions | first }}",
-        "component": "{{ project.config('title')|lower}}"
+        "component": "{{ project.config('title')|lower}}",
+        "hierarchical_versions": {"lvl0": "{{ project.config('title')|lower}}", "lvl1": "{{ project.config('title')|lower}}>{{ project.versions | first }}" }
     },
     {{ add_class_methods_index(class) }}
     {% endfor %}
@@ -64,7 +69,9 @@
     "name": "{{ meth|replace({'\\': '\\\\'})|raw }}",
     "doc": {{ meth.shortdesc|desc(class)|json_encode|raw }},
     "version": "{{ project.versions | first }}",
-    "component": "{{ project.config('title')|lower}}"
+    "component": "{{ project.config('title')|lower}}",
+    "hierarchical_versions": {"lvl0": "{{ project.config('title')|lower}}", "lvl1": "{{ project.config('title')|lower}}>{{ project.versions | first }}" }
+
 },
 {% endfor %}
 {% endif %}

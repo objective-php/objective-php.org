@@ -8,6 +8,7 @@ use ObjectivePHP\Middleware\Action\RestAction\AbstractEndpoint;
 use ObjectivePHP\ServicesFactory\Annotation\Inject;
 use ObjectivePHP\ServicesFactory\Specification\InjectionAnnotationProvider;
 use Psr\Http\Message\ServerRequestInterface;
+use Zend\Diactoros\Response\JsonResponse;
 
 /**
  * Class BuildApiEndpointV1
@@ -33,22 +34,24 @@ class BuildApiEndpointV1 extends AbstractEndpoint implements InjectionAnnotation
 
             $this->getIndexManager()->generateAll();
             $this->getRepositoryManager()->operateAll();
+            return new JsonResponse(['code' => 0, 'status'=> 'Ok']);
     }
 
 
     public function post(ServerRequestInterface $request)
     {
+        $log = [];
         if ($request->getHeader('x-github-event')[0] === 'create') { // a Branch or Tag is created.
             $body = \json_decode($request->getBody()->getContents());
             if ($body->ref_type === 'tag') {
                 $tarUrl = 'https://github.com/' . $body->repository->full_name . '/archive/' . $body->ref . '.tar.gz';
-
+                $log[$body->repository->name] = [];
                 if ($repoPath = $this->getRepositoryManager()->fetchRepo($tarUrl, $body->repository->name, ltrim($body->ref, 'v'))) {
-                    \preg_match("/(.*\..*)\./", \ltrim($body->ref, 'v'), $o);
-
-                    $this->getRepositoryManager()->operate($repoPath, $body->repository->name, $o[1]);
+                    \preg_match("/(.*\..*)\./", \ltrim($body->ref, 'v'), $matches);
+                    $log[$body->repository->name][] = $matches[1];
+                    $this->getRepositoryManager()->operate($repoPath, $body->repository->name, $matches[1]);
                     $this->getRepositoryManager()->dataMenu();
-                    return "It worked";
+                    return new JsonResponse(['code' => 0, 'status'=> 'Ok', 'log' => $log]);
                 }
                 throw new \Exception('Unable to fetch targz file or to decompress it');
             }

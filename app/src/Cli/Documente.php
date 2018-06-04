@@ -40,7 +40,6 @@ class Documente extends AbstractCliAction implements InjectionAnnotationProvider
         //        $this->expects(new Param(['p' => 'package'], 'Redocumente this package'));
     }
 
-
     /**
      * @param AbstractCliAction $app
      */

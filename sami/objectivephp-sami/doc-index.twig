@@ -26,14 +26,18 @@
                 {%- set type = element[0] %}
                 {%- set value = element[1] %}
                 {%- if 'class' == type -%}
-                    <dt>{{ class_link(value) }}{% if has_namespaces %} &mdash; <em>Class in namespace {{ namespace_link(value.namespace) }}{% endif %}</em></dt>
-                    <dd>{{ value.shortdesc|desc(value) }}</dd>
+                    {%- if value.isInterface %}
+                        {%- set class_type = 'interface' %}
+                    {%- elseif value.isAbstract %}
+                        {%- set class_type = 'abstract' %}
+                    {%- elseif value.isTrait %}
+                        {%- set class_type = 'trait' %}
+                    {%- else %}
+                        {%- set class_type = 'class' %}
+                    {%- endif %}
+                    <dt class="index-item"><span class="badge badge-{{ class_type }}">{{ class_type }}</span>{{ class_link(value) }}</dt>
                 {%- elseif 'method' == type -%}
-                    <dt>{{ method_link(value) }}() &mdash; <em>Method in class {{ class_link(value.class) }}</em></dt>
-                    <dd>{{ value.shortdesc|desc(value.class) }}</dd>
-                {%- elseif 'property' == type -%}
-                    <dt>${{ property_link(value) }} &mdash; <em>Property in class {{ class_link(value.class) }}</em></dt>
-                    <dd>{{ value.shortdesc|desc(value.class) }}</dd>
+                    <dt class="index-item"><span class="badge badge-method">method</span>{{ method_link(value) }}()</dt>
                 {%- endif %}
             {%- endfor %}
         </dl>

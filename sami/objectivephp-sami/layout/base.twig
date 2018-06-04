@@ -27,6 +27,9 @@
             <li class="nav-item">
                 <a class="nav-link" href="/doc/">Doc</a>
             </li>
+            {#<li class="nav-item">#}
+                {#<a class="nav-link" href="/search">Search</a>#}
+            {#</li>#}
         </ul>
         <ul class="navbar-nav my-2 my-lg-0">
             <li class="nav-item">
@@ -38,13 +41,6 @@
 <nav id="site-nav" class="navbar navbar-default" role="navigation">
     <div class="control-nav-bar-cont">
         <div id="control-panel">
-            <form id="search-form" action="../../search.html" method="GET">
-                <i class="fas fa-search"></i>
-                <input name="search"
-                       class="typeahead form-control"
-                       type="search"
-                       placeholder="  Search">
-            </form>
         </div>
         <div id="version-dropdown" class="btn-group">
             <p> {% block VERSION '' %}</p>

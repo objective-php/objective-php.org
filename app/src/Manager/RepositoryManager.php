@@ -40,9 +40,9 @@ class RepositoryManager
     public function __construct()
     {
         try {
-            $this->packages = \json_decode(\file_get_contents(__DIR__ . '/../../data/packages.json'), true);
+            $this->packages = \json_decode(file_get_contents(__DIR__ . '/../../data/packages.json'), true);
         } catch (\Exception $e) {
-            if (!\is_dir(__DIR__ . '/../../data/packages.json') && !\mkdir(__DIR__ . '/../../data/packages.json', 0755, true) && !\is_dir(__DIR__ . '/../../data/packages.json')) {
+            if (!is_dir(__DIR__ . '/../../data/packages.json') && !mkdir(__DIR__ . '/../../data/packages.json', 0755, true) && !is_dir(__DIR__ . '/../../data/packages.json')) {
                 throw new \RuntimeException(sprintf('Directory "%s" was not created', __DIR__ . '/../../data/packages.json'));
             }
         }
@@ -57,20 +57,21 @@ class RepositoryManager
         foreach ($this->components as $key => $package) {
             if ($package->getHost() === 'github') {
                 $versions = [];
-                $tags = \GuzzleHttp\json_decode($client->get('https://api.github.com/repos/' . $key . '/git/refs/tags?client_id=' . $this->getAuths()[explode('/', $key)[0]]->getClientId() . '&client_secret=' . $this->getAuths()[explode('/', $key)[0]]->getClientSecret())->getBody()->getContents());
+                $githubAuths = $this->getAuths()['github-' . explode('/', $key)[0]];
+                $tags = \GuzzleHttp\json_decode($client->get('https://api.github.com/repos/' . $key . '/git/refs/tags?client_id=' . $githubAuths->getClientId() . '&client_secret=' . $githubAuths->getClientKey())->getBody()->getContents());
                 foreach ($tags as $tag) {
                     // x.x.x
-                    $v = \ltrim(\str_replace('refs/tags/', '', $tag->ref), 'v');
+                    $v = ltrim(str_replace('refs/tags/', '', $tag->ref), 'v');
 
                     //On verifie que le tag est superieur a la minVersion et que ce n'est pas une version dev,alpha, etc
-                    if (!\preg_match('/[a-z]/i', $v) && \version_compare($v, $this->components[$key]->getMinVersion(), '>=')) {
-                        \preg_match("/(.*\..*)\./", $v, $o);
+                    if (!preg_match('/[a-z]/i', $v) && version_compare($v, $this->components[$key]->getMinVersion(), '>=')) {
+                        preg_match("/(.*\..*)\./", $v, $o);
                         $versions[$o[1]] = $v;
                     }
                 }
                 $res[$key] = $versions;
             }
-            \krsort($res[$key]);
+            krsort($res[$key]);
         }
         return $res;
     }
@@ -83,7 +84,7 @@ class RepositoryManager
             foreach ($versions as $minor => $version) {
                 $this->rmAll($this->getPaths()['tmp']);
                 $tarUrl = 'https://github.com/' . $key . '/archive/v' . $version . '.tar.gz';
-                $repoPath = $this->fetchRepo($tarUrl, $repoName = \explode('/', $key)[1], $version);
+                $repoPath = $this->fetchRepo($tarUrl, $repoName = explode('/', $key)[1]);
                 try {
                     $this->operate($repoPath, $repoName, $minor);
                 } catch (ComponentStructureException $e) {
@@ -97,11 +98,11 @@ class RepositoryManager
     //https://github.com/louis-cuny/application/archive/v2.0.1.tar.gz
     //application
     //2.0.0
-    public function fetchRepo(string $tarUrl, string $componentName, string $version): string
+    public function fetchRepo(string $tarUrl, string $componentName): string
     {
         $this->rmAll($this->getPaths()['tmp']);
-        $md5 = \md5($tarUrl);
-        if (!\copy($tarUrl, $targz = ($path = $this->getPaths()['tmp'] . $componentName . '-' . $md5) . '.tar.gz')) {
+        $md5 = md5($tarUrl);
+        if (!copy($tarUrl, $targz = ($path = $this->getPaths()['tmp'] . $componentName . '-' . $md5) . '.tar.gz')) {
             $error = error_get_last();
             throw new \RuntimeException(
                 sprintf('[%s] Unable to copy file : %s', $error['type'], $error['message'])
@@ -117,21 +118,44 @@ class RepositoryManager
     //2.0
     public function operate(string $repoPath, string $componentName, string $tag)
     {
-        if (\is_dir($docsPath = $this->getPaths()['tmp'] . $repoPath . '/docs')) {
+        if (is_dir($docsPath = $this->getPaths()['tmp'] . $repoPath . '/docs')) {
             $finder = new Finder();
             $finder->files()->in($docsPath)->name('*.md');
+            $pathToDoc = $this->getPaths()['doc'] . $componentName . '/' . $tag . '/';
+            $docJson = [];
 
             foreach ($finder as $file) {
-                if (!\is_dir($pathToDoc = $this->getPaths()['doc'] . $componentName . '/' . $tag . '/') && !\mkdir($pathToDoc, 0755, true) && !\is_dir($pathToDoc)) {
+                if (!is_dir($pathToDoc) && !mkdir($pathToDoc, 0755, true) && !is_dir($pathToDoc)) {
                     throw new \RuntimeException(sprintf('Directory "%s" was not created', $pathToDoc));
                 }
-                \file_put_contents($pathToDoc . $htmlName = $file->getBasename('.md') . '.html', $this->renderDoc($file->getContents(), ucfirst($componentName), $tag));
-                if (!($file->getFilename() === 'index.md')) {
-                    $niceName = \preg_replace('([0-9]*\.)', '', $file->getBasename('.md'), 1);
-                    $niceName = \str_replace(['-', '_'], ' ', $niceName);
+                $htmlName = $file->getBasename('.md') . '.html';
+
+                $environment = Environment::createCommonMarkEnvironment();
+                $environment->addExtension(new TableExtension());
+                $converter = new Converter(new DocParser($environment), new HtmlRenderer($environment));
+                $contents = $converter->convertToHtml($file->getContents());
+                $docJson[] = [
+                    'name'                  => ucwords($componentName . ' ' . $tag . ' ' . $file->getBasename('.md')),
+                    'link'                  => '/doc/' . $componentName . '/' . $tag . '/' . $htmlName,
+                    'version'               => $tag,
+                    'component'             => $componentName,
+                    'content'               => $contents,
+                    'hierarchical_versions' => ['lvl0' => $componentName, 'lvl1' => $componentName . '>' . $tag]
+                ];
+                $content = file_get_contents($this->getPaths()['html'] . 'doclayout.html');
+                $content = str_replace('{{PAGE-CONTENT}}', $contents, $content);
+                $content = str_replace('{{TITLE}}', ucfirst($componentName) . ' - ' . $tag . ' | Objective PHP Documentation', $content);
+                $content = str_replace('{{VERSION}}', $tag, $content);
+                $content = str_replace('{{COMPONENT-NAME}}', ucfirst($componentName), $content);
+                \file_put_contents($pathToDoc . $htmlName, $content);
+
+                if (!($file->getFilename() === 'index.md')) { //TODO Gerer si pas d'index.md
+                    $niceName = preg_replace('([0-9]*\.)', '', $file->getBasename('.md'), 1);
+                    $niceName = str_replace(['-', '_'], ' ', $niceName);
                     $this->packages[$componentName][$tag][$niceName] = $htmlName;
                 }
             }
+            \file_put_contents($pathToDoc . 'doc.json', \json_encode($docJson));
         } else {
             throw new ComponentStructureException('No docs folder in ' . $componentName . "\n");
         }
@@ -140,29 +164,28 @@ class RepositoryManager
                               'version'   => $tag]);
         \file_put_contents($this->getPaths()['tmp'] . '/infos.json', $json, JSON_PRETTY_PRINT);
 
-        print_r(\exec('php ' . __DIR__ . '/sami.phar update -v ' . __DIR__ . '/sami-config.php --force'));
-//        $client = new \AlgoliaSearch\Client('JIIVBNDTOY', '18388ac4ec83253c7f8bc636218b7882');
-        //$index = $client->initIndex('getstarted_actors');
-//        $index = $client->initIndex('objective_php');
-//        $objects = json_decode(file_get_contents($pathToDoc . '/api/sami.json'), false);
+        exec('php ' . $this->getPaths()['public'] . '../sami/sami.phar update -vvv ' . __DIR__ . '/sami-config.php --force', $output, $code);
+//        exec('php ' . $this->getPaths()['public'] . '../sami/sami/sami.php update -v ' . __DIR__ . '/sami-config.php --force', $output, $code);
 
-//        $index->addObjects($objects);
+        if ($code != 0) {
+            throw new \Exception('Something went wrong while generating ' . $componentName);
+        }
+
+        if (false) {
+            $algoliaAuths = $this->getAuths()['algolia-louis-cuny'];
+            $client = new \AlgoliaSearch\Client($algoliaAuths->getClientId(), $algoliaAuths->getClientKey());
+            $index = $client->initIndex('objective_php_api');
+            $objects = json_decode(file_get_contents($pathToDoc . '/api/sami.json'), false);
+
+            $index2 = $client->initIndex('objective_php_doc');
+            $objects2 = json_decode(file_get_contents($pathToDoc . 'doc.json'), false);
+            print_r($objects);
+            print_r($objects2);
+            //                $index->addObjects($objects);
+            //                $index2->addObjects($objects2);
+        }
     }
 
-    public function renderDoc(string $pageContent, $title, $version): string
-    {
-        $content = file_get_contents($this->getPaths()['html'] . 'doclayout.html');
-        $environment = Environment::createCommonMarkEnvironment();
-        $environment->addExtension(new TableExtension());
-        //$environment->addBlockRenderer(Table::class, new OpTableRenderer());
-        $converter = new Converter(new DocParser($environment), new HtmlRenderer($environment));
-        $content = str_replace('{{PAGE-CONTENT}}', $converter->convertToHtml($pageContent), $content);
-        $content = str_replace('{{TITLE}}', $title . ' - ' . $version . ' | Objective PHP Documentation', $content);
-        $content = str_replace('{{VERSION}}', $version, $content);
-        $content = str_replace('{{COMPONENT-NAME}}', $title, $content);
-
-        return $content;
-    }
 
     public function dataMenu(string $outputFile): void
     {
@@ -229,20 +252,20 @@ class RepositoryManager
      */
     public function rmAll(string $dir): void
     {
-        if (\is_dir($dir)) {
-            $objects = \scandir($dir, SCANDIR_SORT_NONE);
+        if (is_dir($dir)) {
+            $objects = scandir($dir, SCANDIR_SORT_NONE);
             foreach ($objects as $object) {
                 if ($object !== '.' && $object !== '..') {
-                    if (\filetype($dir . '/' . $object) === 'dir') {
+                    if (filetype($dir . '/' . $object) === 'dir') {
                         $this->rmAll($dir . '/' . $object);
                     } else {
-                        \unlink($dir . '/' . $object);
+                        unlink($dir . '/' . $object);
                     }
                 }
             }
-            \reset($objects);
+            reset($objects);
             if ($this->getPaths()['tmp'] !== $dir) {
-                \rmdir($dir);
+                rmdir($dir);
             }
         }
     }
@@ -302,5 +325,6 @@ class RepositoryManager
         $this->auths = $auths;
         return $this;
     }
+
 
 }

@@ -10,32 +10,19 @@ use App\Config\PathsConfig;
  */
 class IndexManager
 {
-//    public const DOC_DIR = __DIR__ . '/../../../public/doc/';
-//    public const HTML_DIR = __DIR__ . '/../../layouts/html/';
-
-//    public $base_url;
 
     /**
      * @var PathsConfig[]
      */
     protected $paths;
 
-    /**
-     * IndexManager constructor.
-     */
-    public function __construct()
-    {
-//        $this->base_url = 'http://' . $_SERVER['HTTP_HOST'];
-
-    }
-
 
     public function generateAll(): void
     {
-        if (!\is_dir($this->getPaths()['tmp']) && !\mkdir($this->getPaths()['tmp'], 0755, true) && !\is_dir($this->getPaths()['tmp'])) {
+        if (!is_dir($this->getPaths()['tmp']) && !mkdir($this->getPaths()['tmp'], 0755, true) && !is_dir($this->getPaths()['tmp'])) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $this->getPaths()['tmp']));
         }
-        if (!\is_dir($this->getPaths()['doc']) && !\mkdir($this->getPaths()['doc'], 0755, true) && !\is_dir($this->getPaths()['doc'])) {
+        if (!is_dir($this->getPaths()['doc']) && !mkdir($this->getPaths()['doc'], 0755, true) && !is_dir($this->getPaths()['doc'])) {
             throw new \RuntimeException(sprintf('Directory "%s" was not created', $this->getPaths()['doc']));
         }
 

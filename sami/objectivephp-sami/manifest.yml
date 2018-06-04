@@ -9,9 +9,8 @@ global:
     'interfaces.twig': 'interfaces.html'
     'traits.twig':     'traits.html'
 #    'opensearch.twig': 'opensearch.xml'
-#    'search.twig':     'search.html'
     'sami.json.twig':  'sami.json'
-    'sami.js.twig':    'sami.js'
+#    'sami.js.twig':    'sami.js'
 
 namespace:
     'namespace.twig':   '%s.html'

@@ -188,7 +188,7 @@
 {% block methods %}
     <div class="container-fluid underlined">
         {% for method in methods %}
-            <div class="row">
+            <div class="row method-row">
                 <div class="col-md-2 type">
                     {% if method.static %}static&nbsp;{% endif %}{{ hint_link(method.hint) }}
                 </div>

@@ -13,14 +13,14 @@
 {%- endmacro %}
 
 {% macro method_link(method, absolute, classonly) -%}
-    <a href="{{ method_path(method) }}">
-        {{- abbr_class(method.class) }}{% if not classonly|default(false) %}::{{ method.name|raw }}{% endif -%}
+    <a class="method-class-link" href="{{ class_path(method.class) }}">
+        {{- abbr_class(method.class) }}{% if not classonly|default(false) %}</a>::<a class="method-link" href="{{ method_path(method) }}">{{ method.name|raw }}{% endif -%}
     </a>
 {%- endmacro %}
 
 {% macro property_link(property, absolute, classonly) -%}
-    <a href="{{ property_path(property) }}">
-        {{- abbr_class(property.class) }}{% if not classonly|default(true) %}#{{ property.name|raw }}{% endif -%}
+    <a href="{{ property_path(property) }}" class="index_property_link">
+        ${{- abbr_class(property.name) }}{% if not classonly|default(true) %}#{{ property.name|raw }}{% endif -%}
     </a>
 {%- endmacro %}
 
@@ -55,7 +55,7 @@
 {%- endmacro %}
 
 {% macro abbr_class(class, absolute) -%}
-    <abbr title="{{ class }}">{{ absolute|default(false) ? class : class.shortname }}</abbr>
+    <abbr style="margin-left: 5px" title="{{ class }}">{{ absolute|default(false) ? class : class.shortname }}</abbr>
 {%- endmacro %}
 
 {% macro method_parameters_signature(method) -%}

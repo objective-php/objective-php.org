@@ -1,7 +1,6 @@
 <?php
 
 namespace App;
-
 /**
  * The AppNamespace namespace should be changed to whatever fit your project
  *
@@ -9,9 +8,6 @@ namespace App;
  * renaming operation painless
  */
 
-use App\Config\AuthsConfig;
-use App\Config\ComponentsConfig;
-use App\Config\PathsConfig;
 use ObjectivePHP\Cli\Application\AbstractCliApplication;
 
 /**
@@ -23,8 +19,5 @@ class CliApplication extends AbstractCliApplication
 {
     public function init()
     {
-        $this->getConfig()->registerDirective(new PathsConfig());
-        $this->getConfig()->registerDirective(new ComponentsConfig());
-        $this->getConfig()->registerDirective(new AuthsConfig());
     }
 }

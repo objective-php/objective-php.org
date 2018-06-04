@@ -1,0 +1,71 @@
+<!--<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3/dist/instantsearch.min.css">-->
+<nav id="site-nav" class="navbar navbar-default" role="navigation">
+    <div class="control-nav-bar-cont">
+        <div id="control-panel">
+        </div>
+        <div class="seach-bar">
+            <input id="search-input">
+        </div>
+    </div>
+</nav>
+<div id="left-column" class="menu-container ">
+    <div id="facets">
+        <div id="clear-all"></div>
+        <div id="component-refinement-list"></div>
+        <div id="version-refinement-list"></div>
+        <div id="hierarchical-versions"></div>
+        <div id="select-doc" data-hits-per-page="4" class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons">
+            <label class="btn btn-primary">
+                <input type="radio" name="doc" autocomplete="off"> User Doc
+            </label>
+            <label class="btn btn-primary active">
+                <input type="radio" name="both" autocomplete="off"> Both
+            </label>
+            <label class="btn btn-primary">
+                <input type="radio" name="api" autocomplete="off"> Api Doc
+            </label>
+        </div>
+        <script>
+            $(function () {
+                $("#select-doc label ").click(function () {
+                    switch ($(this).children().attr('name')) {
+                        case 'doc':
+                            $('#part-api').hide()
+                            $('#part-doc').show()
+                            $('#select-doc').data('hitsPerPage', '8')
+                            break
+                        case 'api':
+                            $('#part-doc').hide();
+                            $('#part-api').show();
+                            $('#select-doc').data('hitsPerPage', '8')
+                            break
+                        case 'both':
+                            $('#part-api').show();
+                            $('#part-doc').show();
+                            $('#select-doc').data('hitsPerPage', '4')
+                            break;
+                    }
+                    //Start again to refresh
+                    searcher.searchApi.started = false
+                    searcher.searchApi.start()
+                })
+            })
+        </script>
+    </div>
+</div>
+<div id="right-column">
+    <div id="page-content" class="search-page">
+        <div id="part-doc">
+            <div id="hits_doc" class="is-hits"></div>
+            <div id="pagination_doc"></div>
+        </div>
+        <div id="part-api">
+            <div id="hits_api" class="is-hits"></div>
+            <div id="pagination_api"></div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/instantsearch.js@2.3/dist/instantsearch.min.js"></script>
+<script src="/assets/widgets.js"></script>
+

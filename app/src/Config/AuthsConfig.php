@@ -21,16 +21,6 @@ class AuthsConfig extends AbstractMultiComplexDirective implements IgnoreDefault
      */
     protected $id;
 
-    /**
-     * Component repository host
-     *
-     * Define here the name of the host where your components is stored. ( github... )
-     *
-     * @config-attribute
-     * @config-example-value github
-     * @var string
-     */
-    protected $host;
 
     /**
      * Host's client Id
@@ -38,21 +28,32 @@ class AuthsConfig extends AbstractMultiComplexDirective implements IgnoreDefault
      * Define here the client ID for the OAuth connection
      *
      * @config-attribute
-     * @config-example-value 2b90f3380f225b1e
+     * @config-example-value 2b90f3380f225b
      * @var string
      */
-    protected $client_id;
+    protected $clientId;
 
     /**
-     * Host's client secret
+     * Host's client key
      *
-     * Define here the client Secret for the OAuth connection
+     * Define here the client key (or secret) for the OAuth connection
      *
      * @config-attribute
-     * @config-example-value 22d5b1cc12a0bdda9a3e8d50b1bc08b
+     * @config-example-value 22d5b1cc12a0bdda9a3e8d50b1bc0
      * @var string
      */
-    protected $client_secret;
+    protected $clientKey;
+
+    /**
+     * Host's client admin key
+     *
+     * Define here the client admin key  for the admin  OAuth connection
+     *
+     * @config-attribute
+     * @config-example-value 22d5b1cda9a3e8d50b1bc0
+     * @var string
+     */
+    protected $adminKey;
 
     /**
      * @return string
@@ -75,54 +76,54 @@ class AuthsConfig extends AbstractMultiComplexDirective implements IgnoreDefault
     /**
      * @return string
      */
-    public function getHost(): string
-    {
-        return $this->host;
-    }
-
-    /**
-     * @param string $host
-     * @return AuthsConfig
-     */
-    public function setHost(string $host): AuthsConfig
-    {
-        $this->host = $host;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
     public function getClientId(): string
     {
-        return $this->client_id;
+        return $this->clientId;
     }
 
     /**
-     * @param string $client_id
+     * @param string $clientId
      * @return AuthsConfig
      */
-    public function setClientId(string $client_id): AuthsConfig
+    public function setClientId(string $clientId): AuthsConfig
     {
-        $this->client_id = $client_id;
+        $this->clientId = $clientId;
         return $this;
     }
 
     /**
      * @return string
      */
-    public function getClientSecret(): string
+    public function getClientKey(): string
     {
-        return $this->client_secret;
+        return $this->clientKey;
     }
 
     /**
-     * @param string $client_secret
+     * @param string $clientKey
      * @return AuthsConfig
      */
-    public function setClientSecret(string $client_secret): AuthsConfig
+    public function setClientKey(string $clientKey): AuthsConfig
     {
-        $this->client_secret = $client_secret;
+        $this->clientKey = $clientKey;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAdminKey(): string
+    {
+        return $this->clientKey;
+    }
+
+    /**
+     * @param string $adminKey
+     * @return AuthsConfig
+     */
+    public function setAdminKey(string $adminKey): AuthsConfig
+    {
+        $this->adminKey = $adminKey;
         return $this;
     }
 }
