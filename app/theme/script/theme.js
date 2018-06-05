@@ -57,7 +57,7 @@ $(function () {
             })
             .each(function (index, element) {
                 let $li = $(element).parent().parent().removeClass('opened')
-                if (~util.readCookie($(element).next().text()).indexOf('opened'))
+                if (util.readCookie($(element).next().text()) && util.readCookie($(element).next().text()).includes('opened'))
                     $li.addClass('opened')
             });
 

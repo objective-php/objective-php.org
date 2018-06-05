@@ -20,6 +20,9 @@ class Home extends PhtmlAction
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        return $this->render();
+        return $this->render([
+                                 'page.title'    => 'Objective PHP Documentation Website',
+                                 'page.subtitle' => 'This project provides developers the documentation associated to the Objective-Php framework.'
+                             ]);
     }
 }

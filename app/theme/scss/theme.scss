@@ -40,6 +40,10 @@ a.active {
   font-weight: bold;
 }
 
+section.jumbotron {
+  margin-top: $headerHeight ;
+}
+
 /* Site columns */
 #right-column {
   padding-top: $headerHeight + $controlsHeight;
@@ -70,6 +74,8 @@ a.active {
   height: 100%;
   background: #f2f2f2 local;
   padding: 10px 30px;
+
+  border-right: 2px solid $primary;
 }
 
 @media (max-width: 767px) {
@@ -170,7 +176,7 @@ a.active {
 /* Control panel, search form, version drop-down */
 
 #control-panel {
-  background: $main-contrast-color;
+  //background: $main-contrast-color;
   padding: 12px;
   box-sizing: border-box;
   width: $left-width;
@@ -189,6 +195,8 @@ a.active {
   @media (max-width: 767px) {
     width: 100vw;
   }
+  border-right: 2px solid $primary;
+  border-bottom: 2px solid $primary;
 }
 
 #control-panel form {
@@ -257,6 +265,9 @@ a.active {
   left: 0;
   right: 0;
   z-index: 99;
+
+  border-bottom: 2px solid $primary;
+
 }
 
 /* Api menu */
