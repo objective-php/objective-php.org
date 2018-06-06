@@ -31,6 +31,8 @@ class IndexManager
 
     public function docIndex(): string
     {
+        $asset = json_decode(file_get_contents($this->getPaths()['public'] . 'dist/manifest.json'), true);
+
         $content = file_get_contents($this->getPaths()['html'] . 'doclayout.html');
         $pageContent = '<h1>Welcome to Objective PHP user documentation</h1><br/><br/>
 <p>You can navigate through it from the left menu.</p><br/>
@@ -39,6 +41,8 @@ class IndexManager
         $content = str_replace('{{TITLE}}', 'Objective PHP Documentation', $content);
         $content = str_replace('{{VERSION}}', '', $content);
         $content = str_replace('{{COMPONENT-NAME}}', '', $content);
+        $content = str_replace('{{STYLE}}', $asset['theme.css'], $content);
+        $content = str_replace('{{SCRIPT}}', $asset['app.js'], $content);
 
         return $content;
     }

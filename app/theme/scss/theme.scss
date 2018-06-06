@@ -17,8 +17,8 @@ $theme-colors: (
         "trait": #a09d35
 );
 
-//@import "~font-awesome/scss/font-awesome";
-@import "~bootstrap/scss/bootstrap";
+@import '~font-awesome/scss/font-awesome';
+@import '~bootstrap/scss/bootstrap';
 @import "~github-markdown-css/github-markdown";
 
 // Start
@@ -660,4 +660,26 @@ dd {
 
 #doc-index .pagination {
   margin: 0;
+}
+
+
+.footer {
+  background-color:$rezozero-header-color;
+  color: $alt-color;
+  font-size: .8rem;
+
+  padding: {
+    top:40px;
+    bottom:20px;
+  };
+
+  .subscriptions {
+    p {
+      margin-bottom: 0;
+    }
+    a {
+      color: $alt-color;
+      font-size: 1.5rem;
+    }
+  }
 }

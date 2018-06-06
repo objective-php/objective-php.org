@@ -22,7 +22,9 @@ $sami = new Sami($iterator, [
 ]);
 
 $sami->extend('twig', function ($twig) {
-    $twig->addGlobal('UZ', 'TOTA');
+    $asset = json_decode(file_get_contents(__DIR__ . '/../../../public/dist/manifest.json'), true);
+    $twig->addGlobal('style', $asset['theme.css']);
+    $twig->addGlobal('app', $asset['app.js']);
     return $twig;
 });
 
