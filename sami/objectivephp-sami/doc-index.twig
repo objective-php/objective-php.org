@@ -14,7 +14,7 @@
             {% if items[letter] is defined and items[letter]|length > 1 %}
                 <li><a href="#letter{{ letter|raw }}">{{ letter|raw }}</a></li>
             {% else %}
-                <li class="disabled"><a href="#letter{{ letter|raw }}">{{ letter|raw }}</a></li>
+                <li class="disabled"><a>{{ letter|raw }}</a></li>
             {% endif %}
         {% endfor %}
     </ul>
