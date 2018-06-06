@@ -33,16 +33,16 @@ class IndexManager
     {
         $asset = json_decode(file_get_contents($this->getPaths()['public'] . 'dist/manifest.json'), true);
 
-        $content = file_get_contents($this->getPaths()['html'] . 'doclayout.html');
+        $content = file_get_contents($this->getPaths()['base.twig']);
         $pageContent = '<h1>Welcome to Objective PHP user documentation</h1><br/><br/>
 <p>You can navigate through it from the left menu.</p><br/>
 <p>Please take attention on the versions you are using</p>';
-        $content = str_replace('{{PAGE-CONTENT}}', $pageContent, $content);
-        $content = str_replace('{{TITLE}}', 'Objective PHP Documentation', $content);
-        $content = str_replace('{{VERSION}}', '', $content);
-        $content = str_replace('{{COMPONENT-NAME}}', '', $content);
-        $content = str_replace('{{STYLE}}', $asset['theme.css'], $content);
-        $content = str_replace('{{SCRIPT}}', $asset['app.js'], $content);
+        $content = str_replace('{% block content \'\' %}', $pageContent, $content);
+        $content = str_replace('{% block title project.config(\'title\') %}', 'Objective PHP Documentation', $content);
+        $content = str_replace('{% block VERSION \'\' %}', '', $content);
+        $content = str_replace('{% block COMPONENTNAME \'\' %}', '', $content);
+        $content = str_replace('{{ style }}', $asset['theme.css'], $content);
+        $content = str_replace('{{ app }}', $asset['app.js'], $content);
 
         return $content;
     }

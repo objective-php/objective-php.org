@@ -3,6 +3,7 @@
         "app": "app/",
         "data": "app/data/",
         "tmp": "app/tmp/",
+        "base.twig": "app/layouts/objectivephp-sami/layout/base.twig",
         "html": "app/layouts/html/",
         "doc": "public/doc/",
         "public": "public/"

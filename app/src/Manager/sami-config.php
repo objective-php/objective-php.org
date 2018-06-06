@@ -17,7 +17,7 @@ $sami = new Sami($iterator, [
     'title'                => ucfirst($infos->compoName),
     'build_dir'            => __DIR__ . '/../../../public/doc/' . $infos->compoName . '/%version%/api',
     'cache_dir'            => $tmpDir . '/cache/' . $infos->compoName . '/%version%',
-    'template_dirs'        => [__DIR__ . '/../../../sami/' . 'objectivephp-sami'],
+    'template_dirs'        => [__DIR__ . '/../../../app/layouts'],
     'default_opened_level' => 1
 ]);
 

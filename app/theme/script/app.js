@@ -1,6 +1,7 @@
 import 'bootstrap';
 import 'lodash';
 
+
 $(function () {
     let $apitree = $('#api-tree');
     if ($apitree.length) {
@@ -70,7 +71,7 @@ $(function () {
             $('#version-select').html(docMenuInfos[currentCompo])
             $.each(dataMenu[currentCompo], (minorVersion, val) =>
                 $('#version-options')
-                    .append('<a class="dropdown-item" href="/doc/' + currentCompo + '/' + minorVersion + '/' + window.location.pathname.split('/').pop() + '">' + minorVersion + '</a>')
+                    .append('<a class="dropdown-item" href="/doc/' + currentCompo + '/' + minorVersion + '/' + window.location.pathname.split('/')[4] + '">' + minorVersion + '</a>')
                     .children().last().click(() => {
                     docMenuInfos[currentCompo] = minorVersion
                     util.createCookie('docMenuInfos', JSON.stringify(docMenuInfos))
@@ -81,7 +82,7 @@ $(function () {
         }
     }
 });
-
+console.log('ROUUUGE');
 window.util = new function () {
     this.createCookie = (name, value, days) => {
         if (days) {

@@ -7,7 +7,7 @@ const ManifestPlugin = require('webpack-manifest-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const extractSass = new ExtractTextPlugin({
-    filename: "[name].[chunkhash].css",
+    filename: "[name].css",
     disable: dev
 });
 
@@ -50,11 +50,11 @@ cssLoaders.push({
 module.exports = {
     entry: {
         'theme': './app/theme/scss/theme.scss',
-        'app': './app/theme/script/theme.js',
+        'app': './app/theme/script/app.js',
     },
     output: {
         path: path.resolve(__dirname, 'public/dist/'),
-        filename: "[name].[chunkhash].js"
+        filename: "[name].js"
     },
     module: {
         rules: [
@@ -94,8 +94,11 @@ module.exports = {
         extractSass,
         new ManifestPlugin(),
         new CleanWebpackPlugin('dist', {
-            root: path.resolve(__dirname, 'public/dist/'),
-            dry: false
+            root: path.resolve(__dirname, 'public/'),
+            dry: false,
+            watch: true,
+            exclude:  ['dataMenu.js'],
+            verbose:  true
         }),
         new webpack.ProvidePlugin({
             "$": "jquery",

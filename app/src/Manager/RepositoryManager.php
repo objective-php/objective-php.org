@@ -144,13 +144,13 @@ class RepositoryManager
                     'content'               => $contents,
                     'hierarchical_versions' => ['lvl0' => $componentName, 'lvl1' => $componentName . '>' . $tag]
                 ];
-                $content = file_get_contents($this->getPaths()['html'] . 'doclayout.html');
-                $content = str_replace('{{PAGE-CONTENT}}', $contents, $content);
-                $content = str_replace('{{TITLE}}', ucfirst($componentName) . ' - ' . $tag . ' | Objective PHP Documentation', $content);
-                $content = str_replace('{{VERSION}}', $tag, $content);
-                $content = str_replace('{{COMPONENT-NAME}}', ucfirst($componentName), $content);
-                $content = str_replace('{{STYLE}}', $asset['theme.css'], $content);
-                $content = str_replace('{{SCRIPT}}', $asset['app.js'], $content);
+                $content = file_get_contents($this->getPaths()['base.twig']);
+                $content = str_replace('{% block content \'\' %}', $contents, $content);
+                $content = str_replace('{% block title project.config(\'title\') %}', ucfirst($componentName) . ' - ' . $tag . ' | Objective PHP Documentation', $content);
+                $content = str_replace('{% block VERSION \'\' %}', $tag, $content);
+                $content = str_replace('{% block COMPONENTNAME \'\' %}', ucfirst($componentName), $content);
+                $content = str_replace('{{ style }}', $asset['theme.css'], $content);
+                $content = str_replace('{{ app }}', $asset['app.js'], $content);
                 \file_put_contents($pathToDoc . $htmlName, $content);
 
                 if (!($file->getFilename() === 'index.md')) { //TODO Gerer si pas d'index.md
@@ -169,7 +169,7 @@ class RepositoryManager
         \file_put_contents($this->getPaths()['tmp'] . '/infos.json', $json, JSON_PRETTY_PRINT);
 
         exec('php ' . $this->getPaths()['public'] . '../sami/sami.phar update -vvv ' . __DIR__ . '/sami-config.php --force', $output, $code);
-//        exec('php ' . $this->getPaths()['public'] . '../sami/sami/sami.php update -v ' . __DIR__ . '/sami-config.php --force', $output, $code);
+        //        exec('php ' . $this->getPaths()['public'] . '../sami/sami/sami.php update -v ' . __DIR__ . '/sami-config.php --force', $output, $code);
 
         if ($code != 0) {
             throw new \Exception('Something went wrong while generating ' . $componentName);
@@ -329,6 +329,4 @@ class RepositoryManager
         $this->auths = $auths;
         return $this;
     }
-
-
 }
