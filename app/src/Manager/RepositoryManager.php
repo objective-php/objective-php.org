@@ -92,7 +92,7 @@ class RepositoryManager
                 }
             }
         }
-        $this->dataMenu($this->getPaths()['public'] . 'assets/dataMenu.js');
+        $this->dataMenu($this->getPaths()['public'] . 'dist/dataMenu.js');
     }
 
     //https://github.com/louis-cuny/application/archive/v2.0.1.tar.gz
@@ -124,6 +124,8 @@ class RepositoryManager
             $pathToDoc = $this->getPaths()['doc'] . $componentName . '/' . $tag . '/';
             $docJson = [];
 
+            $asset = json_decode(file_get_contents($this->getPaths()['public'] . 'dist/manifest.json'), true);
+
             foreach ($finder as $file) {
                 if (!is_dir($pathToDoc) && !mkdir($pathToDoc, 0755, true) && !is_dir($pathToDoc)) {
                     throw new \RuntimeException(sprintf('Directory "%s" was not created', $pathToDoc));
@@ -147,6 +149,8 @@ class RepositoryManager
                 $content = str_replace('{{TITLE}}', ucfirst($componentName) . ' - ' . $tag . ' | Objective PHP Documentation', $content);
                 $content = str_replace('{{VERSION}}', $tag, $content);
                 $content = str_replace('{{COMPONENT-NAME}}', ucfirst($componentName), $content);
+                $content = str_replace('{{STYLE}}', $asset['theme.css'], $content);
+                $content = str_replace('{{SCRIPT}}', $asset['app.js'], $content);
                 \file_put_contents($pathToDoc . $htmlName, $content);
 
                 if (!($file->getFilename() === 'index.md')) { //TODO Gerer si pas d'index.md

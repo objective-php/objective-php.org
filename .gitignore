@@ -6,10 +6,8 @@ app/src/Manager/Renderer/
 app/theme/scss/theme.css
 
 packages/
-public/assets/style.css
-public/assets/theme.js
 public/assets/dev.js
-public/assets/dataMenu.js
+public/dist/
 public/doc/
 
 sami/sami/

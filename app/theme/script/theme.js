@@ -34,7 +34,7 @@ $(function () {
         //On construit l'html du menu
         let docMenu = '<ul>'
         $.each(docMenuInfos, (compoName, minorVersion) => {
-            docMenu += '<li class="menu-' + compoName + '" ><div class="hd"><i class="fas fa-angle-right fa-lg"></i>'
+            docMenu += '<li class="menu-' + compoName + '" ><div class="hd"><i class="fa fa-angle-right fa-lg"></i>'
             docMenu += `<a href="/doc/${compoName}/${minorVersion}/index.html">${compoName}</a>`
             docMenu += '</div><div class="bd"><ul>'
             $.each(dataMenu[compoName][minorVersion], (nice, raw) => {
