@@ -12,32 +12,35 @@
 
     {{ block('api_nav') }}
     {#<div id="alpha-ribbon" class="hidden-xs"><div id="alpha-ribbon-inner">Beta version</div></div>#}
-    <div id="api-content">
-    {% block below_menu '' %}
-    {% block page_content '' %}
+    <div id="api-content" class="markdown-body">
+        {% block below_menu '' %}
+        {% block page_content '' %}
     </div>
     {{ block('footer') }}
 {% endblock %}
 
 {% block api_nav %}
-    <nav id="api-nav" class="navbar navbar-default" role="navigation">
-        <ul class="nav navbar-nav hidden-xs" id='navbar-elements'>
-            <li class="spacer">
-            </li>
-            <li><a href="{{ path('classes.html') }}">Classes</a></li>
-            <li class="spacer"></li>
+    <div id="api-nav">
+        <ul id="navbar-elements" class="d-flex justify-content-around">
+            <li><a href="{{ path('classes.html') }}">
+                    Classes
+                </a></li>
             {% if has_namespaces %}
-                <li><a href="{{ path('namespaces.html') }}">Namespaces</a></li>
-                <li class="spacer"></li>
+                <li><a href="{{ path('namespaces.html') }}">
+                        Namespaces
+                    </a></li>
             {% endif %}
-            <li><a href="{{ path('interfaces.html') }}">Interfaces</a></li>
-            <li class="spacer"></li>
-            <li><a href="{{ path('traits.html') }}">Traits</a></li>
-            <li class="spacer"></li>
-            <li><a href="{{ path('doc-index.html') }}">Index</a></li>
-            <li class="spacer"></li>
+            <li><a href="{{ path('interfaces.html') }}">
+                    Interfaces
+                </a></li>
+            <li><a href="{{ path('traits.html') }}">
+                    Traits
+                </a></li>
+            <li><a href="{{ path('doc-index.html') }}">
+                    Index
+                </a></li>
         </ul>
-    </nav>
+    </div>
 {% endblock %}
 
 

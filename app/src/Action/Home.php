@@ -22,7 +22,7 @@ class Home extends PhtmlAction
     {
         return $this->render([
                                  'page.title'    => 'Objective PHP Documentation Website',
-                                 'page.subtitle' => 'This project provides developers the documentation associated to the Objective-Php framework.'
+                                 'page.subtitle' => 'This project provides developers the documentation associated to the Objective PHP framework.'
                              ]);
     }
 }

@@ -1,10 +1,9 @@
 //4 color, 90° on the nuancier
 $primary: #515A91;
+$secondary: #94C05F;
 //$secondary: #D3A168;
-//$tertiary: #D3C668;
 $tertiary: #B55980;
 //$tertiary: #D3C668;
-$secondary: #94C05F;
 $quaternary: #D3B568;
 
 $theme-colors: (
@@ -36,12 +35,16 @@ $rz-header-height: $headerHeight;
 $left-width: 25vw;
 $right-width: 75vw;
 
-//a.active {
-//  font-weight: bold;
-//}
-
 section.jumbotron {
-  margin-top: $headerHeight ;
+  margin-top: $headerHeight;
+}
+
+a {
+  user-select: none;
+}
+
+a.nav-link.active {
+  background-color: lighten($primary, 10%);
 }
 
 /* Site columns */
@@ -196,7 +199,6 @@ section.jumbotron {
     width: 100vw;
   }
   border-right: 2px solid $primary;
-  border-bottom: 2px solid $primary;
 }
 
 #control-panel form {
@@ -278,61 +280,36 @@ section.jumbotron {
   left: 0;
   right: 0;
   background-color: $secondary;
-  padding: 0;
-  margin: 0;
-  z-index: 98;
+  height: $controlsHeight;
+  line-height: $controlsHeight;
+  vertical-align: top;
   @media (min-width: 767px) and (max-width: 1200px) {
     left: $left-width;
   }
   @media (min-width: 1200px) {
     left: 325px;
-
   }
 }
 
-#navbar-elements {
+#navbar-elements > li {
+  list-style: none;
   height: $controlsHeight;
-  line-height: $controlsHeight;
-  padding: 0;
-  margin: 0;
+}
+
+#navbar-elements > li > a {
+  color: white;
+  border: 1px solid white;
+  font-size: .9rem;
+  padding: 5px 10px;
+}
+
+#navbar-elements > li > a:hover {
+  text-decoration: none;
+  background-color: darken($secondary, 5%);
 }
 
 #api-content {
   margin-top: $controlsHeight;
-}
-
-#api-nav.navbar-default .navbar-nav > li {
-  height: $controlsHeight;
-  padding: 0;
-  margin: 0;
-}
-
-#api-nav.navbar-default .navbar-nav > li > a {
-  line-height: $controlsHeight;
-  box-sizing: border-box;
-
-  color: #333333;
-  font-size: 16px;
-  text-transform: uppercase;
-  padding: 6px 12px;
-  background-color: #f7f7f7;
-  border: 1px solid #afafaf;
-  border-radius: 5px;
-  vertical-align: top;
-
-  text-decoration: none;
-  &:hover {
-    color: lighten(#333333, 5%);
-    background-color: darken(#f7f7f7, 5%);
-  }
-}
-
-#api-nav.navbar-default .navbar-nav > li.spacer {
-  min-width: 5px;
-  @media (max-width: 767px) {
-    width: calc((100vw - 490px) / 6);
-  }
-  width: calc((#{$right-width} - 490px) / 6);
 }
 
 .label {
@@ -469,7 +446,7 @@ code {
   li {
     margin-top: 0;
     font-weight: bold;
-    &.disabled a{
+    &.disabled a {
       font-weight: normal;
       color: #828282;
     }
@@ -478,7 +455,6 @@ code {
     }
   }
 }
-
 
 a.index_property_link {
   color: #828282;
@@ -514,7 +490,6 @@ abbr[title], abbr[data-original-title] {
 }
 
 //Sami
-
 
 /** General Sami styling **/
 
@@ -583,7 +558,6 @@ abbr[title], abbr[data-original-title] {
   font-size: 90%;
 }
 
-
 /* Namespaces page */
 
 //.namespaces {
@@ -607,7 +581,6 @@ abbr[title], abbr[data-original-title] {
 //  }
 //}
 
-
 /** Code and pre tags **/
 
 tt, code, pre {
@@ -620,7 +593,7 @@ code {
   padding-bottom: 0.2em;
   margin: 0;
   font-size: 85%;
-  background-color: rgba(0,0,0,0.04);
+  background-color: rgba(0, 0, 0, 0.04);
   border-radius: 3px;
   color: #333;
 }
@@ -640,7 +613,6 @@ h2 {
   font-size: 25px;
   margin: 20px 0;
 }
-
 
 /** Doc index **/
 
@@ -662,16 +634,16 @@ dd {
   margin: 0;
 }
 
-
 .footer {
-  background-color:$rezozero-header-color;
+  background-color: $rezozero-header-color;
   color: $alt-color;
   font-size: .8rem;
 
   padding: {
-    top:40px;
-    bottom:20px;
-  };
+    top: 40px;
+    bottom: 20px;
+  }
+;
 
   .subscriptions {
     p {
