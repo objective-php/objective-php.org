@@ -1,0 +1,45 @@
+<main class="container page-content">
+    <div class="row">
+        <article class="col-sm-12">
+            <header>
+                <h1>Community</h1>
+                <p class="lead">The Objective PHP community come mostly from the OpCoding company.</p>
+            </header>
+
+            <p>This is an Open source project ... @TODO explain that it's open to world wild contribution</p>
+
+            <h2>Get support from active members</h2>
+
+            <p>@TODO explain what are the ways to get in touch with the core team</p>
+
+            <h2>Improve the framework</h2>
+
+            <p>@TODO explain what are the main incomming works that are needing help</p>
+
+        </article>
+    </div>
+</main>
+
+<aside class="sponsors jumbotron">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <p class="lead text-center">Thanks to our Sponsors</p>
+                <ul class="list-inline d-flex justify-content-center">
+                    <?php foreach ($this->get('sponsors') as $sponsor) : ?>
+                        <li class="list-inline-item">
+                            <a href="<?= $sponsor['url'] ?>" target="_blank">
+                                <div class="media d-flex align-items-center">
+                                    <img class="align-self-center mr-3" src="<?= $sponsor['logo'] ?>" alt="<?= $sponsor['name'] ?> logo">
+                                    <div class="media-body">
+                                        <p class="sponsors-name"><?= $sponsor['name'] ?></p>
+                                    </div>
+                                </div>
+                            </a>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        </div>
+    </div>
+</aside>
