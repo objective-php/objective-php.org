@@ -135,7 +135,7 @@ class RepositoryManager
                 $environment = Environment::createCommonMarkEnvironment();
                 $environment->addExtension(new TableExtension());
                 $converter = new Converter(new DocParser($environment), new HtmlRenderer($environment));
-                $contents = $converter->convertToHtml($file->getContents());
+                $contents = '<div class="markdown-body">' . $converter->convertToHtml($file->getContents()) . '</div>';
                 $docJson[] = [
                     'name'                  => ucwords($componentName . ' ' . $tag . ' ' . $file->getBasename('.md')),
                     'link'                  => '/doc/' . $componentName . '/' . $tag . '/' . $htmlName,
