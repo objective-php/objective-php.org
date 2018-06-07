@@ -658,6 +658,13 @@ dd {
   }
 }
 
+article {
+  header {
+    border-bottom: 1px solid #eaecef;
+    margin-bottom: 50px;
+  }
+}
+
 .page-content {
   margin-top: 56px;
   padding: {
@@ -668,13 +675,6 @@ dd {
   #{headings(2,6)} {
     margin-top: 50px;
     border-bottom: 1px solid #eaecef;
-  }
-
-  article {
-    header {
-      border-bottom: 1px solid #eaecef;
-      margin-bottom: 50px;
-    }
   }
 }
 
