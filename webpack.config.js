@@ -6,6 +6,7 @@ const webpack = require("webpack");
 const ManifestPlugin = require('webpack-manifest-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
+
 const extractSass = new ExtractTextPlugin({
     filename: "[name].css",
     disable: dev
@@ -27,6 +28,8 @@ let cssLoaders = [
 ];
 
 if (!dev) {
+    extractSass.filename = "[name].[chunkhash].css"
+
     cssLoaders.push({
         loader: 'postcss-loader',
         options: {
@@ -87,7 +90,6 @@ module.exports = {
                     {loader: "file-loader"}
                 ]
             }
-
         ]
     },
     plugins: [
@@ -107,3 +109,6 @@ module.exports = {
         })
     ]
 };
+if (!dev) {
+    module.exports.output.filename = "[name].[chunkhash].js";
+}

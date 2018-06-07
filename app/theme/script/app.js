@@ -1,14 +1,12 @@
 import 'bootstrap';
 import 'lodash';
 
-
 $(function () {
     let $apitree = $('#api-tree');
     if ($apitree.length) {
         $("a[href*=\\#]:not([href=\\#])").click(function () {
             if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '')
                 || location.hostname == this.hostname) {
-
                 window.util.scrollToAnchor(this.hash);
             }
         });
@@ -48,7 +46,6 @@ $(function () {
         })
         docMenu += '<ul>'
 
-
         $('#api-tree').html(docMenu)
 
         $('#api-tree .hd i')
@@ -71,7 +68,7 @@ $(function () {
             $('#version-select').html(docMenuInfos[currentCompo])
             $.each(dataMenu[currentCompo], (minorVersion, val) =>
                 $('#version-options')
-                    .append('<a class="dropdown-item" href="/doc/' + currentCompo + '/' + minorVersion + '/' + window.location.pathname.split('/')[4] + '">' + minorVersion + '</a>')
+                    .append('<a class="dropdown-item" href="/doc/' + currentCompo + '/' + minorVersion + '/' + (Object.values(val).includes(window.location.pathname.split('/')[4]) ? window.location.pathname.split('/')[4] : 'index.html') + '">' + minorVersion + '</a>')
                     .children().last().click(() => {
                     docMenuInfos[currentCompo] = minorVersion
                     util.createCookie('docMenuInfos', JSON.stringify(docMenuInfos))
@@ -82,7 +79,7 @@ $(function () {
         }
     }
 });
-console.log('ROUUUGE');
+
 window.util = new function () {
     this.createCookie = (name, value, days) => {
         if (days) {
@@ -108,6 +105,7 @@ window.util = new function () {
     this.eraseCookie = (name) => {
         util.createCookie(name, "", -1);
     }
+
     this.capitalizeFirstLetter = (string) => {
         return string[0].toUpperCase() + string.slice(1);
     }
