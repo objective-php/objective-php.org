@@ -28,15 +28,13 @@ while [[ $pointer -le $# ]]; do
 
       # splice out pointer frame from positional list
       [[ $pointer -gt 1 ]] \
-         && set -- ${@:1:((pointer - 1))} ${@:((pointer + $slice_len)):$#} \
-         || set -- ${@:((pointer + $slice_len)):$#};
+         && set -- $"{@:1:((pointer - 1))}" $"{@:((pointer + $slice_len)):$#}"\
+         || set -- $"{@:((pointer + $slice_len)):$#}";
    fi
 done
 
-echo "Starting PHP internal server..."
-echo ""
-echo "Listening to port: $PORT"
-echo "Application environment: $APPLICATION_ENV"
-echo ""
-echo ""
-env APPLICATION_ENV=$APPLICATION_ENV php -S localhost:$PORT -t public
+echo "\n"
+echo "Listening to port: \033[32m$PORT\033[0m"
+echo "Application environment: \033[32m$APPLICATION_ENV\033[0m \n\n"
+
+env APPLICATION_ENV=${APPLICATION_ENV} php -S localhost:${PORT} -t public

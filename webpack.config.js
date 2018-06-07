@@ -84,7 +84,7 @@ module.exports = {
             {
                 test: /\.(woff|ttf|otf|eot|woff2|jpg|png|svg)$/,
                 use: [
-                    { loader: "file-loader" }
+                    {loader: "file-loader"}
                 ]
             }
 
@@ -97,8 +97,8 @@ module.exports = {
             root: path.resolve(__dirname, 'public/'),
             dry: false,
             watch: true,
-            exclude:  ['dataMenu.js'],
-            verbose:  true
+            exclude: ['dataMenu.js'],
+            verbose: true
         }),
         new webpack.ProvidePlugin({
             "$": "jquery",
