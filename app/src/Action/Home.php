@@ -20,7 +20,7 @@ class Home extends AbstractPage
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         return $this->render([
-            'page.title'    => 'Objective PHP Documentation Website',
+            'page.title'    => 'Objective PHP',
             'page.subtitle' => 'This project provides developers the documentation associated to the Objective PHP framework.'
         ]);
     }
