@@ -163,16 +163,17 @@ class RepositoryManager
         } else {
             throw new ComponentStructureException('No docs folder in ' . $componentName . "\n");
         }
+
         $json = \json_encode(['repoPath'  => $repoPath,
                               'compoName' => $componentName,
                               'version'   => $tag]);
         \file_put_contents($this->getPaths()['tmp'] . '/infos.json', $json, JSON_PRETTY_PRINT);
 
-        exec('php ' . $this->getPaths()['public'] . '../sami/sami.phar update -vvv ' . __DIR__ . '/sami-config.php --force', $output, $code);
-        //        exec('php ' . $this->getPaths()['public'] . '../sami/sami/sami.php update -v ' . __DIR__ . '/sami-config.php --force', $output, $code);
+        exec('php ' . $this->getPaths()['public'] . '../sami.phar update -vvv ' . __DIR__ . '/sami-config.php --force', $output, $code);
+//        exec('php ' . $this->getPaths()['public'] . '../sami/sami.php update -v ' . __DIR__ . '/sami-config.php --force', $output, $code);
 
         if ($code != 0) {
-            throw new \Exception('Something went wrong while generating ' . $componentName);
+            throw new \Exception(sprintf('Something went wrong while generating %s (%s)', $componentName, print_r($output, true)));
         }
 
         if (false) {
