@@ -2,7 +2,6 @@
 
 namespace App\Action;
 
-use ObjectivePHP\Middleware\Action\PhtmlAction\PhtmlAction;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -12,7 +11,7 @@ use Psr\Http\Server\RequestHandlerInterface;
  *
  * @package Showcase\Action
  */
-class Home extends PhtmlAction
+class Home extends AbstractPage
 {
     /**
      * Process an incoming server request and return a response, optionally delegating
@@ -21,8 +20,8 @@ class Home extends PhtmlAction
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         return $this->render([
-                                 'page.title'    => 'Objective PHP Documentation Website',
-                                 'page.subtitle' => 'This project provides developers the documentation associated to the Objective PHP framework.'
-                             ]);
+            'page.title'    => 'Objective PHP Documentation Website',
+            'page.subtitle' => 'This project provides developers the documentation associated to the Objective PHP framework.'
+        ]);
     }
 }

@@ -31,10 +31,9 @@ class BuildApiEndpointV1 extends AbstractEndpoint implements InjectionAnnotation
 
     public function get(ServerRequestInterface $request)
     {
-
-            $this->getIndexManager()->generateAll();
-            $this->getRepositoryManager()->operateAll();
-            return new JsonResponse(['code' => 0, 'status'=> 'Ok']);
+        $this->getIndexManager()->generateAll();
+        $this->getRepositoryManager()->operateAll();
+        return new JsonResponse(['code' => 0, 'status'=> 'Ok']);
     }
 
 

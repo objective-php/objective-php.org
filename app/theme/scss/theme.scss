@@ -1,3 +1,5 @@
+@import "utils";
+
 //4 color, 90° on the nuancier
 $primary: #515A91;
 $secondary: #94C05F;
@@ -608,7 +610,7 @@ pre {
   border-radius: 3px;
 }
 
-h2 {
+.documentation h2 {
   background-color: #f2f2f2;
   padding: 4px 4px 4px 8px;
   font-size: 25px;
@@ -635,6 +637,47 @@ dd {
   margin: 0;
 }
 
+
+.sponsors {
+  &.jumbotron {
+    margin-bottom: 0;
+  }
+  ul {
+    margin-bottom: 0;
+    li {
+      margin-left: 50px;
+      margin-right: 50px;
+    }
+  }
+  a {
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+  .sponsors-name {
+    margin-bottom: 0;
+  }
+}
+
+.page-content {
+  margin-top: 56px;
+  padding: {
+    top: 20px;
+    bottom: 20px;
+  };
+
+  #{headings(2,6)} {
+    margin-top: 50px;
+    border-bottom: 1px solid #eaecef;
+  }
+
+  article {
+    header {
+      border-bottom: 1px solid #eaecef;
+      margin-bottom: 50px;
+    }
+  }
+}
+
 .footer {
   background-color: $rezozero-header-color;
   color: $alt-color;
@@ -643,8 +686,7 @@ dd {
   padding: {
     top: 40px;
     bottom: 20px;
-  }
-;
+  };
 
   .subscriptions {
     p {

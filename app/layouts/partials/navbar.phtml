@@ -13,15 +13,13 @@ use ObjectivePHP\Application\Config\ApplicationName;
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
-
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
+            <?php foreach ($this->get('navbar-main-menu') as $page) : ?>
             <li class="nav-item">
-                <a class="nav-link" href="/doc">Documentation</a>
+                <a class="nav-link <?= $page['active'] ?>" href="<?= $page['url'] ?>"><?= $page['name'] ?></a>
             </li>
-<!--            <li class="nav-item">-->
-<!--                <a class="nav-link" href="/search">Search</a>-->
-<!--            </li>-->
+            <?php endforeach; ?>
         </ul>
         <ul class="navbar-nav my-2 my-lg-0">
             <li class="nav-item">
