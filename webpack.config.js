@@ -7,8 +7,7 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 const extractSass = new ExtractTextPlugin({
-    filename: dev ? '[name].js' : '[name].[chunkhash:8].js',
-    disable: dev
+    filename: dev ? '[name].css' : '[name].[chunkhash:8].css'
 });
 
 let cssLoaders = [
