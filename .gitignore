@@ -5,6 +5,8 @@ tmp/
 app/src/Manager/Renderer/
 app/theme/scss/theme.css
 
+app/config/auths.json
+
 packages/
 public/assets/dev.js
 public/dist/
