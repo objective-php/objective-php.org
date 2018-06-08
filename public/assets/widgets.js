@@ -1,6 +1,5 @@
 $(function () {
     window.searcher = new function () {
-        let self = this;
 
         this.getRefinementListHeader = (name) => {
             return '<legend class="col-form-label-lg pt-0">' + util.capitalizeFirstLetter(name) + ' :</legend>'
@@ -18,8 +17,8 @@ $(function () {
                 attributeName: name,
                 sortBy: ['name:asc'],
                 templates: {
-                    header: self.getRefinementListHeader(name),
-                    item: self.getRefinementListItem
+                    header: this.getRefinementListHeader(name),
+                    item: this.getRefinementListItem
                 }
             })
         }
@@ -38,20 +37,18 @@ $(function () {
                 separator: '>',
                 sortBy: ['name:asc'],
                 templates: {
-                    header: self.getHierarchicalMenuHeader(name),
-                    item: self.getHierarchicalMenuItem
+                    header: this.getHierarchicalMenuHeader(name),
+                    item: this.getHierarchicalMenuItem
                 }
             })
         }
         this.getHitsItemDoc = (data) => {
-            // console.log(data);
             return '<div class="hit"><div class="hit-content"><a href="' + data.link + '">' +
                 // '<p class="hit-name">' + data._highlightResult.name.value + '</p></a> ' +
                 // '<p class="hit-description">' + data._highlightResult.content + '</p>' +
                 '</div></div>';
         }
         this.getHitsItemApi = (data) => {
-            console.log(data);
             return '<div class="hit"><div class="hit-content"><a href="' + data.link + '">' +
                 '<p class="hit-name">' + data._highlightResult.name.value + '</p></a> ' +
                 // '<p class="hit-description">' + data._highlightResult.content + '</p>' +
@@ -62,7 +59,7 @@ $(function () {
                 container: '#hits_' + name,
                 escapeHits: true,
                 templates: {
-                    item: self['getHitsItem' + _.capitalize(name)],
+                    item: this['getHitsItem' + _.capitalize(name)],
                     empty: "We didn't find any results for the search <em>\"{{query}}\"</em>"
                 }
             })
@@ -100,25 +97,25 @@ $(function () {
         // }
 
         this.searchApi = instantsearch({
-                appId: 'JIIVBNDTOY',
-                apiKey: 'f774ad24b1c6e4b3c1052a7b7738577a',
+                appId: '',
+                apiKey: '',
                 indexName: 'objective_php_api',
                 urlSync: true,
                 searchFunction: (helper) => {
                     //Synchronize the query
-                    self.searchDoc.helper.setQuery(self.searchApi.helper.state.query)
+                    this.searchDoc.helper.setQuery(this.searchApi.helper.state.query)
                     //Synchronize the disjunctiveFacets
-                    self.searchDoc.helper.state.disjunctiveFacets = self.searchApi.helper.state.disjunctiveFacets;
-                    self.searchDoc.helper.state.disjunctiveFacetsRefinements = self.searchApi.helper.state.disjunctiveFacetsRefinements;
+                    this.searchDoc.helper.state.disjunctiveFacets = this.searchApi.helper.state.disjunctiveFacets;
+                    this.searchDoc.helper.state.disjunctiveFacetsRefinements = this.searchApi.helper.state.disjunctiveFacetsRefinements;
                     //Synchronize the hierarchicalFacets
-                    self.searchDoc.helper.state.hierarchicalFacets = self.searchApi.helper.state.hierarchicalFacets;
-                    self.searchDoc.helper.state.hierarchicalFacetsRefinements = self.searchApi.helper.state.hierarchicalFacetsRefinements;
+                    this.searchDoc.helper.state.hierarchicalFacets = this.searchApi.helper.state.hierarchicalFacets;
+                    this.searchDoc.helper.state.hierarchicalFacetsRefinements = this.searchApi.helper.state.hierarchicalFacetsRefinements;
                     //Set hitsPerPage
                     helper.setQueryParameter('hitsPerPage', $('#select-doc').data('hitsPerPage'))
-                    self.searchDoc.helper.setQueryParameter('hitsPerPage', $('#select-doc').data('hitsPerPage'))
+                    this.searchDoc.helper.setQueryParameter('hitsPerPage', $('#select-doc').data('hitsPerPage'))
 
                     helper.search();
-                    self.searchDoc.helper.search();
+                    this.searchDoc.helper.search();
                 },
                 searchParameters: {}
             }

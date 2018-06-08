@@ -1,14 +1,13 @@
 const path = require('path');
 
 const dev = process.env.NODE_ENV === "development";
-
 const webpack = require("webpack");
 const ManifestPlugin = require('webpack-manifest-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 const extractSass = new ExtractTextPlugin({
-    filename: "[name].css",
+    filename: dev ? '[name].js' : '[name].[chunkhash:8].js',
     disable: dev
 });
 
@@ -28,8 +27,6 @@ let cssLoaders = [
 ];
 
 if (!dev) {
-    extractSass.filename = "[name].[chunkhash].css"
-
     cssLoaders.push({
         loader: 'postcss-loader',
         options: {
@@ -57,7 +54,7 @@ module.exports = {
     },
     output: {
         path: path.resolve(__dirname, 'public/dist/'),
-        filename: "[name].js"
+        filename: dev ? '[name].js' : '[name].[chunkhash:8].js',
     },
     module: {
         rules: [
@@ -85,9 +82,14 @@ module.exports = {
                 }
             },
             {
-                test: /\.(woff|ttf|otf|eot|woff2|jpg|png|svg)$/,
+                test: /\.(ttf|otf|eot|woff2?|jpe?g|png|svg)$/,
                 use: [
-                    {loader: "file-loader"}
+                    {
+                        loader: "file-loader",
+                        options: {
+                            name: '[name].[hash:8].[ext]'
+                        }
+                    }
                 ]
             }
         ]
@@ -109,6 +111,3 @@ module.exports = {
         })
     ]
 };
-if (!dev) {
-    module.exports.output.filename = "[name].[chunkhash].js";
-}

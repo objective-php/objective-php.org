@@ -101,7 +101,6 @@ a.nav-link.active {
 
 /* API Tree */
 
-
 #api-tree ul {
   list-style-type: none;
   margin: 0;
@@ -634,7 +633,6 @@ dd {
   margin: 0;
 }
 
-
 .sponsors {
   &.jumbotron {
     margin-bottom: 0;
@@ -667,7 +665,8 @@ article {
   padding: {
     top: 20px;
     bottom: 20px;
-  };
+  }
+;
 
   #{headings(2,6)} {
     margin-top: 50px;
@@ -683,7 +682,8 @@ article {
   padding: {
     top: 40px;
     bottom: 20px;
-  };
+  }
+;
 
   .subscriptions {
     p {

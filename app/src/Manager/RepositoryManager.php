@@ -195,7 +195,7 @@ class RepositoryManager
     {
         $docMenu = '<ul>';
         foreach ($this->packages as $compoName => $package) {
-            $docMenu .= '<li class="opened" ><div class="hd"><i class="fas fa-angle-right fa-lg"></i>';
+            $docMenu .= '<li class="opened" ><div class="hd"><i class="fa fa-angle-right fa-lg"></i>';
             $docMenu .= '<a href="/doc/' . $compoName . '/' . key($package) . '/index.html">' . $compoName . '</a>';
             $docMenu .= '</div><div class="bd"><ul>';
             foreach ($package as $minorVersion => $files) {
