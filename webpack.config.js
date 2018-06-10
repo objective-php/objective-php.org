@@ -14,7 +14,8 @@ let cssLoaders = [
     {
         loader: 'css-loader',
         options: {
-            sourceMap: true
+            minimize: dev,
+            sourceMap: dev
         }
     },
     {
@@ -34,7 +35,7 @@ if (!dev) {
                     browsers: ['last 2 versions', 'ie > 8']
                 })
             ],
-            sourceMap: true
+            sourceMap: true //No use in prod.. ?
         }
     });
 }
@@ -42,7 +43,7 @@ if (!dev) {
 cssLoaders.push({
     loader: 'sass-loader',
     options: {
-        sourceMap: true
+        sourceMap: dev
     }
 });
 

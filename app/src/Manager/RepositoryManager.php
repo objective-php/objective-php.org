@@ -153,7 +153,7 @@ class RepositoryManager
                 $content = str_replace('{{ app }}', $asset['app.js'], $content);
                 \file_put_contents($pathToDoc . $htmlName, $content);
 
-                if (!($file->getFilename() === 'index.md')) { //TODO Gerer si pas d'index.md
+                if (!($file->getFilename() === 'index.md')) { //TODO Gerer si pas d'index.md ?
                     $niceName = preg_replace('([0-9]*\.)', '', $file->getBasename('.md'), 1);
                     $niceName = str_replace(['-', '_'], ' ', $niceName);
                     $this->packages[$componentName][$tag][$niceName] = $htmlName;
