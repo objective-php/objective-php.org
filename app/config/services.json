@@ -1,18 +1,29 @@
 {
-  "services":{
-    "manager.repository": {
-      "class": "App\\Manager\\RepositoryManager",
-      "setters": {
-        "setPaths": "param(paths)",
-        "setComponents": "param(components)",
-        "setAuths": "param(auths)"
-      }
-    },
-    "manager.index": {
-      "class": "App\\Manager\\IndexManager",
-      "setters": {
-        "setPaths": "param(paths)"
-      }
+    "services": {
+        "manager.clients": {
+            "class": "App\\Manager\\ClientsManager",
+            "setters": {
+                "setAuths": "param(auths)"
+            }
+        },
+        "manager.packages": {
+            "class": "App\\Manager\\PackagesManager"
+        },
+        "manager.repository": {
+            "class": "App\\Manager\\RepositoryManager",
+            "setters": {
+                "setPaths": "param(paths)",
+                "setComponents": "param(components)",
+                "setAuths": "param(auths)",
+                "setClientsManager": "service(manager.clients)",
+                "setPackagesManager": "service(manager.packages)"
+            }
+        },
+        "manager.index": {
+            "class": "App\\Manager\\IndexManager",
+            "setters": {
+                "setPaths": "param(paths)"
+            }
+        }
     }
-  }
 }

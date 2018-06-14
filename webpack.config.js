@@ -14,7 +14,7 @@ let cssLoaders = [
     {
         loader: 'css-loader',
         options: {
-            minimize: dev,
+            minimize: !dev,
             sourceMap: dev
         }
     },
@@ -60,7 +60,7 @@ module.exports = {
         rules: [
             {
                 test: /\.js/,
-                exclude: /(node_modules)/,
+                exclude: /node_modules/,
                 use: {
                     loader: 'babel-loader',
                     options: {
@@ -101,7 +101,7 @@ module.exports = {
             root: path.resolve(__dirname, 'public/'),
             dry: false,
             watch: true,
-            exclude: ['dataMenu.js'],
+            exclude: ['dataMenu.js', 'manifest.json'],
             verbose: true
         }),
         new webpack.ProvidePlugin({

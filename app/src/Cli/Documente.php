@@ -92,6 +92,7 @@ class Documente extends AbstractCliAction implements InjectionAnnotationProvider
      */
     public function setRepositoryManager(RepositoryManager $repositoryManager): Documente
     {
+        $repositoryManager->initClient();
         $this->repositoryManager = $repositoryManager;
         return $this;
     }

@@ -5,19 +5,18 @@ namespace App\Manager;
 use App\Config\AuthsConfig;
 use App\Config\ComponentsConfig;
 use App\Config\PathsConfig;
-use GuzzleHttp\Client;
+use App\Exception\ComponentStructureException;
+use App\Model\Package;
+use App\Model\Version;
 use League\CommonMark\Converter;
 use League\CommonMark\DocParser;
 use League\CommonMark\Environment;
 use League\CommonMark\HtmlRenderer;
-use App\Exception\ComponentStructureException;
 use Symfony\Component\Finder\Finder;
 use Webuni\CommonMark\TableExtension\TableExtension;
 
 class RepositoryManager
 {
-
-    protected $packages;
 
     /**
      * @var ComponentsConfig[]
@@ -35,36 +34,79 @@ class RepositoryManager
     protected $auths;
 
     /**
-     * RepositoryManager constructor.
+     * @var ClientsManager
      */
-    public function __construct()
+    protected $clientsManager;
+
+    /**
+     * @var PackagesManager
+     */
+    protected $packagesManager;
+
+
+    /**
+     * @param Package $package
+     *
+     * @param bool    $force
+     *
+     * @throws \Exception
+     */
+    public function handlePing(Package $package, $force = false): void
     {
-        try {
-            $this->packages = \json_decode(file_get_contents(__DIR__ . '/../../data/packages.json'), true);
-        } catch (\Exception $e) {
-            if (!is_dir(__DIR__ . '/../../data/packages.json') && !mkdir(__DIR__ . '/../../data/packages.json', 0755, true) && !is_dir(__DIR__ . '/../../data/packages.json')) {
-                throw new \RuntimeException(sprintf('Directory "%s" was not created', __DIR__ . '/../../data/packages.json'));
-            }
+        if (!$force && $this->getPackagesManager()->getPackage($package->getFullName())) {
+            throw new \Exception('The Package ' . $package->getFullName() . ' is allreadly registered. Aborting...');
         }
+        $package = $this->fetchPackageVersions($package);
+        $this->operateRepo($package);
+        $this->getPackagesManager()->save($package);
     }
 
 
+    /**
+     * @param Package $package
+     *
+     * @return Package
+     * @throws \LogicException
+     */
+    public function fetchPackageVersions(Package $package): Package
+    {
+        $tags = \GuzzleHttp\json_decode($this->getClientsManager()->getGithubClient()->get('/repos/' . $package->getFullName() . '/git/refs/tags')->getBody()->getContents());
+        foreach ($tags as $tag) {
+            try {
+                $patch = ltrim(str_replace('refs/tags/', '', $tag->ref), 'v');
+                preg_match("/(.*\..*)\./", $patch, $matches);
+                $package->addVersion(
+                    new Version(
+                        $matches[1],
+                        $patch,
+                        'https://github.com/' . $package->getFullName() . '/archive/v' . $patch . '.tar.gz'
+                    )
+                );
+            } catch (\Exception $e) {
+                $e->getMessage();
+            }
+        }
+
+        return $package;
+    }
+
+
+    /**
+     * @return array
+     */
     public function fetchTags(): array
     {
-        $client = new Client();
         $res = [];
-
         foreach ($this->components as $key => $package) {
             if ($package->getHost() === 'github') {
                 $versions = [];
-                $githubAuths = $this->getAuths()['github-' . explode('/', $key)[0]];
-                $tags = \GuzzleHttp\json_decode($client->get('https://api.github.com/repos/' . $key . '/git/refs/tags?client_id=' . $githubAuths->getClientId() . '&client_secret=' . $githubAuths->getClientKey())->getBody()->getContents());
+                $tags = \GuzzleHttp\json_decode($this->getClientsManager()->getGithubClient()->get('/repos/' . $key . '/git/refs/tags')->getBody()->getContents());
                 foreach ($tags as $tag) {
                     // x.x.x
                     $v = ltrim(str_replace('refs/tags/', '', $tag->ref), 'v');
-
                     //On verifie que le tag est superieur a la minVersion et que ce n'est pas une version dev,alpha, etc
-                    if (!preg_match('/[a-z]/i', $v) && version_compare($v, $this->components[$key]->getMinVersion(), '>=')) {
+                    if (!preg_match('/[a-z]/i', $v)
+                        && version_compare($v, $this->components[$key]->getMinVersion(), '>=')) {
                         preg_match("/(.*\..*)\./", $v, $o);
                         $versions[$o[1]] = $v;
                     }
@@ -73,22 +115,62 @@ class RepositoryManager
             }
             krsort($res[$key]);
         }
+
         return $res;
     }
 
-    public function operateAll(): void
-    { //only works for github repos
+    /**
+     * @return array
+     */
+    public function fetchWholeTags(): array
+    {
+        $repos = \GuzzleHttp\json_decode($this->getClientsManager()->get->get('users/louis-cuny/repos')->getBody()->getContents());
+        $repoList = [];
+        foreach ($repos as $repo) {
+            $tags = \GuzzleHttp\json_decode($this->githubClient->get($repo->url)->getBody()->getContents());
 
-        $this->packages = [];
+            print_r($tags);
+            echo '</pre>';
+        }
+
+        $res = [];
+        foreach ($this->components as $key => $package) {
+            if ($package->getHost() === 'github') {
+                $versions = [];
+                // $githubAuths = $this->getAuths()['github-' . explode('/', $key)[0]];
+                $tags = \GuzzleHttp\json_decode($this->githubClient->get('https://api.github.com/repos/' . $key . '/git/refs/tags')->getBody()->getContents());
+                foreach ($tags as $tag) {
+                    // x.x.x
+                    $v = ltrim(str_replace('refs/tags/', '', $tag->ref), 'v');
+
+                    //On verifie que le tag est superieur a la minVersion et que ce n'est pas une version dev,alpha, etc
+                    if (!preg_match('/[a-z]/i', $v)
+                        && version_compare($v, $this->components[$key]->getMinVersion(), '>=')) {
+                        preg_match("/(.*\..*)\./", $v, $o);
+                        $versions[$o[1]] = $v;
+                    }
+                }
+                $res[$key] = $versions;
+            }
+            krsort($res[$key]);
+        }
+
+        return $res;
+    }
+
+    //only works for github repos
+    public function operateAll(): void
+    {
         foreach ($this->fetchTags() as $key => $versions) {
             foreach ($versions as $minor => $version) {
                 $this->rmAll($this->getPaths()['tmp']);
+                //                $tarUrl = 'https://api.github.com/repos/louis-cuny/noitacol/tarball/v' . $version ;
                 $tarUrl = 'https://github.com/' . $key . '/archive/v' . $version . '.tar.gz';
                 $repoPath = $this->fetchRepo($tarUrl, $repoName = explode('/', $key)[1]);
                 try {
                     $this->operate($repoPath, $repoName, $minor);
-                } catch (ComponentStructureException $e) {
-                    echo $e->getMessage();
+                } catch (ComponentStructureException $exception) {
+                    echo $exception->getMessage();
                 }
             }
         }
@@ -104,18 +186,38 @@ class RepositoryManager
         $md5 = md5($tarUrl);
         if (!copy($tarUrl, $targz = ($path = $this->getPaths()['tmp'] . $componentName . '-' . $md5) . '.tar.gz')) {
             $error = error_get_last();
-            throw new \RuntimeException(
-                sprintf('[%s] Unable to copy file : %s', $error['type'], $error['message'])
-            );
+            throw new \RuntimeException(sprintf('[%s] Unable to copy file : %s', $error['type'], $error['message']));
         }
         $repoPath = (new \PharData($targz))->decompress();
         (new \PharData($path . '.tar'))->extractTo($this->getPaths()['tmp']);
+
         return $repoPath;
     }
 
-    //application-2.0.1
-    //application
-    //2.0
+    /**
+     * @param Package $package
+     *
+     * @throws \Exception
+     */
+    public function operateRepo(Package $package)
+    {
+        foreach ($package->getVersions() as $version) {
+            $this->rmAll($this->getPaths()['tmp']);
+            $repoPath = $this->fetchRepo($version->getTargz(), $package->getName());
+            $this->operate($repoPath, $package->getName(), $version->getMinor());
+        }
+        $this->dataMenu($this->getPaths()['public'] . 'dist/dataMenu.js');
+    }
+
+    /**
+     * @param string $repoPath      Could be application-2.0.1
+     * @param string $componentName Could be application
+     * @param string $tag           Could be 2.0
+     *
+     * @throws ComponentStructureException
+     * @throws \AlgoliaSearch\AlgoliaException
+     * @throws \Exception
+     */
     public function operate(string $repoPath, string $componentName, string $tag)
     {
         if (is_dir($docsPath = $this->getPaths()['tmp'] . $repoPath . '/docs')) {
@@ -136,21 +238,31 @@ class RepositoryManager
                 $environment->addExtension(new TableExtension());
                 $converter = new Converter(new DocParser($environment), new HtmlRenderer($environment));
                 $contents = '<div class="markdown-body">' . $converter->convertToHtml($file->getContents()) . '</div>';
-                $docJson[] = [
-                    'name'                  => ucwords($componentName . ' ' . $tag . ' ' . $file->getBasename('.md')),
-                    'link'                  => '/doc/' . $componentName . '/' . $tag . '/' . $htmlName,
-                    'version'               => $tag,
-                    'component'             => $componentName,
-                    'content'               => $contents,
-                    'hierarchical_versions' => ['lvl0' => $componentName, 'lvl1' => $componentName . '>' . $tag]
-                ];
+                //              FOR THE SEARCH RECORDS
+                //                $docJson[] = [
+                //                    'name'                  => ucwords($componentName . ' ' . $tag . ' ' . $file->getBasename('.md')),
+                //                    'link'                  => '/doc/' . $componentName . '/' . $tag . '/' . $htmlName,
+                //                    'version'               => $tag,
+                //                    'component'             => $componentName,
+                //                    'content'               => $contents,
+                //                    'hierarchical_versions' => ['lvl0' => $componentName, 'lvl1' => $componentName . '>' . $tag]
+                //                ];
                 $content = file_get_contents($this->getPaths()['base.twig']);
-                $content = str_replace('{% block content \'\' %}', $contents, $content);
-                $content = str_replace('{% block title project.config(\'title\') %}', ucfirst($componentName) . ' - ' . $tag . ' | Objective PHP Documentation', $content);
-                $content = str_replace('{% block VERSION \'\' %}', $tag, $content);
-                $content = str_replace('{% block COMPONENTNAME \'\' %}', ucfirst($componentName), $content);
-                $content = str_replace('{{ style }}', $asset['theme.css'], $content);
-                $content = str_replace('{{ app }}', $asset['app.js'], $content);
+                $content = str_replace([
+                    '{% block content \'\' %}',
+                    '{% block title project.config(\'title\') %}',
+                    '{% block VERSION \'\' %}',
+                    '{% block COMPONENTNAME \'\' %}',
+                    '{{ style }}',
+                    '{{ app }}'
+                ], [
+                    $contents,
+                    ucfirst($componentName) . ' - ' . $tag . ' | Objective PHP Documentation',
+                    $tag,
+                    ucfirst($componentName),
+                    $asset['theme.css'],
+                    $asset['app.js']
+                ], $content);
                 \file_put_contents($pathToDoc . $htmlName, $content);
 
                 if (!($file->getFilename() === 'index.md')) { //TODO Gerer si pas d'index.md ?
@@ -159,37 +271,39 @@ class RepositoryManager
                     $this->packages[$componentName][$tag][$niceName] = $htmlName;
                 }
             }
-            \file_put_contents($pathToDoc . 'doc.json', \json_encode($docJson));
+            //              FOR THE SEARCH RECORDS
+            //            \file_put_contents($pathToDoc . 'doc.json', \json_encode($docJson));
         } else {
             throw new ComponentStructureException('No docs folder in ' . $componentName . "\n");
         }
-        $json = \json_encode(['repoPath'  => $repoPath,
-                              'compoName' => $componentName,
-                              'version'   => $tag]);
+        $json = \json_encode([
+            'repoPath'  => $repoPath,
+            'compoName' => $componentName,
+            'version'   => $tag
+        ]);
         \file_put_contents($this->getPaths()['tmp'] . '/infos.json', $json, JSON_PRETTY_PRINT);
 
-        exec('php ' . $this->getPaths()['public'] . '../sami.phar update -vvv ' . __DIR__ . '/sami-config.php --force', $output, $code);
-//                exec('php ' . $this->getPaths()['public'] . '../sami/sami.php update -v ' . __DIR__ . '/sami-config.php --force', $output, $code);
+        exec('php ' . $this->getPaths()['public'] . '../sami.phar update -vvv ' . __DIR__ . '/sami-config.php --force',
+            $output, $code);
+        //                exec('php ' . $this->getPaths()['public'] . '../sami/sami.php update -v ' . __DIR__ . '/sami-config.php --force', $output, $code);
 
         if ($code != 0) {
-            throw new \Exception(sprintf('Something went wrong while generating %s (%s)', $componentName, print_r($output, true)));
+            throw new \Exception(sprintf('Something went wrong while generating %s (%s)', $componentName,
+                print_r($output, true)));
         }
-
-        if (false) {
-            $algoliaAuths = $this->getAuths()['algolia-louis-cuny'];
-            $client = new \AlgoliaSearch\Client($algoliaAuths->getClientId(), $algoliaAuths->getClientKey());
-            $index = $client->initIndex('objective_php_api');
-            $objects = json_decode(file_get_contents($pathToDoc . '/api/sami.json'), false);
-
-            $index2 = $client->initIndex('objective_php_doc');
-            $objects2 = json_decode(file_get_contents($pathToDoc . 'doc.json'), false);
-            print_r($objects);
-            print_r($objects2);
-            //                $index->addObjects($objects);
-            //                $index2->addObjects($objects2);
-        }
+        //              FOR THE SEARCH RECORDS
+        //            $algoliaAuths = $this->getAuths()['algolia-louis-cuny'];
+        //            $client = new \AlgoliaSearch\Client($algoliaAuths->getClientId(), $algoliaAuths->getClientKey());
+        //            $index = $client->initIndex('objective_php_api');
+        //            $objects = json_decode(file_get_contents($pathToDoc . '/api/sami.json'), false);
+        //
+        //            $index2 = $client->initIndex('objective_php_doc');
+        //            $objects2 = json_decode(file_get_contents($pathToDoc . 'doc.json'), false);
+        //            print_r($objects);
+        //            print_r($objects2);
+        //            //                $index->addObjects($objects);
+        //            //                $index2->addObjects($objects2);
     }
-
 
     public function dataMenu(string $outputFile): void
     {
@@ -208,9 +322,6 @@ class RepositoryManager
                     $docMenu .= '<a href="/doc/' . $compoName . '/' . $minorVersion . '/' . $raw . '">' . $nice . '</a>';
                     $docMenu .= '</div></li>';
                 }
-                ////////////   API   //////////
-                //                $path =self::PUBLIC_DIR . 'doc/' . $compoName . '/' . $minorVersion . '/api/';
-                //                $docMenu .= $this->menuApi($path);
                 $docMenu .= '<li><div class="hb leaf"><a href="/doc/' . $compoName . '/' . $minorVersion . '/api/index.html">API</a></div></li>';
                 $docMenu .= '</ul></div></li>';
             }
@@ -284,6 +395,7 @@ class RepositoryManager
 
     /**
      * @param PathsConfig[] $paths
+     *
      * @return $this
      */
     public function setPaths($paths): RepositoryManager
@@ -303,6 +415,7 @@ class RepositoryManager
 
     /**
      * @param array $components
+     *
      * @return RepositoryManager
      */
     public function setComponents($components): RepositoryManager
@@ -322,11 +435,55 @@ class RepositoryManager
 
     /**
      * @param AuthsConfig[] $auths
+     *
      * @return RepositoryManager
      */
     public function setAuths(array $auths): RepositoryManager
     {
         $this->auths = $auths;
+
         return $this;
     }
+
+    /**
+     * @param $clientsManager
+     *
+     * @return RepositoryManager
+     */
+    public function setClientsManager($clientsManager): RepositoryManager
+    {
+        $this->clientsManager = $clientsManager;
+
+        return $this;
+    }
+
+    /**
+     * @return ClientsManager
+     */
+    public function getClientsManager(): ClientsManager
+    {
+        return $this->clientsManager;
+    }
+
+    /**
+     * @param PackagesManager $packagesManager
+     *
+     * @return RepositoryManager
+     */
+    public function setPackagesManager(PackagesManager $packagesManager): RepositoryManager
+    {
+        $this->packagesManager = $packagesManager;
+
+        return $this;
+    }
+
+    /**
+     * @return PackagesManager
+     */
+    public function getPackagesManager(): PackagesManager
+    {
+        return $this->packagesManager;
+    }
+
+
 }

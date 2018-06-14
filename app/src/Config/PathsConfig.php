@@ -6,6 +6,7 @@ use ObjectivePHP\Config\Directive\AbstractMultiScalarDirective;
 
 /**
  * Class Paths
+ *
  * @package App\Config
  */
 class PathsConfig extends AbstractMultiScalarDirective
@@ -18,26 +19,32 @@ class PathsConfig extends AbstractMultiScalarDirective
      * @config-index "path.id"
      * @var string Correspond au nom du path
      */
-    protected $id;
+    protected $reference;
 
+    /**
+     * If its a dir and doesn t already exist, try to create it
+     *
+     * @return mixed|string
+     * @throws \RuntimeException
+     */
     public function getValue()
     {
-        return $_SERVER['DOCUMENT_ROOT'] . '/../' . parent::getValue();
+        if (!parent::getValue()) {
+            return '';
+        }
+
+        $path = getcwd() . '/' . parent::getValue();
+
+        if (basename($path) !== '..' && strpos(basename($path), '.')) {
+            return $path;
+        }
+
+        if (!is_dir($path) && !mkdir($path, 0755, true) && !is_dir($path)) {
+            throw new \RuntimeException(sprintf('Directory "%s" was not created', $path));
+        }
+
+        return $path . '/';
     }
 
-    /**
-     * @return string
-     */
-    public function getId(): string
-    {
-        return $this->id;
-    }
 
-    /**
-     * @param string $id
-     */
-    public function setId(string $id): void
-    {
-        $this->id = $id;
-    }
 }
