@@ -19,6 +19,11 @@ class RepositoryManager
 {
 
     /**
+     * @var Exception[]
+     */
+    protected $report = [];
+
+    /**
      * @var ComponentsConfig[]
      */
     protected $components;
@@ -51,9 +56,9 @@ class RepositoryManager
      *
      * @throws \Exception
      */
-    public function handlePing(Package $package, $force = false): void
+    public function handlePing(Package $package): void
     {
-        if (!$force && $this->getPackagesManager()->getPackage($package->getFullName())) {
+        if ($this->getPackagesManager()->getPackage($package->getFullName())) {
             throw new \Exception('The Package ' . $package->getFullName() . ' is allreadly registered. Aborting...');
         }
         $package = $this->fetchPackageVersions($package);
@@ -82,8 +87,8 @@ class RepositoryManager
                         'https://github.com/' . $package->getFullName() . '/archive/v' . $patch . '.tar.gz'
                     )
                 );
-            } catch (\Exception $e) {
-                $e->getMessage();
+            } catch (\Exception $exception) {
+                $this->report[] = $exception;
             }
         }
 
@@ -168,7 +173,7 @@ class RepositoryManager
                 $tarUrl = 'https://github.com/' . $key . '/archive/v' . $version . '.tar.gz';
                 $repoPath = $this->fetchRepo($tarUrl, $repoName = explode('/', $key)[1]);
                 try {
-                    $this->operate($repoPath, $repoName, $minor);
+                    $this->operate($repoPath, $repoName, $minor, null);
                 } catch (ComponentStructureException $exception) {
                     echo $exception->getMessage();
                 }
@@ -199,32 +204,34 @@ class RepositoryManager
      *
      * @throws \Exception
      */
-    public function operateRepo(Package $package)
+    public function operateRepo(Package $package): void
     {
         foreach ($package->getVersions() as $version) {
             $this->rmAll($this->getPaths()['tmp']);
             $repoPath = $this->fetchRepo($version->getTargz(), $package->getName());
-            $this->operate($repoPath, $package->getName(), $version->getMinor());
+            $this->operate($repoPath, $package->getName(), $version->getMinor(), $package);
         }
         $this->dataMenu($this->getPaths()['public'] . 'dist/dataMenu.js');
     }
 
     /**
-     * @param string $repoPath      Could be application-2.0.1
-     * @param string $componentName Could be application
-     * @param string $tag           Could be 2.0
+     * @param string  $repoPath      Could be application-2.0.1
+     * @param string  $componentName Could be application
+     * @param string  $tag           Could be 2.0
+     * @param Package $package
      *
      * @throws ComponentStructureException
-     * @throws \AlgoliaSearch\AlgoliaException
      * @throws \Exception
      */
-    public function operate(string $repoPath, string $componentName, string $tag)
+    public function operate(string $repoPath, string $componentName, string $tag, Package $package)
     {
         if (is_dir($docsPath = $this->getPaths()['tmp'] . $repoPath . '/docs')) {
             $finder = new Finder();
             $finder->files()->in($docsPath)->name('*.md');
             $pathToDoc = $this->getPaths()['doc'] . $componentName . '/' . $tag . '/';
-            $docJson = [];
+
+            //              FOR THE SEARCH RECORDS
+            //            $docJson = [];
 
             $asset = json_decode(file_get_contents($this->getPaths()['public'] . 'dist/manifest.json'), true);
 
@@ -268,9 +275,11 @@ class RepositoryManager
                 if (!($file->getFilename() === 'index.md')) { //TODO Gerer si pas d'index.md ?
                     $niceName = preg_replace('([0-9]*\.)', '', $file->getBasename('.md'), 1);
                     $niceName = str_replace(['-', '_'], ' ', $niceName);
-                    $this->packages[$componentName][$tag][$niceName] = $htmlName;
+                    $package->getVersion($tag)->addDoc([$niceName => $htmlName]);
+                    //                    $this->packages[$componentName][$tag][$niceName] = $htmlName;
                 }
             }
+
             //              FOR THE SEARCH RECORDS
             //            \file_put_contents($pathToDoc . 'doc.json', \json_encode($docJson));
         } else {
@@ -283,14 +292,20 @@ class RepositoryManager
         ]);
         \file_put_contents($this->getPaths()['tmp'] . '/infos.json', $json, JSON_PRETTY_PRINT);
 
-        exec('php ' . $this->getPaths()['public'] . '../sami.phar update -vvv ' . __DIR__ . '/sami-config.php --force',
-            $output, $code);
+        exec(
+            'php ' . $this->getPaths()['public'] . '../sami.phar update -vvv ' . __DIR__ . '/sami-config.php --force',
+            $output,
+            $code
+        );
         //                exec('php ' . $this->getPaths()['public'] . '../sami/sami.php update -v ' . __DIR__ . '/sami-config.php --force', $output, $code);
 
-        if ($code != 0) {
-            throw new \Exception(sprintf('Something went wrong while generating %s (%s)', $componentName,
-                print_r($output, true)));
+        if ($code !== 0) {
+            throw new \Exception(
+                sprintf('Something went wrong while generating %s (%s)', $componentName, print_r($output, true))
+            );
         }
+        $this->getPackagesManager()->save($package);
+
         //              FOR THE SEARCH RECORDS
         //            $algoliaAuths = $this->getAuths()['algolia-louis-cuny'];
         //            $client = new \AlgoliaSearch\Client($algoliaAuths->getClientId(), $algoliaAuths->getClientKey());
@@ -307,60 +322,34 @@ class RepositoryManager
 
     public function dataMenu(string $outputFile): void
     {
-        $docMenu = '<ul>';
-        foreach ($this->packages as $compoName => $package) {
-            $docMenu .= '<li class="opened" ><div class="hd"><i class="fa fa-angle-right fa-lg"></i>';
-            $docMenu .= '<a href="/doc/' . $compoName . '/' . key($package) . '/index.html">' . $compoName . '</a>';
-            $docMenu .= '</div><div class="bd"><ul>';
-            foreach ($package as $minorVersion => $files) {
-                reset($package);
-                $docMenu .= '<li style="padding-left: 20px" class="' . ($minorVersion === key($package) ? 'opened' : 'nojs') . '"><div class="hd"><i class="fas fa-angle-right fa-lg"></i>';
-                $docMenu .= '<a href="/doc/' . $compoName . '/' . $minorVersion . '/index.html">' . $minorVersion . '</a>';
-                $docMenu .= '</div><div class="bd"><ul>';
-                foreach ($files as $nice => $raw) {
-                    $docMenu .= '<li><div class="hb leaf">';
-                    $docMenu .= '<a href="/doc/' . $compoName . '/' . $minorVersion . '/' . $raw . '">' . $nice . '</a>';
-                    $docMenu .= '</div></li>';
-                }
-                $docMenu .= '<li><div class="hb leaf"><a href="/doc/' . $compoName . '/' . $minorVersion . '/api/index.html">API</a></div></li>';
-                $docMenu .= '</ul></div></li>';
-            }
-            $docMenu .= '</ul></div></li>';
-        }
-        $docMenu .= '<ul>';
-        \file_put_contents($this->getPaths()['doc'] . 'doctree.html', $docMenu);
+        //                  FOR NON-JS !!
+        //        $docMenu = '<ul>';
+        //        foreach ($this->packages as $compoName => $package) {
+        //            $docMenu .= '<li class="opened" ><div class="hd"><i class="fa fa-angle-right fa-lg"></i>';
+        //            $docMenu .= '<a href="/doc/' . $compoName . '/' . key($package) . '/index.html">' . $compoName . '</a>';
+        //            $docMenu .= '</div><div class="bd"><ul>';
+        //            foreach ($package as $minorVersion => $files) {
+        //                reset($package);
+        //                $docMenu .= '<li style="padding-left: 20px" class="' . ($minorVersion === key($package) ? 'opened' : 'nojs') . '"><div class="hd"><i class="fas fa-angle-right fa-lg"></i>';
+        //                $docMenu .= '<a href="/doc/' . $compoName . '/' . $minorVersion . '/index.html">' . $minorVersion . '</a>';
+        //                $docMenu .= '</div><div class="bd"><ul>';
+        //                foreach ($files as $nice => $raw) {
+        //                    $docMenu .= '<li><div class="hb leaf">';
+        //                    $docMenu .= '<a href="/doc/' . $compoName . '/' . $minorVersion . '/' . $raw . '">' . $nice . '</a>';
+        //                    $docMenu .= '</div></li>';
+        //                }
+        //                $docMenu .= '<li><div class="hb leaf"><a href="/doc/' . $compoName . '/' . $minorVersion . '/api/index.html">API</a></div></li>';
+        //                $docMenu .= '</ul></div></li>';
+        //            }
+        //            $docMenu .= '</ul></div></li>';
+        //        }
+        //        $docMenu .= '<ul>';
+        //        \file_put_contents($this->getPaths()['doc'] . 'doctree.html', $docMenu);
 
-        $js = 'dataMenu = ' . $json = \json_encode($this->packages, JSON_PRETTY_PRINT);
+        $js = 'dataMenu = ' . \json_encode($this->getPackagesManager()->getDataMenu(), JSON_PRETTY_PRINT); //todo virer flag
         \file_put_contents($outputFile, $js);
-        \file_put_contents($this->getPaths()['app'] . 'data/packages.json', $json);
     }
 
-    public function menuApi(string $path): string
-    {
-        $finder = new Finder();
-        $res = '<ul>';
-        foreach ($finder->in($path)->directories()->depth('== 0') as $element) {
-            $res .= '<li class="nojs">
-                    <div class="hd"><i class="fas fa-angle-right fa-lg"></i>
-                        <a href="link bleu">' . $element->getFilename() . '</a>
-                    </div>
-                    <div class="bd">';
-            $res .= $this->menuApi($element->getPathname());
-            $res .= '</div>
-                </li>';
-        }
-        foreach ($finder->files()->name('*.html') as $element) {
-            $res .= ' <li>
-                    <div class="hd leaf">
-                        <a href="link bleu">' . $element->getFilename() . '</a>
-                    </div>
-                </li>';
-        }
-
-        $res .= '</ul>';
-
-        return $res;
-    }
 
     /**
      * @param string $dir The directory to empty
@@ -485,5 +474,28 @@ class RepositoryManager
         return $this->packagesManager;
     }
 
+    /**
+     * @return Exception[]
+     */
+    public function getReport(): array
+    {
+        return $this->report;
+    }
 
+    /**
+     * @return array
+     */
+    public function getJsonReport(): array
+    {
+        $res = [];
+        foreach ($this->getReport() as $exception) {
+            $res[] = [
+                'message' => $exception->getMessage(),
+                'line'    => $exception->getLine(),
+                'trace'   => $exception->getTraceAsString()
+            ];
+        }
+
+        return $res;
+    }
 }

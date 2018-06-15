@@ -34,21 +34,27 @@ class BuildApiEndpointV1 extends AbstractEndpoint implements InjectionAnnotation
      * @param ServerRequestInterface $request
      *
      * @return bool|void|JsonResponse
+     * @throws \InvalidArgumentException
      */
     public function get(ServerRequestInterface $request)
     {
         if (isset($request->getQueryParams()['whole'])) {
             $this->getRepositoryManager()->fetchWholeTags();
+
             return true;
         }
-//        $this->getIndexManager()->generateAll();
+        //        $this->getIndexManager()->generateAll();
         $this->getRepositoryManager()->operateAll();
+
         return new JsonResponse(['code' => 0, 'status' => 'Ok']);
     }
 
 
     /**
      * @param ServerRequestInterface $request
+     *
+     * @throws \InvalidArgumentException
+     * @throws \RuntimeException
      * @throws \AlgoliaSearch\AlgoliaException
      * @throws \App\Exception\ComponentStructureException
      * @throws \Exception
@@ -56,57 +62,70 @@ class BuildApiEndpointV1 extends AbstractEndpoint implements InjectionAnnotation
     public function post(ServerRequestInterface $request)
     {
         $log = [];
-        if ($hookType = $request->getHeader('x-github-event')[0]) {
-            $body = \json_decode($request->getBody()->getContents());
-            switch ($hookType) {
-                case 'ping':
-                    if ($this->pingValidation($body)) {
-                        $package = new Package(
-                            $body->repository->name,
-                            $body->repository->full_name,
-                            array_key_exists('min-version', $request->getQueryParams()) ? $request->getQueryParams()['min-version'] : '0'
-                        );//Si on suit deja le package, return false SINON Generer et tout ILU
-                        $this->getRepositoryManager()->handlePing($package, true); //TODO virer force
-//                        $this->getRepositoryManager()->fetchTags($package);
-//                        $this->getRepositoryManager()->operateRepo($package);
-
-                        die();
-//                        print_r($package);
-                        //Add to packages
-                        //$this->getRepositoryManager()->OperatePackage($package);
-                    } else {
-                        throw new \Exception('Hook badly configurate !');
-                    }
-                    //  $this->getRepositoryManager()->
-                    break;
-                case 'create':
-                    $body = \json_decode($request->getBody()->getContents());
-                    if ($body->ref_type === 'tag') {
-                        $tarUrl = 'https://github.com/' . $body->repository->full_name . '/archive/' . $body->ref . '.tar.gz';
-                        $log[$body->repository->name] = [];
-                        if ($repoPath = $this->getRepositoryManager()->fetchRepo($tarUrl, $body->repository->name, ltrim($body->ref, 'v'))) {
-                            \preg_match("/(.*\..*)\./", \ltrim($body->ref, 'v'), $matches);
-                            $log[$body->repository->name][] = $matches[1];
-                            $this->getRepositoryManager()->operate($repoPath, $body->repository->name, $matches[1]);
-                            $this->getRepositoryManager()->dataMenu();
-                            return new JsonResponse(['code' => 0, 'status' => 'Ok', 'log' => $log]);
-                        }
-                        throw new \Exception('Unable to fetch targz file or to decompress it');
-                    }
-                    throw new \Exception('Not a tag');
-                    break;
-                case 'push':
-                    break;
-                default:
-                    throw new \Exception('Bad hook type');
-                    break;
-            }
+        if (!$hookType = $request->getHeader('x-github-event')[0]) {
+            throw new \Exception('This request doesnt came from github');
         }
-        throw new \Exception('This request doesnt came from github');
+        $body = \json_decode($request->getBody()->getContents());
+        switch ($hookType) {
+            case 'ping':
+                if ($this->pingValidation($body)) {
+                    $package = new Package(
+                        $body->repository->name,
+                        $body->repository->full_name,
+                        array_key_exists('min-version',
+                            $request->getQueryParams()) ? $request->getQueryParams()['min-version'] : '0'
+                    );
+                    //Si on suit deja le package, return false SINON Generer et tout ILU
+                    $this->getRepositoryManager()->handlePing($package); //TODO virer force
+                    //                        $this->getRepositoryManager()->fetchTags($package);
+                    //                        $this->getRepositoryManager()->operateRepo($package);
+
+                    //                        print_r($package);
+                    //Add to packages
+                    //$this->getRepositoryManager()->OperatePackage($package);
+                } else {
+                    throw new \UnvalideHookException('Hook badly configurate !');
+                }
+                //  $this->getRepositoryManager()->
+                break;
+            case 'create':
+                $body = \json_decode($request->getBody()->getContents());
+                if (!$body->ref_type === 'tag') {
+                    throw new \UnvalideHookException('The hook isnt a tag hook');
+                }
+
+                $tarUrl = 'https://github.com/' . $body->repository->full_name . '/archive/' . $body->ref . '.tar.gz';
+                $log[$body->repository->name] = [];
+                if ($repoPath = $this->getRepositoryManager()
+                    ->fetchRepo($tarUrl, $body->repository->name, ltrim($body->ref, 'v'))) {
+                    \preg_match("/(.*\..*)\./", \ltrim($body->ref, 'v'), $matches);
+                    $log[$body->repository->name][] = $matches[1];
+                    $this->getRepositoryManager()->operate($repoPath, $body->repository->name, $matches[1]);
+                    $this->getRepositoryManager()->dataMenu();
+
+                    return new JsonResponse(['code' => 0, 'status' => 'Ok', 'log' => $log]);
+                } else {
+                    throw new \Exception('Unable to fetch targz file or to decompress it');
+                }
+                break;
+            case 'push':
+                break;
+            default:
+                throw new \Exception('Bad hook type');
+                break;
+        }
+
+        return new JsonResponse([
+            'code'       => 0,
+            'status'     => 'Ok',
+            'log'        => $log,
+            'exceptions' => $this->getRepositoryManager()->getJsonReport()
+        ]);
     }
 
     /**
      * @param $body
+     *
      * @return bool
      */
     public function pingValidation($body): bool
@@ -125,6 +144,7 @@ class BuildApiEndpointV1 extends AbstractEndpoint implements InjectionAnnotation
         ) {
             return true;
         }
+
         return false;
     }
 
@@ -138,11 +158,13 @@ class BuildApiEndpointV1 extends AbstractEndpoint implements InjectionAnnotation
 
     /**
      * @param RepositoryManager $repositoryManager
+     *
      * @return BuildApiEndpointV1
      */
     public function setRepositoryManager(RepositoryManager $repositoryManager): BuildApiEndpointV1
     {
         $this->repositoryManager = $repositoryManager;
+
         return $this;
     }
 
@@ -156,11 +178,13 @@ class BuildApiEndpointV1 extends AbstractEndpoint implements InjectionAnnotation
 
     /**
      * @param IndexManager $indexManager
+     *
      * @return BuildApiEndpointV1
      */
     public function setIndexManager(IndexManager $indexManager): BuildApiEndpointV1
     {
         $this->indexManager = $indexManager;
+
         return $this;
     }
 

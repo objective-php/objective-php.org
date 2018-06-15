@@ -2,6 +2,8 @@
 
 namespace App\Model;
 
+use LogicException;
+
 class Package implements \JsonSerializable
 {
 
@@ -134,12 +136,12 @@ class Package implements \JsonSerializable
      * @param Version $version
      *
      * @return Package
-     * @throws \LogicException
+     * @throws LogicException
      */
     public function addVersion(Version $version): Package
     {
         if (version_compare($version->getPatch(), $this->getMinVersion(), '<')) {
-            throw new \LogicException(sprintf(
+            throw new LogicException(sprintf(
                 'You are trying to add the patch %s but the mininmum available version for documentation is %s',
                 $version->getPatch(),
                 $this->getMinVersion()
@@ -148,7 +150,7 @@ class Package implements \JsonSerializable
 
         if ($oldVersion = $this->getVersion($version->getMinor())) {
             if (!version_compare($version->getPatch(), $oldVersion->getPatch(), '>=')) {
-                throw new \LogicException('There is already a superior patch');
+                throw new LogicException('There is already a superior patch');
             }
             $this->removeVersion($oldVersion);
         }

@@ -30,7 +30,7 @@ class PackagesManager
         foreach ($packages as $package) {
             $this->addPackage($package);
         }
-        $json = \json_encode($this->packages);
+        $json = \json_encode($this->packages, JSON_UNESCAPED_SLASHES);
         \file_put_contents($this->packagesPath, $json);
 
         return $this;
@@ -98,5 +98,16 @@ class PackagesManager
         return null;
     }
 
+
+    public function getDataMenu(): array
+    {
+        $res = [];
+        foreach ($this->getPackages() as $package) {
+            foreach ($package->getVersions() as $version) {
+                $res[$package->getName()] = [$version->getMinor() => $version->getDocs()];
+            }
+        }
+        return $res;
+    }
 
 }

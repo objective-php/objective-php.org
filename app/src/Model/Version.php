@@ -122,13 +122,17 @@ class Version implements \JsonSerializable
     }
 
     /**
-     * @param mixed $doc
+     * @param array $docs
      *
      * @return Version
      */
-    public function addDoc($doc): Version
+    public function addDoc(...$docs): Version
     {
-        $this->docs[] = $doc;
+        foreach ($docs as $doc) {
+            foreach ($doc as $nice => $html) {
+                $this->docs[$nice] = $html;
+            }
+        }
 
         return $this;
     }
@@ -159,7 +163,7 @@ class Version implements \JsonSerializable
     {
         return [
             'minor' => $this->minor,
-            'full'  => $this->patch,
+            'patch'  => $this->patch,
             'targz' => $this->targz,
             'docs'  => $this->docs
         ];
