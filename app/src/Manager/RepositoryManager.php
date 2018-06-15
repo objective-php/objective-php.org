@@ -52,8 +52,6 @@ class RepositoryManager
     /**
      * @param Package $package
      *
-     * @param bool    $force
-     *
      * @throws \Exception
      */
     public function handlePing(Package $package): void
@@ -63,7 +61,22 @@ class RepositoryManager
         }
         $package = $this->fetchPackageVersions($package);
         $this->operateRepo($package);
-        $this->getPackagesManager()->save($package);
+    }
+
+    /**
+     * @param Package $package
+     * @param         $patch
+     *
+     * @throws \Exception
+     */
+    public function handleCreate(Package $package, $patch): void
+    {
+        //        $package = $this->fetchPackageVersion($package, $patch);
+        $this->addPackageVersion($package, $patch);
+        $version = $package->getVersion($patch);
+        $repoPath = $this->fetchRepo($version->getTargz(), $package->getName());
+        $this->operate($repoPath, $version->getMinor(), $package);
+        $this->dataMenu($this->getPaths()['public'] . 'dist/dataMenu.js');
     }
 
 
@@ -77,16 +90,9 @@ class RepositoryManager
     {
         $tags = \GuzzleHttp\json_decode($this->getClientsManager()->getGithubClient()->get('/repos/' . $package->getFullName() . '/git/refs/tags')->getBody()->getContents());
         foreach ($tags as $tag) {
+            $patch = ltrim(str_replace('refs/tags/', '', $tag->ref), 'v');
             try {
-                $patch = ltrim(str_replace('refs/tags/', '', $tag->ref), 'v');
-                preg_match("/(.*\..*)\./", $patch, $matches);
-                $package->addVersion(
-                    new Version(
-                        $matches[1],
-                        $patch,
-                        'https://github.com/' . $package->getFullName() . '/archive/v' . $patch . '.tar.gz'
-                    )
-                );
+                $this->addPackageVersion($package, $patch);
             } catch (\Exception $exception) {
                 $this->report[] = $exception;
             }
@@ -95,72 +101,20 @@ class RepositoryManager
         return $package;
     }
 
-
     /**
-     * @return array
+     * @param Package $package
+     * @param         $patch
      */
-    public function fetchTags(): array
+    public function addPackageVersion(Package $package, $patch): void
     {
-        $res = [];
-        foreach ($this->components as $key => $package) {
-            if ($package->getHost() === 'github') {
-                $versions = [];
-                $tags = \GuzzleHttp\json_decode($this->getClientsManager()->getGithubClient()->get('/repos/' . $key . '/git/refs/tags')->getBody()->getContents());
-                foreach ($tags as $tag) {
-                    // x.x.x
-                    $v = ltrim(str_replace('refs/tags/', '', $tag->ref), 'v');
-                    //On verifie que le tag est superieur a la minVersion et que ce n'est pas une version dev,alpha, etc
-                    if (!preg_match('/[a-z]/i', $v)
-                        && version_compare($v, $this->components[$key]->getMinVersion(), '>=')) {
-                        preg_match("/(.*\..*)\./", $v, $o);
-                        $versions[$o[1]] = $v;
-                    }
-                }
-                $res[$key] = $versions;
-            }
-            krsort($res[$key]);
-        }
-
-        return $res;
-    }
-
-    /**
-     * @return array
-     */
-    public function fetchWholeTags(): array
-    {
-        $repos = \GuzzleHttp\json_decode($this->getClientsManager()->get->get('users/louis-cuny/repos')->getBody()->getContents());
-        $repoList = [];
-        foreach ($repos as $repo) {
-            $tags = \GuzzleHttp\json_decode($this->githubClient->get($repo->url)->getBody()->getContents());
-
-            print_r($tags);
-            echo '</pre>';
-        }
-
-        $res = [];
-        foreach ($this->components as $key => $package) {
-            if ($package->getHost() === 'github') {
-                $versions = [];
-                // $githubAuths = $this->getAuths()['github-' . explode('/', $key)[0]];
-                $tags = \GuzzleHttp\json_decode($this->githubClient->get('https://api.github.com/repos/' . $key . '/git/refs/tags')->getBody()->getContents());
-                foreach ($tags as $tag) {
-                    // x.x.x
-                    $v = ltrim(str_replace('refs/tags/', '', $tag->ref), 'v');
-
-                    //On verifie que le tag est superieur a la minVersion et que ce n'est pas une version dev,alpha, etc
-                    if (!preg_match('/[a-z]/i', $v)
-                        && version_compare($v, $this->components[$key]->getMinVersion(), '>=')) {
-                        preg_match("/(.*\..*)\./", $v, $o);
-                        $versions[$o[1]] = $v;
-                    }
-                }
-                $res[$key] = $versions;
-            }
-            krsort($res[$key]);
-        }
-
-        return $res;
+        preg_match("/(.*\..*)\./", $patch, $matches);
+        $package->addVersion(
+            new Version(
+                $matches[1],
+                $patch,
+                'https://github.com/' . $package->getFullName() . '/archive/v' . $patch . '.tar.gz'
+            )
+        );
     }
 
     //only works for github repos
@@ -173,7 +127,7 @@ class RepositoryManager
                 $tarUrl = 'https://github.com/' . $key . '/archive/v' . $version . '.tar.gz';
                 $repoPath = $this->fetchRepo($tarUrl, $repoName = explode('/', $key)[1]);
                 try {
-                    $this->operate($repoPath, $repoName, $minor, null);
+                    //       $this->operate($repoPath, $repoName, $minor, null);
                 } catch (ComponentStructureException $exception) {
                     echo $exception->getMessage();
                 }
@@ -209,26 +163,30 @@ class RepositoryManager
         foreach ($package->getVersions() as $version) {
             $this->rmAll($this->getPaths()['tmp']);
             $repoPath = $this->fetchRepo($version->getTargz(), $package->getName());
-            $this->operate($repoPath, $package->getName(), $version->getMinor(), $package);
+            $this->operate($repoPath, $version->getMinor(), $package);
         }
         $this->dataMenu($this->getPaths()['public'] . 'dist/dataMenu.js');
     }
 
     /**
-     * @param string  $repoPath      Could be application-2.0.1
-     * @param string  $componentName Could be application
-     * @param string  $tag           Could be 2.0
+     * Function Operate
+     *
+     * This method is the heart of the app, it generate the documentation relative to a version of a package
+     *
+     * @param string  $repoPath Could be application-2.0.1
+     * @param string  $tag      Could be 2.0
      * @param Package $package
      *
+     * @throws \RuntimeException
      * @throws ComponentStructureException
      * @throws \Exception
      */
-    public function operate(string $repoPath, string $componentName, string $tag, Package $package)
+    protected function operate(string $repoPath, string $tag, Package $package)
     {
         if (is_dir($docsPath = $this->getPaths()['tmp'] . $repoPath . '/docs')) {
             $finder = new Finder();
             $finder->files()->in($docsPath)->name('*.md');
-            $pathToDoc = $this->getPaths()['doc'] . $componentName . '/' . $tag . '/';
+            $pathToDoc = $this->getPaths()['doc'] . $package->getName() . '/' . $tag . '/';
 
             //              FOR THE SEARCH RECORDS
             //            $docJson = [];
@@ -247,12 +205,12 @@ class RepositoryManager
                 $contents = '<div class="markdown-body">' . $converter->convertToHtml($file->getContents()) . '</div>';
                 //              FOR THE SEARCH RECORDS
                 //                $docJson[] = [
-                //                    'name'                  => ucwords($componentName . ' ' . $tag . ' ' . $file->getBasename('.md')),
-                //                    'link'                  => '/doc/' . $componentName . '/' . $tag . '/' . $htmlName,
+                //                    'name'                  => ucwords($package->getName( . ' ' . $tag . ' ' . $file->getBasename('.md')),
+                //                    'link'                  => '/doc/' . $package->getName( . '/' . $tag . '/' . $htmlName,
                 //                    'version'               => $tag,
-                //                    'component'             => $componentName,
+                //                    'component'             => $package->getName(,
                 //                    'content'               => $contents,
-                //                    'hierarchical_versions' => ['lvl0' => $componentName, 'lvl1' => $componentName . '>' . $tag]
+                //                    'hierarchical_versions' => ['lvl0' => $package->getName(, 'lvl1' => $package->getName( . '>' . $tag]
                 //                ];
                 $content = file_get_contents($this->getPaths()['base.twig']);
                 $content = str_replace([
@@ -264,9 +222,9 @@ class RepositoryManager
                     '{{ app }}'
                 ], [
                     $contents,
-                    ucfirst($componentName) . ' - ' . $tag . ' | Objective PHP Documentation',
+                    ucfirst($package->getName()) . ' - ' . $tag . ' | Objective PHP Documentation',
                     $tag,
-                    ucfirst($componentName),
+                    ucfirst($package->getName()),
                     $asset['theme.css'],
                     $asset['app.js']
                 ], $content);
@@ -276,18 +234,17 @@ class RepositoryManager
                     $niceName = preg_replace('([0-9]*\.)', '', $file->getBasename('.md'), 1);
                     $niceName = str_replace(['-', '_'], ' ', $niceName);
                     $package->getVersion($tag)->addDoc([$niceName => $htmlName]);
-                    //                    $this->packages[$componentName][$tag][$niceName] = $htmlName;
                 }
             }
 
             //              FOR THE SEARCH RECORDS
             //            \file_put_contents($pathToDoc . 'doc.json', \json_encode($docJson));
         } else {
-            throw new ComponentStructureException('No docs folder in ' . $componentName . "\n");
+            throw new ComponentStructureException('No docs folder in ' . $package->getName() . "\n");
         }
         $json = \json_encode([
             'repoPath'  => $repoPath,
-            'compoName' => $componentName,
+            'compoName' => $package->getName(),
             'version'   => $tag
         ]);
         \file_put_contents($this->getPaths()['tmp'] . '/infos.json', $json, JSON_PRETTY_PRINT);
@@ -301,7 +258,7 @@ class RepositoryManager
 
         if ($code !== 0) {
             throw new \Exception(
-                sprintf('Something went wrong while generating %s (%s)', $componentName, print_r($output, true))
+                sprintf('Something went wrong while generating %s (%s)', $package->getName(), print_r($output, true))
             );
         }
         $this->getPackagesManager()->save($package);
@@ -346,7 +303,8 @@ class RepositoryManager
         //        $docMenu .= '<ul>';
         //        \file_put_contents($this->getPaths()['doc'] . 'doctree.html', $docMenu);
 
-        $js = 'dataMenu = ' . \json_encode($this->getPackagesManager()->getDataMenu(), JSON_PRETTY_PRINT); //todo virer flag
+        $js = 'dataMenu = ' . \json_encode($this->getPackagesManager()->getDataMenu(),
+                JSON_PRETTY_PRINT); //todo virer flag
         \file_put_contents($outputFile, $js);
     }
 
@@ -354,7 +312,7 @@ class RepositoryManager
     /**
      * @param string $dir The directory to empty
      */
-    public function rmAll(string $dir): void
+    protected function rmAll(string $dir): void
     {
         if (is_dir($dir)) {
             $objects = scandir($dir, SCANDIR_SORT_NONE);

@@ -68,45 +68,25 @@ class BuildApiEndpointV1 extends AbstractEndpoint implements InjectionAnnotation
         $body = \json_decode($request->getBody()->getContents());
         switch ($hookType) {
             case 'ping':
-                if ($this->pingValidation($body)) {
-                    $package = new Package(
-                        $body->repository->name,
-                        $body->repository->full_name,
-                        array_key_exists('min-version',
-                            $request->getQueryParams()) ? $request->getQueryParams()['min-version'] : '0'
-                    );
-                    //Si on suit deja le package, return false SINON Generer et tout ILU
-                    $this->getRepositoryManager()->handlePing($package); //TODO virer force
-                    //                        $this->getRepositoryManager()->fetchTags($package);
-                    //                        $this->getRepositoryManager()->operateRepo($package);
-
-                    //                        print_r($package);
-                    //Add to packages
-                    //$this->getRepositoryManager()->OperatePackage($package);
-                } else {
+                if (!$this->pingValidation($body)) {
                     throw new \UnvalideHookException('Hook badly configurate !');
                 }
-                //  $this->getRepositoryManager()->
+                $package = new Package(
+                    $body->repository->name,
+                    $body->repository->full_name,
+                    array_key_exists(
+                        'min-version',
+                        $request->getQueryParams()
+                    ) ? $request->getQueryParams()['min-version'] : '0'
+                );
+                $this->getRepositoryManager()->handlePing($package);
+
                 break;
             case 'create':
-                $body = \json_decode($request->getBody()->getContents());
-                if (!$body->ref_type === 'tag') {
-                    throw new \UnvalideHookException('The hook isnt a tag hook');
+                if (!$package = $this->createValidation($body)) {
+                    throw new \UnvalideHookException('The hook isnt a tag hook or the package is not register');
                 }
-
-                $tarUrl = 'https://github.com/' . $body->repository->full_name . '/archive/' . $body->ref . '.tar.gz';
-                $log[$body->repository->name] = [];
-                if ($repoPath = $this->getRepositoryManager()
-                    ->fetchRepo($tarUrl, $body->repository->name, ltrim($body->ref, 'v'))) {
-                    \preg_match("/(.*\..*)\./", \ltrim($body->ref, 'v'), $matches);
-                    $log[$body->repository->name][] = $matches[1];
-                    $this->getRepositoryManager()->operate($repoPath, $body->repository->name, $matches[1]);
-                    $this->getRepositoryManager()->dataMenu();
-
-                    return new JsonResponse(['code' => 0, 'status' => 'Ok', 'log' => $log]);
-                } else {
-                    throw new \Exception('Unable to fetch targz file or to decompress it');
-                }
+                $this->getRepositoryManager()->handleCreate($package, ltrim($body->ref, 'v'));
                 break;
             case 'push':
                 break;
@@ -121,6 +101,18 @@ class BuildApiEndpointV1 extends AbstractEndpoint implements InjectionAnnotation
             'log'        => $log,
             'exceptions' => $this->getRepositoryManager()->getJsonReport()
         ]);
+    }
+
+    public function createValidation($body): ?Package
+    {
+        if ($body->ref_type === 'tag' &&
+            strpos($body->ref, 'v') === 0 &&
+            $package = $this->getRepositoryManager()->getPackagesManager()->getPackage($body->repository->full_name)
+        ) {
+            return $package;
+        }
+
+        return null;
     }
 
     /**
@@ -181,12 +173,11 @@ class BuildApiEndpointV1 extends AbstractEndpoint implements InjectionAnnotation
      *
      * @return BuildApiEndpointV1
      */
-    public function setIndexManager(IndexManager $indexManager): BuildApiEndpointV1
-    {
+    public function setIndexManager(
+        IndexManager $indexManager
+    ): BuildApiEndpointV1 {
         $this->indexManager = $indexManager;
 
         return $this;
     }
-
-
 }

@@ -1,1 +1,21 @@
-[{"name":"application","fullName":"louis-cuny/application","minVersion":"2.0","versions":[{"minor":"2.0","patch":"2.0.2","targz":"https://github.com/louis-cuny/application/archive/v2.0.2.tar.gz","docs":{"quick start":"01.quick-start.html","detailed usage":"02.detailed-usage.html","config directives":"03.config-directives.html","api doc":"04.api-doc.html","faq":"05.faq.html"}}]},{"name":"application","fullName":"louis-cuny/application","minVersion":"2.0","versions":[{"minor":"2.0","patch":"2.0.2","targz":"https://github.com/louis-cuny/application/archive/v2.0.2.tar.gz","docs":{"quick start":"01.quick-start.html","detailed usage":"02.detailed-usage.html","config directives":"03.config-directives.html","api doc":"04.api-doc.html","faq":"05.faq.html"}}]}]
+[
+    {
+        "name": "application",
+        "fullName": "louis-cuny/application",
+        "minVersion": "2.0",
+        "versions": [
+            {
+                "minor": "2.0",
+                "patch": "2.0.2",
+                "targz": "https://github.com/louis-cuny/application/archive/v2.0.2.tar.gz",
+                "docs": {
+                    "quick start": "01.quick-start.html",
+                    "detailed usage": "02.detailed-usage.html",
+                    "config directives": "03.config-directives.html",
+                    "api doc": "04.api-doc.html",
+                    "faq": "05.faq.html"
+                }
+            }
+        ]
+    }
+]

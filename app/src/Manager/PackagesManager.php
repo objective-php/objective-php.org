@@ -107,6 +107,7 @@ class PackagesManager
                 $res[$package->getName()] = [$version->getMinor() => $version->getDocs()];
             }
         }
+
         return $res;
     }
 
