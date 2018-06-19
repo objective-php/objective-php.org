@@ -125,7 +125,7 @@ class Package implements \JsonSerializable
      *
      * @return Package
      */
-    protected function setVersions($versions): Package
+    public function setVersions(array $versions): Package
     {
         $this->versions = $versions;
 
@@ -154,9 +154,7 @@ class Package implements \JsonSerializable
             }
             $this->removeVersion($oldVersion);
         }
-        $versions = $this->getVersions();
-        $versions[] = $version;
-        $this->setVersions($versions);
+        $this->versions[] = $version;
 
         return $this;
     }
@@ -166,9 +164,8 @@ class Package implements \JsonSerializable
      *
      * @return Package
      */
-    public function removeVersion(
-        Version $version
-    ): Package {
+    public function removeVersion(Version $version): Package
+    {
         if (false !== $key = array_search($version, $this->versions, true)) {
             array_splice($this->versions, $key, 1);
         }
@@ -185,22 +182,21 @@ class Package implements \JsonSerializable
         //        print_r($this->getVersions());
         //        echo '</pre>';
 
-        $versions = $this->getVersions();
+//        $versions = $this->getVersions();
+//
+//        usort($versions, function ($a, $b) {
+//            if ($a->getMinor() > $b->getMinor()) {
+//                return true;
+//            }
+//
+//            return false;
+//        });
 
-        usort($versions, function ($a, $b) {
-            if ($a->getMinor() > $b->getMinor()) {
-                return true;
-            }
-
-            return false;
-        });
-
-        $this->setVersions($versions);
+//        $this->setVersions($versions);
 
         //        echo '<pre>';
         //        print_r($this->getVersions());
         //        echo '</pre>';
-        die();
 
         return $this;
     }

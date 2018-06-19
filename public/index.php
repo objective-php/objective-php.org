@@ -2,12 +2,12 @@
 
 use App\Application;
 
-    $autoloader = require '../vendor/autoload.php';
+$autoloader = require '../vendor/autoload.php';
 
-    chdir(dirname(__DIR__));
+chdir(dirname(__DIR__));
 
-    $app = new Application($autoloader);
+$app = new Application($autoloader);
 
-    $app->setEnv(getenv('APPLICATION_ENV') ?: 'production');
+$app->setEnv(getenv('APPLICATION_ENV') ?: 'production');
 
-    $app->run();
+$app->run();

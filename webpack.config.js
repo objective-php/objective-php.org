@@ -9,7 +9,6 @@ const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const extractSass = new ExtractTextPlugin({
     filename: dev ? '[name].css' : '[name].[chunkhash:8].css'
 });
-
 let cssLoaders = [
     {
         loader: 'css-loader',

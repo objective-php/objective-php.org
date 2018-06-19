@@ -2,8 +2,29 @@ import 'bootstrap';
 import 'lodash';
 
 $(function () {
+
+    let docfiles = (compoName, minor) => {
+        let menuEl = `<div class="hd"><i class="fa fa-angle-right fa-lg"></i>`
+        menuEl += `<a href="/doc/${compoName}/${minor}/index.html">${compoName}</a>`
+        menuEl += '</div>'
+        menuEl += '<div class="bd"><ul>'
+        $.each(dataMenu[compoName][minor], (nice, raw) => {
+            menuEl += '<li><div class="hb leaf">'
+            menuEl += `<a href="/doc/${compoName}/${minor}/${raw}">${nice}</a>`
+            menuEl += '</div></li>'
+        })
+        menuEl += `<li><div class="hb leaf"><a href="/doc/${compoName}/${minor}/api/index.html">API</a></div></li>`;
+        menuEl += '</ul></div>'
+        return menuEl
+    }
+
     let $apitree = $('#api-tree');
     if ($apitree.length) {
+
+        if (!util.readCookie('md5Hash') || util.readCookie('md5Hash') != md5Hash) {
+            util.eraseCookie('theMenu')
+            util.createCookie('md5Hash', md5Hash)
+        }
         $("a[href*=\\#]:not([href=\\#])").click(function () {
             if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '')
                 || location.hostname == this.hostname) {
@@ -19,45 +40,40 @@ $(function () {
             currentCompo = window.location.pathname.split('/')[2]
         }
 
-        //On choisit les versions des composants
-        let docMenuInfos = {}
-        if (util.readCookie('docMenuInfos')) {
-            docMenuInfos = JSON.parse(util.readCookie('docMenuInfos'))
+        let theMenu = ''
+        if (util.readCookie('theMenu')) {
+            theMenu = JSON.parse(util.readCookie('theMenu'))
         } else {
-            $.each(dataMenu, (compoName, minorVersions) =>
-                docMenuInfos[compoName] = Object.keys(minorVersions).reduce((a, b) => a > b ? a : b)
-            );
-            util.createCookie('docMenuInfos', JSON.stringify(docMenuInfos))
+            theMenu = '<ul>'
+            $.each(dataMenu, (compoName, minorVersion) => {
+
+                let versions = {}
+                Object.keys(minorVersion).sort((a, b) => {
+                    return b - a;
+                }).forEach(function (key) {
+                    versions[key] = minorVersion[key];
+                });
+                let minor = Object.keys(versions)[0]
+                theMenu += `<li class="menu-${compoName}" >`
+                theMenu += docfiles(compoName, minor)
+                theMenu += '</li>'
+            })
+            theMenu += '<ul>'
+            util.createCookie('theMenu', JSON.stringify(theMenu))
         }
 
-        //On construit l'html du menu
-        let docMenu = '<ul>'
-        $.each(docMenuInfos, (compoName, minorVersion) => {
-            docMenu += `<li class="menu-${compoName}" ><div class="hd"><i class="fa fa-angle-right fa-lg"></i>`
-            docMenu += `<a href="/doc/${compoName}/${minorVersion}/index.html">${compoName}</a>`
-            docMenu += '</div><div class="bd"><ul>'
-            $.each(dataMenu[compoName][minorVersion], (nice, raw) => {
-                docMenu += '<li><div class="hb leaf">'
-                docMenu += `<a href="/doc/${compoName}/${minorVersion}/${raw}">${nice}</a>`
-                docMenu += '</div></li>'
-            })
-            docMenu += `<li><div class="hb leaf"><a href="/doc/${compoName}/${minorVersion}/api/index.html">API</a></div></li>`;
-            docMenu += '</ul></div></li>'
+
+        $('#api-tree').html(theMenu)
+
+        let menuToCookie = () => {
+            util.createCookie('theMenu', JSON.stringify($('#api-tree').html()))
+        }
+
+        $('#api-tree .hd i').click(function () {
+            $(this).parent().parent().toggleClass('opened');
+            menuToCookie()
         })
-        docMenu += '<ul>'
 
-        $('#api-tree').html(docMenu)
-
-        $('#api-tree .hd i')
-            .click(function () {
-                let $li = $(this).parent().parent().toggleClass('opened');
-                util.createCookie($(this).next().text(), $li.attr('class'));
-            })
-            .each(function (index, element) {
-                let $li = $(element).parent().parent().removeClass('opened')
-                if (util.readCookie($(element).next().text()) && util.readCookie($(element).next().text()).includes('opened'))
-                    $li.addClass('opened')
-            });
 
         if (currentCompo) {
             //On construit le dropdown des versions
@@ -65,15 +81,24 @@ $(function () {
                 '            </button>\n' +
                 '            <div id="version-options" class="dropdown-menu">\n' +
                 '            </div>')
-            $('#version-select').html(docMenuInfos[currentCompo])
-            $.each(dataMenu[currentCompo], (minorVersion, val) =>
-                $('#version-options')
-                    .append(`<a class="dropdown-item" href="/doc/${currentCompo}/${minorVersion}/${Object.values(val).includes(window.location.pathname.split('/')[4]) ? window.location.pathname.split('/')[4] : 'index.html'}">${minorVersion}</a>`)
-                    .children().last().click(() => {
-                    docMenuInfos[currentCompo] = minorVersion
-                    util.createCookie('docMenuInfos', JSON.stringify(docMenuInfos))
-                })
+            $('#version-select').html(window.location.pathname.split('/')[3])
+            let versions = {}
+            Object.keys(dataMenu[currentCompo]).sort((a, b) => {
+                return b - a;
+            }).forEach(function (key) {
+                versions[key] = dataMenu[currentCompo][key];
+            });
+            $.each(versions, (minorVersion, val) => {
+                    let random = Math.random().toString(36).substr(2, 16);
+                    $('#version-options')
+                        .append(`<a id="option-${currentCompo}-${random}" class="dropdown-item" href="/doc/${currentCompo}/${minorVersion}/${Object.values(val).includes(window.location.pathname.split('/')[4]) ? window.location.pathname.split('/')[4] : 'index.html'}">${minorVersion}</a>`)
+                    $(`#option-${currentCompo}-${random}`).on('click', {currentCompo, minorVersion}, function () {
+                        $(`li.menu-${currentCompo}`).html(docfiles(currentCompo, minorVersion))
+                        menuToCookie()
+                    });
+                }
             )
+
             //Place en premier le menu-composant qui est consulte
             $('#api-tree > ul').prepend($(`.menu-${currentCompo}`).removeClass('opened').addClass('opened'))
         }

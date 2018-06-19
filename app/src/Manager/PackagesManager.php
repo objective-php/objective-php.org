@@ -63,6 +63,7 @@ class PackagesManager
      */
     public function addPackage(Package $package): PackagesManager
     {
+        $this->removePackage($package);
         $this->packages[] = $package;
 
         return $this;
@@ -73,13 +74,15 @@ class PackagesManager
      *
      * @return PackagesManager
      */
-    public function removePackage(Package $package): ?PackagesManager
+    public function removePackage(Package $package): ?Package
     {
         if (false !== $key = array_search($package, $this->packages, true)) {
             array_splice($this->packages, $key, 1);
 
-            return $this;
+            return $package;
         }
+
+        return null;
     }
 
     /**
@@ -104,11 +107,10 @@ class PackagesManager
         $res = [];
         foreach ($this->getPackages() as $package) {
             foreach ($package->getVersions() as $version) {
-                $res[$package->getName()] = [$version->getMinor() => $version->getDocs()];
+                $res[$package->getName()][$version->getMinor()] = $version->getDocs();
             }
         }
 
         return $res;
     }
-
 }

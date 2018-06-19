@@ -9,6 +9,7 @@ use ObjectivePHP\Middleware\Action\RestAction\AbstractEndpoint;
 use ObjectivePHP\ServicesFactory\Annotation\Inject;
 use ObjectivePHP\ServicesFactory\Specification\InjectionAnnotationProvider;
 use Psr\Http\Message\ServerRequestInterface;
+use UnvalideHookException;
 use Zend\Diactoros\Response\JsonResponse;
 
 /**
@@ -53,10 +54,7 @@ class BuildApiEndpointV1 extends AbstractEndpoint implements InjectionAnnotation
     /**
      * @param ServerRequestInterface $request
      *
-     * @throws \InvalidArgumentException
-     * @throws \RuntimeException
-     * @throws \AlgoliaSearch\AlgoliaException
-     * @throws \App\Exception\ComponentStructureException
+     * @return JsonResponse
      * @throws \Exception
      */
     public function post(ServerRequestInterface $request)
@@ -69,7 +67,7 @@ class BuildApiEndpointV1 extends AbstractEndpoint implements InjectionAnnotation
         switch ($hookType) {
             case 'ping':
                 if (!$this->pingValidation($body)) {
-                    throw new \UnvalideHookException('Hook badly configurate !');
+                    throw new UnvalideHookException('Hook badly configurate !');
                 }
                 $package = new Package(
                     $body->repository->name,
@@ -79,12 +77,13 @@ class BuildApiEndpointV1 extends AbstractEndpoint implements InjectionAnnotation
                         $request->getQueryParams()
                     ) ? $request->getQueryParams()['min-version'] : '0'
                 );
+
                 $this->getRepositoryManager()->handlePing($package);
 
                 break;
             case 'create':
                 if (!$package = $this->createValidation($body)) {
-                    throw new \UnvalideHookException('The hook isnt a tag hook or the package is not register');
+                    throw new UnvalideHookException('The hook isnt a tag hook or the package is not register');
                 }
                 $this->getRepositoryManager()->handleCreate($package, ltrim($body->ref, 'v'));
                 break;

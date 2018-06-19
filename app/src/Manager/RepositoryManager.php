@@ -60,7 +60,12 @@ class RepositoryManager
             throw new \Exception('The Package ' . $package->getFullName() . ' is allreadly registered. Aborting...');
         }
         $package = $this->fetchPackageVersions($package);
-        $this->operateRepo($package);
+        foreach ($package->getVersions() as $version) {
+            $repoPath = $this->fetchRepo($version->getTargz(), $package->getName());
+            $this->operate($repoPath, $version->getMinor(), $package);
+        }
+        $this->getPackagesManager()->save($package);
+        $this->dataMenu($this->getPaths()['public'] . 'dist/dataMenu.js');
     }
 
     /**
@@ -72,10 +77,11 @@ class RepositoryManager
     public function handleCreate(Package $package, $patch): void
     {
         //        $package = $this->fetchPackageVersion($package, $patch);
-        $this->addPackageVersion($package, $patch);
+        $package = $this->addPackageVersion($package, $patch);
         $version = $package->getVersion($patch);
         $repoPath = $this->fetchRepo($version->getTargz(), $package->getName());
         $this->operate($repoPath, $version->getMinor(), $package);
+        $this->getPackagesManager()->save($package);
         $this->dataMenu($this->getPaths()['public'] . 'dist/dataMenu.js');
     }
 
@@ -104,10 +110,13 @@ class RepositoryManager
     /**
      * @param Package $package
      * @param         $patch
+     *
+     * @return Package
      */
-    public function addPackageVersion(Package $package, $patch): void
+    public function addPackageVersion(Package $package, $patch): Package
     {
         preg_match("/(.*\..*)\./", $patch, $matches);
+        preg_match("/(^[0-9]+\.[0-9]+)/", $patch, $matches);
         $package->addVersion(
             new Version(
                 $matches[1],
@@ -115,14 +124,15 @@ class RepositoryManager
                 'https://github.com/' . $package->getFullName() . '/archive/v' . $patch . '.tar.gz'
             )
         );
+
+        return $package;
     }
 
     //only works for github repos
     public function operateAll(): void
     {
-        foreach ($this->fetchTags() as $key => $versions) {
+        foreach ($this->getPackagesManager() as $key => $versions) {
             foreach ($versions as $minor => $version) {
-                $this->rmAll($this->getPaths()['tmp']);
                 //                $tarUrl = 'https://api.github.com/repos/louis-cuny/noitacol/tarball/v' . $version ;
                 $tarUrl = 'https://github.com/' . $key . '/archive/v' . $version . '.tar.gz';
                 $repoPath = $this->fetchRepo($tarUrl, $repoName = explode('/', $key)[1]);
@@ -151,21 +161,6 @@ class RepositoryManager
         (new \PharData($path . '.tar'))->extractTo($this->getPaths()['tmp']);
 
         return $repoPath;
-    }
-
-    /**
-     * @param Package $package
-     *
-     * @throws \Exception
-     */
-    public function operateRepo(Package $package): void
-    {
-        foreach ($package->getVersions() as $version) {
-            $this->rmAll($this->getPaths()['tmp']);
-            $repoPath = $this->fetchRepo($version->getTargz(), $package->getName());
-            $this->operate($repoPath, $version->getMinor(), $package);
-        }
-        $this->dataMenu($this->getPaths()['public'] . 'dist/dataMenu.js');
     }
 
     /**
@@ -261,8 +256,6 @@ class RepositoryManager
                 sprintf('Something went wrong while generating %s (%s)', $package->getName(), print_r($output, true))
             );
         }
-        $this->getPackagesManager()->save($package);
-
         //              FOR THE SEARCH RECORDS
         //            $algoliaAuths = $this->getAuths()['algolia-louis-cuny'];
         //            $client = new \AlgoliaSearch\Client($algoliaAuths->getClientId(), $algoliaAuths->getClientKey());
@@ -277,6 +270,9 @@ class RepositoryManager
         //            //                $index2->addObjects($objects2);
     }
 
+    /**
+     * @param string $outputFile
+     */
     public function dataMenu(string $outputFile): void
     {
         //                  FOR NON-JS !!
@@ -302,9 +298,8 @@ class RepositoryManager
         //        }
         //        $docMenu .= '<ul>';
         //        \file_put_contents($this->getPaths()['doc'] . 'doctree.html', $docMenu);
-
-        $js = 'dataMenu = ' . \json_encode($this->getPackagesManager()->getDataMenu(),
-                JSON_PRETTY_PRINT); //todo virer flag
+        $data =  \json_encode($this->getPackagesManager()->getDataMenu(), JSON_PRETTY_PRINT);
+        $js = 'dataMenu = ' . $data . PHP_EOL . 'md5Hash = "' . uniqid('', true) . '"';
         \file_put_contents($outputFile, $js);
     }
 
