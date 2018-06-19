@@ -5,6 +5,7 @@ namespace App\Action\Api;
 use App\Manager\IndexManager;
 use App\Manager\RepositoryManager;
 use App\Model\Package;
+use ObjectivePHP\Html\Exception;
 use ObjectivePHP\Middleware\Action\RestAction\AbstractEndpoint;
 use ObjectivePHP\ServicesFactory\Annotation\Inject;
 use ObjectivePHP\ServicesFactory\Specification\InjectionAnnotationProvider;
@@ -60,36 +61,50 @@ class BuildApiEndpointV1 extends AbstractEndpoint implements InjectionAnnotation
     public function post(ServerRequestInterface $request)
     {
         $log = [];
-        if (!$hookType = $request->getHeader('x-github-event')[0]) {
-            throw new \Exception('This request doesnt came from github');
-        }
-        $body = \json_decode($request->getBody()->getContents());
-        switch ($hookType) {
-            case 'ping':
-                if (!$this->pingValidation($body)) {
-                    throw new UnvalideHookException('Hook badly configurate !');
-                }
-                $package = new Package(
-                    $body->repository->name,
-                    $body->repository->full_name,
-                    array_key_exists(
-                        'min-version',
-                        $request->getQueryParams()
-                    ) ? $request->getQueryParams()['min-version'] : '0'
-                );
+        try {
+            if (!$hookType = $request->getHeader('x-github-event')[0]) {
+                throw new \Exception('This request doesnt came from github');
+            }
+            $body = \json_decode($request->getBody()->getContents());
+            switch ($hookType) {
+                case 'ping':
+                    if (!$this->pingValidation($body)) {
+                        throw new UnvalideHookException('Hook badly configurate !');
+                    }
+                    $package = new Package(
+                        $body->repository->name,
+                        $body->repository->full_name,
+                        array_key_exists(
+                            'min-version',
+                            $request->getQueryParams()
+                        ) ? $request->getQueryParams()['min-version'] : '0'
+                    );
 
-                $this->getRepositoryManager()->handlePing($package);
+                    $this->getRepositoryManager()->handlePing($package);
 
-                break;
-            case 'create':
-                if (!$package = $this->createValidation($body)) {
-                    throw new UnvalideHookException('The hook isnt a tag hook or the package is not register');
-                }
-                $this->getRepositoryManager()->handleCreate($package, ltrim($body->ref, 'v'));
-                break;
-            default:
-                throw new \Exception('Bad hook type');
-                break;
+                    break;
+                case 'create':
+                    if (!$package = $this->createValidation($body)) {
+                        throw new \App\Exception\UnvalideHookException('The hook isnt a tag hook or the package is not register');
+                    }
+                    $this->getRepositoryManager()->handleCreate($package, ltrim($body->ref, 'v'));
+                    break;
+                default:
+                    throw new \Exception('Bad hook type');
+                    break;
+            }
+        } catch (\Exception $exception) {
+            return new JsonResponse([
+                'code'           => 1,
+                'status'         => 'Not ok',
+                'log'            => $log,
+                'main exception' => [
+                    'message' => $exception->getMessage(),
+                    'line'    => $exception->getLine(),
+                    'trace'   => $exception->getTraceAsString()
+                ],
+                'exceptions'     => $this->getRepositoryManager()->getJsonReport()
+            ]);
         }
 
         return new JsonResponse([

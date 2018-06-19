@@ -42,7 +42,7 @@ if (!dev) {
 cssLoaders.push({
     loader: 'sass-loader',
     options: {
-        sourceMap: dev
+        sourceMap: true
     }
 });
 
