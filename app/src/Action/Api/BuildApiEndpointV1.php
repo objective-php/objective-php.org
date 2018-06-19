@@ -87,8 +87,6 @@ class BuildApiEndpointV1 extends AbstractEndpoint implements InjectionAnnotation
                 }
                 $this->getRepositoryManager()->handleCreate($package, ltrim($body->ref, 'v'));
                 break;
-            case 'push':
-                break;
             default:
                 throw new \Exception('Bad hook type');
                 break;

@@ -174,34 +174,6 @@ class Package implements \JsonSerializable
     }
 
     /**
-     * @return Package
-     */
-    public function sortVersions(): Package
-    {
-        //        echo '<pre>';
-        //        print_r($this->getVersions());
-        //        echo '</pre>';
-
-//        $versions = $this->getVersions();
-//
-//        usort($versions, function ($a, $b) {
-//            if ($a->getMinor() > $b->getMinor()) {
-//                return true;
-//            }
-//
-//            return false;
-//        });
-
-//        $this->setVersions($versions);
-
-        //        echo '<pre>';
-        //        print_r($this->getVersions());
-        //        echo '</pre>';
-
-        return $this;
-    }
-
-    /**
      * Specify data which should be serialized to JSON
      *
      * @link  http://php.net/manual/en/jsonserializable.jsonserialize.php
