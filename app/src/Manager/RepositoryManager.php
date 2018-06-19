@@ -72,6 +72,7 @@ class RepositoryManager
      * @param Package $package
      * @param         $tag
      *
+     * @throws \RuntimeException
      * @throws ComponentStructureException
      * @throws \Exception
      */
@@ -276,30 +277,30 @@ class RepositoryManager
      */
     public function dataMenu(string $outputFile): void
     {
-        //                  FOR NON-JS !!
-        //        $docMenu = '<ul>';
-        //        foreach ($this->packages as $compoName => $package) {
-        //            $docMenu .= '<li class="opened" ><div class="hd"><i class="fa fa-angle-right fa-lg"></i>';
-        //            $docMenu .= '<a href="/doc/' . $compoName . '/' . key($package) . '/index.html">' . $compoName . '</a>';
-        //            $docMenu .= '</div><div class="bd"><ul>';
-        //            foreach ($package as $minorVersion => $files) {
-        //                reset($package);
-        //                $docMenu .= '<li style="padding-left: 20px" class="' . ($minorVersion === key($package) ? 'opened' : 'nojs') . '"><div class="hd"><i class="fas fa-angle-right fa-lg"></i>';
-        //                $docMenu .= '<a href="/doc/' . $compoName . '/' . $minorVersion . '/index.html">' . $minorVersion . '</a>';
-        //                $docMenu .= '</div><div class="bd"><ul>';
-        //                foreach ($files as $nice => $raw) {
-        //                    $docMenu .= '<li><div class="hb leaf">';
-        //                    $docMenu .= '<a href="/doc/' . $compoName . '/' . $minorVersion . '/' . $raw . '">' . $nice . '</a>';
-        //                    $docMenu .= '</div></li>';
-        //                }
-        //                $docMenu .= '<li><div class="hb leaf"><a href="/doc/' . $compoName . '/' . $minorVersion . '/api/index.html">API</a></div></li>';
-        //                $docMenu .= '</ul></div></li>';
-        //            }
-        //            $docMenu .= '</ul></div></li>';
-        //        }
-        //        $docMenu .= '<ul>';
-        //        \file_put_contents($this->getPaths()['doc'] . 'doctree.html', $docMenu);
-        $data = \json_encode($this->getPackagesManager()->getDataMenu(), JSON_PRETTY_PRINT);
+
+        $docMenu = '<ul>';
+        foreach ($packages = $this->getPackagesManager()->getDataMenu() as $compoName => $package) {
+            $docMenu .= '<li class="opened" ><div class="hd"><i class="fa fa-angle-right fa-lg"></i>';
+            $docMenu .= '<a href="/doc/' . $compoName . '/' . key($package) . '/index.html">' . $compoName . '</a>';
+            $docMenu .= '</div><div class="bd"><ul>';
+            foreach ($package as $minorVersion => $files) {
+                reset($package);
+                $docMenu .= '<li style="padding-left: 20px;" class="' . ($minorVersion === key($package) ? 'opened' : 'nojs') . '"><div class="hd"><i class="fas fa-angle-right fa-lg"></i>';
+                $docMenu .= '<a href="/doc/' . $compoName . '/' . $minorVersion . '/index.html">' . $minorVersion . '</a>';
+                $docMenu .= '</div><div class="bd"><ul>';
+                foreach ($files as $nice => $raw) {
+                    $docMenu .= '<li><div class="hb leaf">';
+                    $docMenu .= '<a href="/doc/' . $compoName . '/' . $minorVersion . '/' . $raw . '">' . $nice . '</a>';
+                    $docMenu .= '</div></li>';
+                }
+                $docMenu .= '<li><div class="hb leaf"><a href="/doc/' . $compoName . '/' . $minorVersion . '/api/index.html">API</a></div></li>';
+                $docMenu .= '</ul></div></li>';
+            }
+            $docMenu .= '</ul></div></li>';
+        }
+        $docMenu .= '<ul>';
+        \file_put_contents($this->getPaths()['doc'] . 'doctree.html', $docMenu);
+        $data = \json_encode($packages, JSON_PRETTY_PRINT);
         $js = 'dataMenu = ' . $data . PHP_EOL . 'md5Hash = "' . uniqid('', true) . '"';
         \file_put_contents($outputFile, $js);
     }

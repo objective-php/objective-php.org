@@ -35,7 +35,10 @@ class BuildApiEndpointV1 extends AbstractEndpoint implements InjectionAnnotation
      * @param ServerRequestInterface $request
      *
      * @return bool|void|JsonResponse
+     * @throws \RuntimeException
      * @throws \InvalidArgumentException
+     * @throws \App\Exception\ComponentStructureException
+     * @throws \Exception
      */
     public function get(ServerRequestInterface $request)
     {
