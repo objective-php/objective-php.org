@@ -74,7 +74,6 @@ $(function () {
             menuToCookie()
         })
 
-
         if (currentCompo) {
             //On construit le dropdown des versions
             $('#version-dropdown').html(' <button id="version-select" type="button" class="btn btn-light btn-lg dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">\n' +
@@ -100,7 +99,8 @@ $(function () {
             )
 
             //Place en premier le menu-composant qui est consulte
-            $('#api-tree > ul').prepend($(`.menu-${currentCompo}`).removeClass('opened').addClass('opened'))
+            $('#api-tree > ul').children().removeClass('opened')
+            $('#api-tree > ul').prepend($(`.menu-${currentCompo}`).addClass('opened'))
         }
     }
 })

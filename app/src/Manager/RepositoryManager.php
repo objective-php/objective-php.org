@@ -70,15 +70,15 @@ class RepositoryManager
 
     /**
      * @param Package $package
-     * @param         $patch
+     * @param         $tag
      *
+     * @throws ComponentStructureException
      * @throws \Exception
      */
-    public function handleCreate(Package $package, $patch): void
+    public function handleCreate(Package $package, $tag): void
     {
-        //        $package = $this->fetchPackageVersion($package, $patch);
-        $package = $this->addPackageVersion($package, $patch);
-        $version = $package->getVersion($patch);
+        $package = $this->addPackageVersion($package, $tag);
+        $version = $package->getVersion($tag);
         $repoPath = $this->fetchRepo($version->getTargz(), $package->getName());
         $this->operate($repoPath, $version->getMinor(), $package);
         $this->getPackagesManager()->save($package);
@@ -96,9 +96,9 @@ class RepositoryManager
     {
         $tags = \GuzzleHttp\json_decode($this->getClientsManager()->getGithubClient()->get('/repos/' . $package->getFullName() . '/git/refs/tags')->getBody()->getContents());
         foreach ($tags as $tag) {
-            $patch = ltrim(str_replace('refs/tags/', '', $tag->ref), 'v');
+            $tag = str_replace('refs/tags/', '', $tag->ref);
             try {
-                $this->addPackageVersion($package, $patch);
+                $this->addPackageVersion($package, $tag);
             } catch (\Exception $exception) {
                 $this->report[] = $exception;
             }
@@ -113,34 +113,35 @@ class RepositoryManager
      *
      * @return Package
      */
-    public function addPackageVersion(Package $package, $patch): Package
+    public function addPackageVersion(Package $package, $tag): Package
     {
+        $patch = ltrim($tag, 'v');
         preg_match("/(.*\..*)\./", $patch, $matches);
         preg_match("/(^[0-9]+\.[0-9]+)/", $patch, $matches);
         $package->addVersion(
             new Version(
                 $matches[1],
                 $patch,
-                'https://github.com/' . $package->getFullName() . '/archive/v' . $patch . '.tar.gz'
+                $tag,
+                'https://github.com/' . $package->getFullName() . '/archive/' . $tag . '.tar.gz'
             )
         );
 
         return $package;
     }
 
-    //only works for github repos
+
+    /**
+     * @throws \RuntimeException
+     * @throws ComponentStructureException
+     * @throws \Exception
+     */
     public function operateAll(): void
     {
-        foreach ($this->getPackagesManager() as $key => $versions) {
-            foreach ($versions as $minor => $version) {
-                //                $tarUrl = 'https://api.github.com/repos/louis-cuny/noitacol/tarball/v' . $version ;
-                $tarUrl = 'https://github.com/' . $key . '/archive/v' . $version . '.tar.gz';
-                $repoPath = $this->fetchRepo($tarUrl, $repoName = explode('/', $key)[1]);
-                try {
-                    //       $this->operate($repoPath, $repoName, $minor, null);
-                } catch (ComponentStructureException $exception) {
-                    echo $exception->getMessage();
-                }
+        foreach ($this->getPackagesManager()->getPackages() as $package) {
+            foreach ($package->getVersions() as $version) {
+                $repoPath = $this->fetchRepo($version->getTargz(), $package->getName());
+                $this->operate($repoPath, $version->getMinor(), $package);
             }
         }
         $this->dataMenu($this->getPaths()['public'] . 'dist/dataMenu.js');
@@ -298,7 +299,7 @@ class RepositoryManager
         //        }
         //        $docMenu .= '<ul>';
         //        \file_put_contents($this->getPaths()['doc'] . 'doctree.html', $docMenu);
-        $data =  \json_encode($this->getPackagesManager()->getDataMenu(), JSON_PRETTY_PRINT);
+        $data = \json_encode($this->getPackagesManager()->getDataMenu(), JSON_PRETTY_PRINT);
         $js = 'dataMenu = ' . $data . PHP_EOL . 'md5Hash = "' . uniqid('', true) . '"';
         \file_put_contents($outputFile, $js);
     }

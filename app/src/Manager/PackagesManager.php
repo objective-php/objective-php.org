@@ -110,7 +110,7 @@ class PackagesManager
                 $res[$package->getName()][$version->getMinor()] = $version->getDocs();
             }
         }
-
+        ksort($res);
         return $res;
     }
 }

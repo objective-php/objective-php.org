@@ -112,7 +112,7 @@ class Package implements \JsonSerializable
     public function getVersion($tag): ?Version
     {
         foreach ($this->getVersions() as $version) {
-            if ($version->getMinor() === $tag || $version->getPatch() === $tag) {
+            if ($version->getMinor() === $tag || $version->getPatch() === $tag || $version->getTag() === $tag) {
                 return $version;
             }
         }

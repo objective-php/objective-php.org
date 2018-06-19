@@ -10,6 +10,9 @@ class Version implements \JsonSerializable
     //2.1.1
     protected $patch;
 
+    //v2.1.1
+    protected $tag;
+
     //"http://github/applicationtargz"
     /**
      * @var string
@@ -33,10 +36,11 @@ class Version implements \JsonSerializable
      * @param string $targz
      * @param array  $docs
      */
-    public function __construct($minor, $patch, string $targz, array $docs = [])
+    public function __construct($minor, $patch, $tag, string $targz, array $docs = [])
     {
         $this->minor = $minor;
         $this->patch = $patch;
+        $this->tag = $tag;
         $this->targz = $targz;
         $this->docs = $docs;
     }
@@ -77,6 +81,26 @@ class Version implements \JsonSerializable
     public function setPatch($patch): Version
     {
         $this->patch = $patch;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTag()
+    {
+        return $this->tag;
+    }
+
+    /**
+     * @param mixed $tag
+     *
+     * @return Version
+     */
+    public function setTag($tag): Version
+    {
+        $this->tag = $tag;
 
         return $this;
     }
@@ -163,7 +187,8 @@ class Version implements \JsonSerializable
     {
         return [
             'minor' => $this->minor,
-            'patch'  => $this->patch,
+            'patch' => $this->patch,
+            'tag'   => $this->tag,
             'targz' => $this->targz,
             'docs'  => $this->docs
         ];

@@ -6,7 +6,7 @@ app/src/Manager/Renderer/
 app/theme/scss/theme.css
 
 app/config/auths.json
-
+app/data/
 packages/
 public/assets/dev.js
 public/dist/

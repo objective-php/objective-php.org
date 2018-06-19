@@ -5,7 +5,6 @@ namespace App\Action\Api;
 use App\Manager\IndexManager;
 use App\Manager\RepositoryManager;
 use App\Model\Package;
-use ObjectivePHP\Html\Exception;
 use ObjectivePHP\Middleware\Action\RestAction\AbstractEndpoint;
 use ObjectivePHP\ServicesFactory\Annotation\Inject;
 use ObjectivePHP\ServicesFactory\Specification\InjectionAnnotationProvider;
@@ -40,17 +39,10 @@ class BuildApiEndpointV1 extends AbstractEndpoint implements InjectionAnnotation
      */
     public function get(ServerRequestInterface $request)
     {
-        if (isset($request->getQueryParams()['whole'])) {
-            $this->getRepositoryManager()->fetchWholeTags();
-
-            return true;
-        }
-        //        $this->getIndexManager()->generateAll();
         $this->getRepositoryManager()->operateAll();
 
         return new JsonResponse(['code' => 0, 'status' => 'Ok']);
     }
-
 
     /**
      * @param ServerRequestInterface $request
@@ -79,7 +71,6 @@ class BuildApiEndpointV1 extends AbstractEndpoint implements InjectionAnnotation
                             $request->getQueryParams()
                         ) ? $request->getQueryParams()['min-version'] : '0'
                     );
-
                     $this->getRepositoryManager()->handlePing($package);
 
                     break;
@@ -87,7 +78,7 @@ class BuildApiEndpointV1 extends AbstractEndpoint implements InjectionAnnotation
                     if (!$package = $this->createValidation($body)) {
                         throw new \App\Exception\UnvalideHookException('The hook isnt a tag hook or the package is not register');
                     }
-                    $this->getRepositoryManager()->handleCreate($package, ltrim($body->ref, 'v'));
+                    $this->getRepositoryManager()->handleCreate($package, $body->ref);
                     break;
                 default:
                     throw new \Exception('Bad hook type');
@@ -118,7 +109,6 @@ class BuildApiEndpointV1 extends AbstractEndpoint implements InjectionAnnotation
     public function createValidation($body): ?Package
     {
         if ($body->ref_type === 'tag' &&
-            strpos($body->ref, 'v') === 0 &&
             $package = $this->getRepositoryManager()->getPackagesManager()->getPackage($body->repository->full_name)
         ) {
             return $package;
