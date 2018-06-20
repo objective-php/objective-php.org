@@ -12,6 +12,7 @@ use League\CommonMark\Converter;
 use League\CommonMark\DocParser;
 use League\CommonMark\Environment;
 use League\CommonMark\HtmlRenderer;
+use ObjectivePHP\Html\Exception;
 use Symfony\Component\Finder\Finder;
 use Webuni\CommonMark\TableExtension\TableExtension;
 
@@ -61,8 +62,13 @@ class RepositoryManager
         }
         $package = $this->fetchPackageVersions($package);
         foreach ($package->getVersions() as $version) {
-            $repoPath = $this->fetchRepo($version->getTargz(), $package->getName());
-            $this->operate($repoPath, $version->getMinor(), $package);
+            try {
+                $repoPath = $this->fetchRepo($version->getTargz(), $package->getName());
+                $this->operate($repoPath, $version->getMinor(), $package);
+            } catch (\Exception $exception) {
+                $this->report[] = $exception;
+                $package->removeVersion($version);
+            }
         }
         $this->getPackagesManager()->save($package);
         $this->dataMenu($this->getPaths()['public'] . 'dist/dataMenu.js');
@@ -98,10 +104,14 @@ class RepositoryManager
         $tags = \GuzzleHttp\json_decode($this->getClientsManager()->getGithubClient()->get('/repos/' . $package->getFullName() . '/git/refs/tags')->getBody()->getContents());
         foreach ($tags as $tag) {
             $tag = str_replace('refs/tags/', '', $tag->ref);
-            try {
-                $this->addPackageVersion($package, $tag);
-            } catch (\Exception $exception) {
-                $this->report[] = $exception;
+            error_log($tag);
+            if (version_compare(ltrim($tag, 'v'), $package->getMinVersion(), '>=')) {
+                error_log('bleu');
+                try {
+                    $this->addPackageVersion($package, $tag);
+                } catch (\Exception $exception) {
+                    $this->report[] = $exception;
+                }
             }
         }
 
@@ -153,14 +163,15 @@ class RepositoryManager
     //2.0.0
     public function fetchRepo(string $tarUrl, string $componentName): string
     {
-        $this->rmAll($this->getPaths()['tmp']);
         $md5 = md5($tarUrl);
         if (!copy($tarUrl, $targz = ($path = $this->getPaths()['tmp'] . $componentName . '-' . $md5) . '.tar.gz')) {
             $error = error_get_last();
             throw new \RuntimeException(sprintf('[%s] Unable to copy file : %s', $error['type'], $error['message']));
         }
         $repoPath = (new \PharData($targz))->decompress();
-        (new \PharData($path . '.tar'))->extractTo($this->getPaths()['tmp']);
+        unlink($targz);
+        (new \PharData($tar = $path . '.tar'))->extractTo($this->getPaths()['tmp']);
+        unlink($tar);
 
         return $repoPath;
     }
@@ -215,13 +226,17 @@ class RepositoryManager
                     '{% block title project.config(\'title\') %}',
                     '{% block VERSION \'\' %}',
                     '{% block COMPONENTNAME \'\' %}',
+                    '{{ componentrawname }}',
+                    '{{ githublinktext }}',
                     '{{ style }}',
                     '{{ app }}'
                 ], [
                     $contents,
                     ucfirst($package->getName()) . ' - ' . $tag . ' | Objective PHP Documentation',
                     $tag,
-                    ucfirst($package->getName()),
+                    ucfirst(str_replace('-', ' ', $package->getName())),
+                    $package->getName(),
+                    'This package on Github',
                     $asset['theme.css'],
                     $asset['app.js']
                 ], $content);
@@ -237,7 +252,7 @@ class RepositoryManager
             //              FOR THE SEARCH RECORDS
             //            \file_put_contents($pathToDoc . 'doc.json', \json_encode($docJson));
         } else {
-            throw new ComponentStructureException('No docs folder in ' . $package->getName() . "\n");
+            throw new ComponentStructureException('No docs folder in ' . $package->getName() . 'on tag ' . $tag . "\n");
         }
         $json = \json_encode([
             'repoPath'  => $repoPath,
@@ -252,7 +267,7 @@ class RepositoryManager
             $code
         );
         //                exec('php ' . $this->getPaths()['public'] . '../sami/sami.php update -v ' . __DIR__ . '/sami-config.php --force', $output, $code);
-
+        $this->rmAll($this->getPaths()['tmp'] . '/' . $repoPath);
         if ($code !== 0) {
             throw new \Exception(
                 sprintf('Something went wrong while generating %s (%s)', $package->getName(), print_r($output, true))
@@ -277,7 +292,6 @@ class RepositoryManager
      */
     public function dataMenu(string $outputFile): void
     {
-
         $docMenu = '<ul>';
         foreach ($packages = $this->getPackagesManager()->getDataMenu() as $compoName => $package) {
             $docMenu .= '<li class="opened" ><div class="hd"><i class="fa fa-angle-right fa-lg"></i>';

@@ -21,6 +21,7 @@ $theme-colors: (
 @import '~font-awesome/scss/font-awesome';
 @import '~bootstrap/scss/bootstrap';
 @import "~github-markdown-css/github-markdown";
+@import '~highlight.js/styles/github-gist';
 
 // Start
 $main-contrast-color: $secondary;
@@ -71,7 +72,7 @@ a.nav-link.active {
   max-width: 325px;
   position: fixed;
   line-height: 20px;
-  font-size: 15px;
+  font-size: 17px;
   top: $headerHeight + $controlsHeight;
   height: calc(100% - #{$headerHeight + $controlsHeight});
 
@@ -79,7 +80,7 @@ a.nav-link.active {
   overflow: auto;
   height: 100%;
   background: #f2f2f2 local;
-  padding: 10px 30px;
+  padding: 10px 16px;
 
   border-right: 2px solid $primary;
 }
@@ -701,4 +702,18 @@ article {
 
 .markdown-body table tr:nth-child(2n) {
   background-color: #ebedef;
+}
+
+td:nth-child(2) {
+  font-style: italic;
+}
+
+#github-package-link {
+  position: absolute;
+  right: 0;
+  padding-right: 16px;
+}
+
+#github-package-link a {
+  font-size: 1.25rem;
 }

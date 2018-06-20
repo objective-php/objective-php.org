@@ -1,6 +1,6 @@
 import 'bootstrap';
 import 'lodash';
-
+import hljs from "highlight.js";
 $(function () {
 
     let docfiles = (compoName, minor) => {
@@ -104,6 +104,13 @@ $(function () {
         }
     }
 })
+$(document).ready(function() {
+    hljs.initHighlightingOnLoad()
+
+    $('pre code').each(function(i, block) {
+        hljs.highlightBlock(block);
+    });
+});
 
 window.util = new function () {
     this.createCookie = (name, value, days) => {
@@ -149,3 +156,4 @@ window.util = new function () {
         }
     }
 }
+

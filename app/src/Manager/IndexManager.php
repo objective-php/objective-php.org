@@ -33,9 +33,12 @@ class IndexManager
             '{% block title project.config(\'title\') %}',
             '{% block VERSION \'\' %}',
             '{% block COMPONENTNAME \'\' %}',
+            '{{ componentrawname }}',
+            '{{ githublinktext }}',
             '{{ style }}',
             '{{ app }}'
-        ], [$pageContent, 'Objective PHP Documentation', '', '', $asset['theme.css'], $asset['app.js']], $content);
+        ], [$pageContent, 'Objective PHP Documentation', '', '', '', '', $asset['theme.css'], $asset['app.js']],
+            $content);
 
         return $content;
     }
@@ -57,6 +60,7 @@ class IndexManager
     {
         $this->paths = $paths;
         $this->generateAll();
+
         return $this;
     }
 }
