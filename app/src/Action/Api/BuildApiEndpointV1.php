@@ -132,12 +132,11 @@ class BuildApiEndpointV1 extends AbstractEndpoint implements InjectionAnnotation
 
         if ($body->hook->type === 'Repository' &&
             $body->hook->active === true &&
-            $events === ['create', 'push', 'release'] &&
+            $events === ['create'] &&
             $body->hook->config->content_type === 'json' &&
             $body->repository->name &&
             $body->repository->full_name &&
-            $body->hook->config->content_type === 'json' /*&&*/
-//            $body->repository->owner->login === 'louis-cuny' //TODO
+            $body->hook->config->content_type === 'json'
         ) {
             return true;
         }

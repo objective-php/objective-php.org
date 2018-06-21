@@ -281,7 +281,7 @@ class RepositoryManager
         \file_put_contents($this->getPaths()['tmp'] . '/infos.json', $json, JSON_PRETTY_PRINT);
 
         exec(
-            'php ' . $this->getPaths()['public'] . '../sami.phar update -V -vvv ' . __DIR__ . '/sami-config.php --force',
+            'php ' . $this->getPaths()['public'] . '../sami.phar update -vvv ' . __DIR__ . '/sami-config.php --force',
             $output,
             $code
         );
