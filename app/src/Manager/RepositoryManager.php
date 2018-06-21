@@ -141,7 +141,6 @@ class RepositoryManager
         return $package;
     }
 
-
     /**
      * @throws \RuntimeException
      * @throws ComponentStructureException
@@ -195,16 +194,36 @@ class RepositoryManager
             $finder = new Finder();
             $finder->files()->in($docsPath)->name('*.md');
             $pathToDoc = $this->getPaths()['doc'] . $package->getName() . '/' . $tag . '/';
-
+            if (!is_dir($pathToDoc) && !mkdir($pathToDoc, 0755, true) && !is_dir($pathToDoc)) {
+                throw new \RuntimeException(sprintf('Directory "%s" was not created', $pathToDoc));
+            }
             //              FOR THE SEARCH RECORDS
             //            $docJson = [];
 
             $asset = json_decode(file_get_contents($this->getPaths()['public'] . 'dist/manifest.json'), true);
-
+            $content = file_get_contents($this->getPaths()['base.twig']);
+            $nice = ucfirst(str_replace('-', ' ', $package->getName()));
+            $content = str_replace([
+                '{% block content \'\' %}',
+                '{% block title project.config(\'title\') %}',
+                '{% block VERSION \'\' %}',
+                '{% block COMPONENTNAME \'\' %}',
+                '{{ componentrawname }}',
+                '{{ githublinktext }}',
+                '{{ style }}',
+                '{{ app }}'
+            ], [
+                '<div class="markdown-body"><h1>Welcome to ' . $nice . '\'s Documentation</h1></div>',
+                ucfirst($package->getName()) . ' - ' . $tag . ' | Objective PHP Documentation',
+                $tag,
+                $nice,
+                $package->getName(),
+                'This package on Github',
+                $asset['theme.css'],
+                $asset['app.js']
+            ], $content);
+            \file_put_contents($pathToDoc . 'index.html', $content);
             foreach ($finder as $file) {
-                if (!is_dir($pathToDoc) && !mkdir($pathToDoc, 0755, true) && !is_dir($pathToDoc)) {
-                    throw new \RuntimeException(sprintf('Directory "%s" was not created', $pathToDoc));
-                }
                 $htmlName = $file->getBasename('.md') . '.html';
 
                 $environment = Environment::createCommonMarkEnvironment();
