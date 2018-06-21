@@ -261,7 +261,7 @@ class RepositoryManager
                 ], $content);
                 \file_put_contents($pathToDoc . $htmlName, $content);
 
-                if (!($file->getFilename() === 'index.md')) { //TODO Gerer si pas d'index.md ?
+                if (!($file->getFilename() === 'index.md')) {
                     $niceName = preg_replace('([0-9]*\.)', '', $file->getBasename('.md'), 1);
                     $niceName = str_replace(['-', '_'], ' ', $niceName);
                     $package->getVersion($tag)->addDoc([$niceName => $htmlName]);
