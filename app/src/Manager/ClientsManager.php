@@ -20,8 +20,8 @@ class ClientsManager
     protected function createGithubClient(array $config = []): ClientsManager
     {
         $config['base_uri'] = 'https://api.github.com/repos';
-        $config['query'] = ['client_id'     => $this->getAuths()['github-louis-cuny']->getClientId(),
-                            'client_secret' => $this->getAuths()['github-louis-cuny']->getClientKey()];
+        $config['query'] = ['client_id'     => $this->getAuths()['github-objective-php']->getClientId(),
+                            'client_secret' => $this->getAuths()['github-objective-php']->getClientKey()];
         $this->githubClient = new Client($config);
         return $this;
     }

@@ -28,17 +28,29 @@ class IndexManager
         $asset = \json_decode(file_get_contents($this->getPaths()['public'] . 'dist/manifest.json'), true);
         $content = file_get_contents($this->getPaths()['base.twig']);
         $pageContent = file_get_contents($this->getPaths()['app'] . 'layouts/objectivephp-sami/doc-index-content.twig');
-        $content = str_replace([
-            '{% block content \'\' %}',
-            '{% block title project.config(\'title\') %}',
-            '{% block VERSION \'\' %}',
-            '{% block COMPONENTNAME \'\' %}',
-            '{{ componentrawname }}',
-            '{{ githublinktext }}',
-            '{{ style }}',
-            '{{ app }}'
-        ], [$pageContent, 'Objective PHP Documentation', '', '', '', '', $asset['theme.css'], $asset['app.js']],
-            $content);
+        $content = str_replace(
+            [
+                '{% block content \'\' %}',
+                '{% block title project.config(\'title\') %}',
+                '{% block VERSION \'\' %}',
+                '{% block COMPONENTNAME \'\' %}',
+                '{{ componentrawname }}',
+                '{{ githublinktext }}',
+                '{{ style }}',
+                '{{ app }}'
+            ],
+            [
+                $pageContent,
+                'Objective PHP Documentation',
+                '',
+                '',
+                '',
+                '',
+                $asset['theme.css'],
+                $asset['app.js']
+            ],
+            $content
+        );
 
         return $content;
     }

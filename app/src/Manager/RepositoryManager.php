@@ -188,7 +188,7 @@ class RepositoryManager
      * @throws ComponentStructureException
      * @throws \Exception
      */
-    protected function operate(string $repoPath, string $tag, Package $package)
+    protected function operate(string $repoPath, string $tag, Package $package): void
     {
         if (is_dir($docsPath = $this->getPaths()['tmp'] . $repoPath . '/docs')) {
             $finder = new Finder();
@@ -281,7 +281,7 @@ class RepositoryManager
         \file_put_contents($this->getPaths()['tmp'] . '/infos.json', $json, JSON_PRETTY_PRINT);
 
         exec(
-            'php ' . $this->getPaths()['public'] . '../sami.phar update -vvv ' . __DIR__ . '/sami-config.php --force',
+            'php ' . $this->getPaths()['public'] . '../sami.phar update -V -vvv ' . __DIR__ . '/sami-config.php --force',
             $output,
             $code
         );

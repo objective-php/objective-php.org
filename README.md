@@ -18,11 +18,6 @@ yarn install
 
 The website use Server Side Includes, to work perfectly it should be hosted on an Nginx or Apache server with ngx_http_ssi_module or mod_include activated.
 
-To generate the doc, run the following command in your terminal
-
-```
-vendor/bin/op generate --all
-```
 
 The website can listen to webhooks to generate new doc on new tags or updates.
 
