@@ -195,7 +195,7 @@ class RepositoryManager
             $docMenu .= '</div><div class="bd"><ul>';
             foreach ($package as $minorVersion => $files) {
                 reset($package);
-                $docMenu .= '<li style="padding-left: 20px;" class="' . ($minorVersion === key($package) ? 'opened' : 'nojs') . '"><div class="hd"><i class="fas fa-angle-right fa-lg"></i>';
+                $docMenu .= '<li style="padding-left: 20px;" class="' . ($minorVersion === key($package) ? 'opened' : 'nojs') . '"><div class="hd"><i class="fa fa-angle-right fa-lg"></i>';
                 $docMenu .= '<a href="/doc/' . $compoName . '/' . $minorVersion . '/index.html">' . $minorVersion . '</a>';
                 $docMenu .= '</div><div class="bd"><ul>';
                 foreach ($files as $nice => $raw) {

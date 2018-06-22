@@ -39,20 +39,25 @@
         <div id="control-panel">
         </div>
         <div id="version-dropdown" class="btn-group">
-            <p> {% block VERSION '' %}</p>
+            <p>
+            <noscript>{% block VERSION '' %}</noscript>
+            </p>
         </div>
         <div id="component-name">
             <p> {% block COMPONENTNAME '' %}</p>
         </div>
         <div></div>
         <div id="github-package-link">
-            <p> <a href="http://github.com/objective-php/{{ componentrawname }}" target=\"_blank\">{{ githublinktext }}</a></p>
+            <p><a href="http://github.com/objective-php/{{ componentrawname }}"
+                  target=\"_blank\">{{ githublinktext }}</a></p>
         </div>
     </div>
 </nav>
 <div id="left-column" class="menu-container ">
     <div id="api-tree">
-        <!--#include virtual="/doc/doctree.html" -->
+        <noscript>
+            <!--#include virtual="/doc/doctree.html" -->
+        </noscript>
     </div>
 </div>
 
