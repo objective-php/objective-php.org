@@ -5,18 +5,14 @@ namespace App\Manager;
 use App\Config\PathsConfig;
 
 /**
- * Class IndexManager
- *
- * @package App\Manager
+ * Class IndexManager.
  */
 class IndexManager
 {
-
     /**
      * @var PathsConfig[]
      */
     protected $paths;
-
 
     public function generateAll(): void
     {
@@ -28,7 +24,8 @@ class IndexManager
         $asset = \json_decode(file_get_contents($this->getPaths()['public'] . 'dist/manifest.json'), true);
         $content = file_get_contents($this->getPaths()['base.twig']);
         $pageContent = file_get_contents($this->getPaths()['app'] . 'layouts/objectivephp-sami/doc-index-content.twig');
-        $content = str_replace(
+
+        return str_replace(
             [
                 '{% block content \'\' %}',
                 '{% block title project.config(\'title\') %}',
@@ -37,7 +34,7 @@ class IndexManager
                 '{{ componentrawname }}',
                 '{{ githublinktext }}',
                 '{{ style }}',
-                '{{ app }}'
+                '{{ app }}',
             ],
             [
                 $pageContent,
@@ -47,12 +44,10 @@ class IndexManager
                 '',
                 '',
                 $asset['theme.css'],
-                $asset['app.js']
+                $asset['app.js'],
             ],
             $content
         );
-
-        return $content;
     }
 
     /**
@@ -68,7 +63,7 @@ class IndexManager
      *
      * @return $this
      */
-    public function setPaths($paths): IndexManager
+    public function setPaths($paths): self
     {
         $this->paths = $paths;
         $this->generateAll();
