@@ -13,14 +13,20 @@
             "class": "App\\Manager\\RepositoryManager",
             "setters": {
                 "setPaths": "param(paths)",
-                "setComponents": "param(components)",
                 "setAuths": "param(auths)",
                 "setClientsManager": "service(manager.clients)",
-                "setPackagesManager": "service(manager.packages)"
+                "setPackagesManager": "service(manager.packages)",
+                "setDocApiGenerator": "service(manager.docapigenerator)"
             }
         },
         "manager.index": {
             "class": "App\\Manager\\IndexManager",
+            "setters": {
+                "setPaths": "param(paths)"
+            }
+        },
+        "manager.docapigenerator": {
+            "class": "App\\Manager\\DocApiGenerator\\DocApiGenerator",
             "setters": {
                 "setPaths": "param(paths)"
             }

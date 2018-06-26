@@ -2,7 +2,8 @@
 
 //4 color, 90° on the nuancier
 $primary: #515A91;
-$secondary: #94C05F;
+$secondary: #518a91;
+//$secondary: #94C05F;
 //$secondary: #D3A168;
 $tertiary: #B55980;
 //$tertiary: #D3C668;
@@ -346,70 +347,6 @@ code {
   width: 500px;
 }
 
-//
-//.aa-input-container {
-//  @media (min-width: 767px) {
-//    width: 25vw;
-//  }
-//  line-height: 30px;
-//  box-sizing: border-box;
-//  font-size: 18px;
-//  position: relative;
-//}
-//
-//.aa-input-search {
-//  margin-left: 40px;
-//  width: calc(100% - 40px);
-//  border-radius: 5px;
-//  border: 1px solid rgba(228, 228, 228, 0.6);
-//  padding-left: 12px;
-//  box-sizing: border-box;
-//  -webkit-appearance: none;
-//  -moz-appearance: none;
-//  appearance: none;
-//}
-//
-//.aa-input-search::-webkit-search-decoration, .aa-input-search::-webkit-search-cancel-button, .aa-input-search::-webkit-search-results-button, .aa-input-search::-webkit-search-results-decoration {
-//  display: none;
-//}
-//
-//.aa-input-icon {
-//  height: 16px;
-//  width: 16px;
-//  position: absolute;
-//  top: 50%;
-//  left: 8px;
-//  -webkit-transform: translateY(-50%);
-//  transform: translateY(-50%);
-//  fill: #222222;
-//}
-//
-//.aa-dropdown-menu {
-//  background-color: #fff;
-//  border: 1px solid rgba(228, 228, 228, 0.6);
-//  width: 1000px;
-//  //min-width: 300px;
-//  margin-top: 10px;
-//  box-sizing: border-box;
-//}
-//
-//.aa-suggestion {
-//  padding: 12px;
-//  cursor: pointer;
-//}
-//
-//.aa-suggestion + .aa-suggestion {
-//  border-top: 1px solid rgba(0, 0, 0, 0.6);
-//}
-//
-//.aa-suggestion:hover, .aa-suggestion.aa-cursor {
-//  background-color: rgba(241, 241, 241, 0.35);
-//}
-//
-//.algolia-autocomplete em, #hits em {
-//  color: red;
-//}
-
 #suggestion-type {
   float: right;
   width: 110px;
@@ -432,9 +369,6 @@ code {
   margin: 30px 0;
 }
 
-//.markdown-body li + li{
-//  margin-top: 0;
-//}
 .search-page {
   font-size: 26px;
   line-height: 39px;
@@ -547,7 +481,6 @@ abbr[title], abbr[data-original-title] {
 .namespace-list a {
   padding: 3px 8px;
   margin: 0 5px 5px 0;
-  //border: 1px solid #ddd;
   background-color: #f9f9f9;
   display: inline-block;
   border-radius: 4px;
@@ -557,29 +490,6 @@ abbr[title], abbr[data-original-title] {
   color: #ccc;
   font-size: 90%;
 }
-
-/* Namespaces page */
-
-//.namespaces {
-//  clear: both;
-//}
-//
-//.namespaces .namespace-container {
-//  float: left;
-//  margin: 0 14px 14px 0;
-//  min-width: 30%;
-//}
-//
-//.namespaces h2 {
-//  margin: 0 0 20px 0;
-//}
-//
-//@media (max-width: 991px) {
-//  .namespaces .namespace-container {
-//    margin-right: 0;
-//    width: 100%;
-//  }
-//}
 
 /** Code and pre tags **/
 
@@ -608,7 +518,7 @@ pre {
 }
 
 .documentation h2 {
-  background-color: rgba(148, 192, 95, 0.26);
+  background-color: rgba($secondary, .33);
   padding: 4px 4px 4px 8px;
   font-size: 25px;
   margin: 20px 0;

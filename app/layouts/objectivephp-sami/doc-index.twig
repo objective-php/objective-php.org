@@ -19,6 +19,7 @@
         {% endfor %}
     </ul>
 
+
     {% for letter, elements in items -%}
         <h2 id="letter{{ letter|raw }}">{{ letter|raw }}</h2>
         <dl id="index">
@@ -35,9 +36,12 @@
                     {%- else %}
                         {%- set class_type = 'class' %}
                     {%- endif %}
-                    <dt class="index-item"><span class="badge badge-{{ class_type }}">{{ class_type }}</span>{{ class_link(value) }}</dt>
+                    <dt class="index-item"><span
+                                class="badge badge-{{ class_type }}">{{ class_type }}</span>{{ class_link(value) }}
+                    </dt>
                 {%- elseif 'method' == type -%}
-                    <dt class="index-item"><span class="badge badge-method">method</span>{{ method_link(value) }}()</dt>
+                    <dt class="index-item"><span class="badge badge-method">method</span>{{ method_link(value) }}()
+                    </dt>
                 {%- endif %}
             {%- endfor %}
         </dl>

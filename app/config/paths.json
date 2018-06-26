@@ -4,7 +4,9 @@
         "data": "app/data",
         "tmp": "app/tmp",
         "base.twig": "app/layouts/objectivephp-sami/layout/base.twig",
+        "layouts": "app/layouts",
         "doc": "public/doc",
-        "public": "public"
+        "public": "public",
+        "manifest.json": "public/dist/manifest.json"
     }
 }

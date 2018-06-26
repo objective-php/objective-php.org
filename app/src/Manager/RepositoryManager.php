@@ -25,11 +25,6 @@ class RepositoryManager
     protected $report = [];
 
     /**
-     * @var ComponentsConfig[]
-     */
-    protected $components;
-
-    /**
      * @var PathsConfig[]
      */
     protected $paths;
@@ -48,6 +43,11 @@ class RepositoryManager
      * @var PackagesManager
      */
     protected $packagesManager;
+
+    /**
+     * @var DocApiGeneratorInterface
+     */
+    protected $docApiGenerator;
 
     /**
      * @param Package $package
@@ -88,7 +88,6 @@ class RepositoryManager
         $this->operate($repoPath, $version->getMinor(), $package);
         $this->getPackagesManager()->save($package);
         $this->dataMenu($this->getPaths()['public'] . 'dist/dataMenu.js');
-        $this->dataMenu($this->getPaths()['public'] . 'dist/dataMenu.js');
     }
 
     /**
@@ -103,10 +102,7 @@ class RepositoryManager
         $tags = \GuzzleHttp\json_decode($this->getClientsManager()->getGithubClient()->get('/repos/' . $package->getFullName() . '/git/refs/tags')->getBody()->getContents());
         foreach ($tags as $tag) {
             $tag = str_replace('refs/tags/', '', $tag->ref);
-            error_log($tag);
             if (version_compare(ltrim($tag, 'v'), $package->getMinVersion(), '>=')) {
-                error_log('bleu');
-
                 try {
                     $this->addPackageVersion($package, $tag);
                 } catch (\Exception $exception) {
@@ -213,114 +209,6 @@ class RepositoryManager
         $data = \json_encode($packages, JSON_PRETTY_PRINT);
         $js = 'dataMenu = ' . $data . PHP_EOL . 'md5Hash = "' . uniqid('', true) . '"';
         \file_put_contents($outputFile, $js);
-    }
-
-    /**
-     * @return PathsConfig[]
-     */
-    public function getPaths(): array
-    {
-        return $this->paths;
-    }
-
-    /**
-     * @param PathsConfig[] $paths
-     *
-     * @return $this
-     */
-    public function setPaths($paths): self
-    {
-        $this->paths = $paths;
-
-        return $this;
-    }
-
-    /**
-     * @return ComponentsConfig[]
-     */
-    public function getComponents(): array
-    {
-        return $this->components;
-    }
-
-    /**
-     * @param array $components
-     *
-     * @return RepositoryManager
-     */
-    public function setComponents($components): self
-    {
-        $this->components = $components;
-
-        return $this;
-    }
-
-    /**
-     * @return AuthsConfig[]
-     */
-    public function getAuths(): array
-    {
-        return $this->auths;
-    }
-
-    /**
-     * @param AuthsConfig[] $auths
-     *
-     * @return RepositoryManager
-     */
-    public function setAuths(array $auths): self
-    {
-        $this->auths = $auths;
-
-        return $this;
-    }
-
-    /**
-     * @param $clientsManager
-     *
-     * @return RepositoryManager
-     */
-    public function setClientsManager($clientsManager): self
-    {
-        $this->clientsManager = $clientsManager;
-
-        return $this;
-    }
-
-    /**
-     * @return ClientsManager
-     */
-    public function getClientsManager(): ClientsManager
-    {
-        return $this->clientsManager;
-    }
-
-    /**
-     * @param PackagesManager $packagesManager
-     *
-     * @return RepositoryManager
-     */
-    public function setPackagesManager(PackagesManager $packagesManager): self
-    {
-        $this->packagesManager = $packagesManager;
-
-        return $this;
-    }
-
-    /**
-     * @return PackagesManager
-     */
-    public function getPackagesManager(): PackagesManager
-    {
-        return $this->packagesManager;
-    }
-
-    /**
-     * @return Exception[]
-     */
-    public function getReport(): array
-    {
-        return $this->report;
     }
 
     /**
@@ -438,25 +326,24 @@ class RepositoryManager
         } else {
             throw new ComponentStructureException('No docs folder in ' . $package->getName() . 'on tag ' . $tag . "\n");
         }
-        $json = \json_encode([
-            'repoPath'  => $repoPath,
-            'compoName' => $package->getName(),
-            'version'   => $tag,
-        ]);
-        \file_put_contents($this->getPaths()['tmp'] . '/infos.json', $json, JSON_PRETTY_PRINT);
 
-        exec(
-            'php ' . $this->getPaths()['public'] . '../sami.phar update -vvv ' . __DIR__ . '/sami-config.php --force',
-            $output,
-            $code
+        //        exec(
+        //            'php ' . $this->getPaths()['public'] . '../sami.phar update -vvv ' . __DIR__ . '/sami-config.php --force',
+        //            $output,
+        //            $code
+        //        );
+
+        $apiDocContent = $this->getDocApiGenerator()->generate(
+            $repoPath,
+            $package->getName(),
+            $tag
         );
-        //                exec('php ' . $this->getPaths()['public'] . '../sami/sami.php update -v ' . __DIR__ . '/sami-config.php --force', $output, $code);
         $this->rmAll($this->getPaths()['tmp'] . '/' . $repoPath);
-        if (0 !== $code) {
-            throw new \Exception(
-                sprintf('Something went wrong while generating %s (%s)', $package->getName(), print_r($output, true))
-            );
-        }
+        //        if (0 !== $code) {
+        //            throw new \Exception(
+        //                sprintf('Something went wrong while generating %s (%s)', $package->getName(), print_r($output, true))
+        //            );
+        //        }
         //              FOR THE SEARCH RECORDS
         //            $algoliaAuths = $this->getAuths()['algolia-louis-cuny'];
         //            $client = new \AlgoliaSearch\Client($algoliaAuths->getClientId(), $algoliaAuths->getClientKey());
@@ -492,5 +379,113 @@ class RepositoryManager
                 rmdir($dir);
             }
         }
+    }
+
+    /**
+     * @return PathsConfig[]
+     */
+    public function getPaths(): array
+    {
+        return $this->paths;
+    }
+
+    /**
+     * @param PathsConfig[] $paths
+     *
+     * @return $this
+     */
+    public function setPaths($paths): self
+    {
+        $this->paths = $paths;
+
+        return $this;
+    }
+
+    /**
+     * @return AuthsConfig[]
+     */
+    public function getAuths(): array
+    {
+        return $this->auths;
+    }
+
+    /**
+     * @param AuthsConfig[] $auths
+     *
+     * @return RepositoryManager
+     */
+    public function setAuths(array $auths): self
+    {
+        $this->auths = $auths;
+
+        return $this;
+    }
+
+    /**
+     * @param $clientsManager
+     *
+     * @return RepositoryManager
+     */
+    public function setClientsManager($clientsManager): self
+    {
+        $this->clientsManager = $clientsManager;
+
+        return $this;
+    }
+
+    /**
+     * @return ClientsManager
+     */
+    public function getClientsManager(): ClientsManager
+    {
+        return $this->clientsManager;
+    }
+
+    /**
+     * @param PackagesManager $packagesManager
+     *
+     * @return RepositoryManager
+     */
+    public function setPackagesManager(PackagesManager $packagesManager): self
+    {
+        $this->packagesManager = $packagesManager;
+
+        return $this;
+    }
+
+    /**
+     * @return PackagesManager
+     */
+    public function getPackagesManager(): PackagesManager
+    {
+        return $this->packagesManager;
+    }
+
+    /**
+     * @return Exception[]
+     */
+    public function getReport(): array
+    {
+        return $this->report;
+    }
+
+    /**
+     * @return DocApiGeneratorInterface
+     */
+    public function getDocApiGenerator(): DocApiGeneratorInterface
+    {
+        return $this->docApiGenerator;
+    }
+
+    /**
+     * @param DocApiGeneratorInterface $docApiGenerator
+     *
+     * @return RepositoryManager
+     */
+    public function setDocApiGenerator(DocApiGeneratorInterface $docApiGenerator): RepositoryManager
+    {
+        $this->docApiGenerator = $docApiGenerator;
+
+        return $this;
     }
 }

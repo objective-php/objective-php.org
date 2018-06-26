@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "5d1068530f8389a86d3f8a35b2fe5ea1",
+    "content-hash": "6a9d369206fc5594ca27261dc9856105",
     "packages": [
         {
             "name": "algolia/algoliasearch-client-php",
-            "version": "1.26.0",
+            "version": "1.27.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/algolia/algoliasearch-client-php.git",
-                "reference": "aeb8ab5df50fef94acbee8168382da80539acc9a"
+                "reference": "d4e83cd7756bafff1e1cb2adcbf3c08b974dc263"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/algolia/algoliasearch-client-php/zipball/aeb8ab5df50fef94acbee8168382da80539acc9a",
-                "reference": "aeb8ab5df50fef94acbee8168382da80539acc9a",
+                "url": "https://api.github.com/repos/algolia/algoliasearch-client-php/zipball/d4e83cd7756bafff1e1cb2adcbf3c08b974dc263",
+                "reference": "d4e83cd7756bafff1e1cb2adcbf3c08b974dc263",
                 "shasum": ""
             },
             "require": {
@@ -55,7 +55,7 @@
             ],
             "description": "Algolia Search API Client for PHP",
             "homepage": "https://github.com/algolia/algoliasearch-client-php",
-            "time": "2018-06-07T12:28:42+00:00"
+            "time": "2018-06-19T05:59:53+00:00"
         },
         {
             "name": "aura/accept",
@@ -1258,16 +1258,16 @@
         },
         {
             "name": "objective-php/phtml-action",
-            "version": "v2.0.1",
+            "version": "v2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/objective-php/phtml-action.git",
-                "reference": "dccf32a500ccd45e0e5ae0bffde90d529c9dabb3"
+                "reference": "8edad6a3c4a9318ccd6226972e4a00479ab78c08"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/objective-php/phtml-action/zipball/dccf32a500ccd45e0e5ae0bffde90d529c9dabb3",
-                "reference": "dccf32a500ccd45e0e5ae0bffde90d529c9dabb3",
+                "url": "https://api.github.com/repos/objective-php/phtml-action/zipball/8edad6a3c4a9318ccd6226972e4a00479ab78c08",
+                "reference": "8edad6a3c4a9318ccd6226972e4a00479ab78c08",
                 "shasum": ""
             },
             "require": {
@@ -1307,7 +1307,7 @@
                 "psr-15",
                 "view"
             ],
-            "time": "2018-05-13T12:03:50+00:00"
+            "time": "2018-06-24T11:13:59+00:00"
         },
         {
             "name": "objective-php/primitives",
@@ -1835,6 +1835,56 @@
             "time": "2017-07-14T14:27:02+00:00"
         },
         {
+            "name": "pimple/pimple",
+            "version": "v3.2.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/silexphp/Pimple.git",
+                "reference": "9e403941ef9d65d20cba7d54e29fe906db42cf32"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/silexphp/Pimple/zipball/9e403941ef9d65d20cba7d54e29fe906db42cf32",
+                "reference": "9e403941ef9d65d20cba7d54e29fe906db42cf32",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0",
+                "psr/container": "^1.0"
+            },
+            "require-dev": {
+                "symfony/phpunit-bridge": "^3.2"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.2.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Pimple": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                }
+            ],
+            "description": "Pimple, a simple Dependency Injection Container",
+            "homepage": "http://pimple.sensiolabs.org",
+            "keywords": [
+                "container",
+                "dependency injection"
+            ],
+            "time": "2018-01-21T07:42:36+00:00"
+        },
+        {
             "name": "psr/container",
             "version": "1.0.0",
             "source": {
@@ -2136,16 +2186,16 @@
         },
         {
             "name": "symfony/finder",
-            "version": "v4.1.0",
+            "version": "v4.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/finder.git",
-                "reference": "087e2ee0d74464a4c6baac4e90417db7477dc238"
+                "reference": "84714b8417d19e4ba02ea78a41a975b3efaafddb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/finder/zipball/087e2ee0d74464a4c6baac4e90417db7477dc238",
-                "reference": "087e2ee0d74464a4c6baac4e90417db7477dc238",
+                "url": "https://api.github.com/repos/symfony/finder/zipball/84714b8417d19e4ba02ea78a41a975b3efaafddb",
+                "reference": "84714b8417d19e4ba02ea78a41a975b3efaafddb",
                 "shasum": ""
             },
             "require": {
@@ -2181,7 +2231,7 @@
             ],
             "description": "Symfony Finder Component",
             "homepage": "https://symfony.com",
-            "time": "2018-05-16T14:33:22+00:00"
+            "time": "2018-06-19T21:38:16+00:00"
         },
         {
             "name": "webmozart/assert",

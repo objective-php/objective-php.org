@@ -1,47 +1,45 @@
 {
-  "name": "objective-php/objective-php.org",
-  "description": "Objective PHP Project Documentation Website",
-  "type": "website",
-  "keywords": [
-    "documentation",
-    "framework",
-    "objective php"
-  ],
-  "homepage": "https://github.com/objective-php/objective-php.org",
-  "license": "GPL-3.0",
-  "authors": [
-    {
-      "name": "Louis Cuny",
-      "email": "louis-cuny@gmx.fr",
-      "role": "Intern"
+    "name": "objective-php/objective-php.org",
+    "description": "Objective PHP Project Documentation Website",
+    "type": "website",
+    "keywords": [
+        "documentation",
+        "framework",
+        "objective php"
+    ],
+    "homepage": "https://github.com/objective-php/objective-php.org",
+    "license": "GPL-3.0",
+    "authors": [
+        {
+            "name": "Louis Cuny",
+            "email": "louis-cuny@gmx.fr",
+            "role": "Intern"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../rest-action"
+        }
+    ],
+    "require": {
+        "php": ">=7.0",
+        "objective-php/application": "^2.0",
+        "objective-php/phtml-action": "^2.0",
+        "objective-php/rest-action": "^2.0",
+        "objective-php/services-factory": "^2.0",
+        "symfony/finder": "^4.0",
+        "league/commonmark": "^0.17.5",
+        "guzzlehttp/guzzle": "^6.3",
+        "php-http/guzzle6-adapter": "^1.1",
+        "webuni/commonmark-table-extension": "^0.8.0",
+        "algolia/algoliasearch-client-php": "^1.25",
+        "netresearch/jsonmapper": "^1.4",
+        "pimple/pimple": "^3.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/src"
+        }
     }
-  ],
-  "repositories": [
-    {
-      "type": "path",
-      "url": "../rest-action"
-    }
-  ],
-  "require": {
-    "php": ">=7.0",
-    "objective-php/application": "^2.0",
-    "objective-php/phtml-action": "^2.0",
-    "objective-php/rest-action": "^2.0",
-    "objective-php/services-factory":  "^2.0",
-    "objective-php/cli":  "^2.0.0-beta",
-    "symfony/finder": "^4.0",
-    "league/commonmark": "^0.17.5",
-    "guzzlehttp/guzzle": "^6.3",
-    "php-http/guzzle6-adapter": "^1.1",
-    "webuni/commonmark-table-extension": "^0.8.0",
-    "algolia/algoliasearch-client-php": "^1.25",
-    "netresearch/jsonmapper": "^1.4"
-  },
-  "autoload": {
-    "psr-4": {
-      "App\\": "app/src"
-    }
-  },
-  "require-dev": {
-  }
 }

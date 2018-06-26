@@ -3,6 +3,7 @@
 namespace App\Manager;
 
 use App\Model\Package;
+use ObjectivePHP\Html\Exception;
 
 class PackagesManager
 {
@@ -21,6 +22,9 @@ class PackagesManager
     {
         $this->packagesPath = getcwd() . '/app/data/packages.json';
         $json = \json_decode(\file_get_contents($this->packagesPath));
+        if ($json === null && json_last_error() !== JSON_ERROR_NONE) {
+            $json = [];
+        }
         $mapper = new \JsonMapper();
         $this->packages = $mapper->mapArray($json, [], Package::class);
     }
@@ -110,7 +114,7 @@ class PackagesManager
                 $res[$package->getName()][$version->getMinor()] = $version->getDocs();
             }
         }
-        
+
         return $res;
     }
 }

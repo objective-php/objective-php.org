@@ -32,7 +32,6 @@ class Application extends AbstractHttpApplication
         $this->registerPackage(new PhtmlActionPackage());
 
         $this->getConfig()->registerDirective(new PathsConfig());
-        $this->getConfig()->registerDirective(new ComponentsConfig());
         $this->getConfig()->registerDirective(new AuthsConfig());
     }
 }
