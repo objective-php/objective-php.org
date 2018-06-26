@@ -26,7 +26,7 @@
             }
         },
         "manager.docapigenerator": {
-            "class": "App\\Manager\\DocApiGenerator\\DocApiGenerator",
+            "class": "App\\Manager\\DocApiGenerator\\SamiGenerator",
             "setters": {
                 "setPaths": "param(paths)"
             }

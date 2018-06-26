@@ -6,10 +6,7 @@ use App\Manager\DocApiGeneratorInterface;
 use Sami\Sami;
 use Symfony\Component\Finder\Finder;
 
-require_once 'phar://' . __DIR__ . '/../../../../sami.phar/Sami/Sami.php';
-require_once 'phar://' . __DIR__ . '/../../../../sami.phar/vendor/autoload.php';
-
-class DocApiGenerator implements DocApiGeneratorInterface
+class SamiGenerator implements DocApiGeneratorInterface
 {
 
     /**
@@ -22,11 +19,14 @@ class DocApiGenerator implements DocApiGeneratorInterface
      * @param string $componentName
      * @param string $version
      *
-     * @return string
+     * @return bool
      * @throws \InvalidArgumentException
      */
-    public function generate(string $repositoryPath, string $componentName, string $version): string
+    public function generate(string $repositoryPath, string $componentName, string $version): bool
     {
+        require_once 'phar://' . $this->getPaths()['sami.phar'] . '/Sami/Sami.php';
+        require_once 'phar://' . $this->getPaths()['sami.phar'] . '/vendor/autoload.php';
+
         $iterator = Finder::create()
             ->files()
             ->name('*.php')
@@ -61,9 +61,13 @@ class DocApiGenerator implements DocApiGeneratorInterface
             );
         });
 
-        $sami->offsetGet('project')->update(null, true);
+        try {
+            $sami->offsetGet('project')->update(null, true);
+        } catch (\Throwable $throwable) {
+            return false;
+        }
 
-        return 'Worked';
+        return true;
     }
 
     /**

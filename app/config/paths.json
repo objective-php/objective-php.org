@@ -7,6 +7,7 @@
         "layouts": "app/layouts",
         "doc": "public/doc",
         "public": "public",
-        "manifest.json": "public/dist/manifest.json"
+        "manifest.json": "public/dist/manifest.json",
+        "sami.phar": "sami.phar"
     }
 }

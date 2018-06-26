@@ -327,22 +327,21 @@ class RepositoryManager
             throw new ComponentStructureException('No docs folder in ' . $package->getName() . 'on tag ' . $tag . "\n");
         }
 
-        //        exec(
-        //            'php ' . $this->getPaths()['public'] . '../sami.phar update -vvv ' . __DIR__ . '/sami-config.php --force',
-        //            $output,
-        //            $code
-        //        );
-
-        $apiDocContent = $this->getDocApiGenerator()->generate(
+        $generationResult = $this->getDocApiGenerator()->generate(
             $repoPath,
             $package->getName(),
             $tag
         );
+
+        if (!$generationResult) {
+            throw new \Exception(
+                sprintf('Something went wrong while generating %s', $package->getName())
+            );
+        }
+
         $this->rmAll($this->getPaths()['tmp'] . '/' . $repoPath);
         //        if (0 !== $code) {
-        //            throw new \Exception(
-        //                sprintf('Something went wrong while generating %s (%s)', $package->getName(), print_r($output, true))
-        //            );
+
         //        }
         //              FOR THE SEARCH RECORDS
         //            $algoliaAuths = $this->getAuths()['algolia-louis-cuny'];

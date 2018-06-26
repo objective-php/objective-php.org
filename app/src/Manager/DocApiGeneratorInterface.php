@@ -9,7 +9,7 @@ interface DocApiGeneratorInterface
      * @param string $componentName
      * @param string $version
      *
-     * @return string
+     * @return bool
      */
-    public function generate(string $repositoryPath, string $componentName, string $version): string;
+    public function generate(string $repositoryPath, string $componentName, string $version): bool;
 }
