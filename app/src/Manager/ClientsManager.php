@@ -21,8 +21,8 @@ class ClientsManager
     {
         $config['base_uri'] = 'https://api.github.com/repos';
         $config['query'] = [
-            'client_id'     => $this->getAuths()['github-louis-cuny']->getClientId(),
-            'client_secret' => $this->getAuths()['github-louis-cuny']->getClientKey()
+            'client_id'     => $this->getAuths()['github-objective-php']->getClientId(),
+            'client_secret' => $this->getAuths()['github-objective-php']->getClientKey()
         ];
         $this->githubClient = new Client($config);
 
