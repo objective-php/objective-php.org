@@ -130,7 +130,10 @@ class Version implements \JsonSerializable
      */
     public function getDocs(): array
     {
-        return $this->docs;
+        $docs = $this->docs;
+        asort($docs);
+
+        return $docs;
     }
 
     /**
