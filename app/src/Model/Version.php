@@ -4,26 +4,44 @@ namespace App\Model;
 
 class Version implements \JsonSerializable
 {
-    //2.1
+
+    /**
+     * Could be 2.1
+     *
+     * @var string
+     */
     protected $minor;
 
-    //2.1.1
+
+    /**
+     * Could be 2.1.1
+     *
+     * @var string
+     */
     protected $patch;
 
-    //v2.1.1
+
+    /**
+     * Could be v2.1.1
+     *
+     * @var string
+     */
     protected $tag;
 
-    //"http://github/applicationtargz"
+
     /**
+     * Could be "http://github/applicationtargz"
+     *
      * @var string
      */
     protected $targz;
 
-    // [
-    //      "quick start"   => "01.quick-start.html",
-    //      "faq"           => "02.faq.html"
-    // ]
     /**
+     * Could be [
+     *      "quick start"   => "01.quick-start.html",
+     *      "faq"           => "02.faq.html"
+     * ]
+     *
      * @var array
      */
     protected $docs;
@@ -130,10 +148,9 @@ class Version implements \JsonSerializable
      */
     public function getDocs(): array
     {
-        $docs = $this->docs;
-        asort($docs);
+        \asort($this->docs);
 
-        return $docs;
+        return $this->docs;
     }
 
     /**

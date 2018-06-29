@@ -51,7 +51,7 @@ class BuildApiEndpointV1 extends AbstractEndpoint implements InjectionAnnotation
                     'line'    => $exception->getLine(),
                     'trace'   => $exception->getTraceAsString()
                 ]
-            ]);
+            ], 400);
         }
 
         return new JsonResponse([
@@ -71,7 +71,7 @@ class BuildApiEndpointV1 extends AbstractEndpoint implements InjectionAnnotation
     {
         try {
             if (!$hookType = $request->getHeader('x-github-event')[0]) {
-                throw new \UnvalideHookException('This request doesnt came from github');
+                throw new UnvalideHookException('This request doesnt came from github');
             }
             $body = \json_decode($request->getBody()->getContents());
             switch ($hookType) {
@@ -96,7 +96,7 @@ class BuildApiEndpointV1 extends AbstractEndpoint implements InjectionAnnotation
                     $this->getRepositoryManager()->handleCreate($package, $body->ref);
                     break;
                 default:
-                    throw new \Exception('Bad hook type');
+                    throw new UnvalideHookException('Bad hook type');
                     break;
             }
         } catch (\Exception $exception) {
@@ -109,7 +109,7 @@ class BuildApiEndpointV1 extends AbstractEndpoint implements InjectionAnnotation
                     'line'    => $exception->getLine(),
                     'trace'   => $exception->getTraceAsString()
                 ]
-            ]);
+            ], 400);
         }
 
         return new JsonResponse([

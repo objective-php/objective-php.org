@@ -7,6 +7,8 @@ use ObjectivePHP\Config\Directive\AbstractMultiScalarDirective;
 /**
  * Class Paths
  *
+ * @config-example-reference "tmp"
+ * @config-example-value "app/tmp"
  * @package App\Config
  */
 class PathsConfig extends AbstractMultiScalarDirective
@@ -15,11 +17,6 @@ class PathsConfig extends AbstractMultiScalarDirective
 
     protected $key = self::KEY;
 
-    /**
-     * @config-index "path.id"
-     * @var string Correspond au nom du path
-     */
-    protected $reference;
 
     /**
      * If its a dir and doesn t already exist, try to create it
@@ -45,6 +42,4 @@ class PathsConfig extends AbstractMultiScalarDirective
 
         return $path . '/';
     }
-
-
 }

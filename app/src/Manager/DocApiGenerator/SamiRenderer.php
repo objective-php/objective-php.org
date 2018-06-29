@@ -18,6 +18,7 @@ require_once 'phar://' . __DIR__ . '/../../../../sami.phar/Sami/Project.php';
  */
 class SamiRenderer extends Renderer
 {
+
     /**
      * @param Project $project
      *
