@@ -60,7 +60,7 @@ class RepositoryManager
         if ($this->getPackagesManager()->getPackage($package->getFullName())) {
             throw new UnvalideHookException(
                 'The Package ' . $package->getFullName()
-                . ' is allreadly registered. Aborting...'
+                . ' is already registered. Aborting...'
             );
         }
         $package = $this->fetchPackageVersions($package);
@@ -106,7 +106,7 @@ class RepositoryManager
         $tags = \GuzzleHttp\json_decode(
             $this->getClientsManager()
                 ->getGithubClient()
-                ->get('/repos/' . $package->getFullName() . '/git/refs/tags')
+                ->get(sprintf('/repos/%s/git/refs/tags', $package->getFullName()))
                 ->getBody()
                 ->getContents()
         );
@@ -197,28 +197,55 @@ class RepositoryManager
     {
         $docMenu = '<ul>';
         foreach ($packages = $this->getPackagesManager()->getDataMenu() as $compoName => $package) {
-            $docMenu .= '<li class="opened" ><div class="hd"><i class="fa fa-angle-right fa-lg"></i>';
-            $docMenu .= '<a href="/doc/' . $compoName . '/' . key($package) . '/index.html">' . $compoName . '</a>';
-            $docMenu .= '</div><div class="bd"><ul>';
+            $docMenu .= sprintf(
+                '<li class="opened" ><div class="hd"><i class="fa fa-angle-right fa-lg"></i>
+                    <a href="/doc/%1$s/%2$s/index.html"> %1$s </a>
+                   </div><div class="bd"><ul>',
+                $compoName,
+                key($package)
+            );
             foreach ($package as $minorVersion => $files) {
                 reset($package);
-                $docMenu .= '<li style="padding-left: 20px;" class="';
-                $docMenu .= ($minorVersion === key($package) ? 'opened' : 'nojs');
-                $docMenu .= '"><div class="hd"><i class="fa fa-angle-right fa-lg"></i>';
-                $docMenu .= '<a href="/doc/' . $compoName . '/' . $minorVersion . '/index.html">' . $minorVersion;
-                $docMenu .= '</a></div><div class="bd"><ul>';
+                $docMenu .= sprintf(
+                    '<li style="padding-left: 20px;" class="%1$s">
+                        <div class="hd"><i class="fa fa-angle-right fa-lg"></i>
+                            <a href="/doc/%2$s/%3$s/index.html">%3$s</a>
+                        </div>
+                        <div class="bd">
+                            <ul>',
+                    ($minorVersion === key($package) ? 'opened' : 'nojs'),
+                    $compoName,
+                    $minorVersion
+                );
                 foreach ($files as $nice => $raw) {
-                    $docMenu .= '<li><div class="hb leaf">';
-                    $docMenu .= '<a href="/doc/' . $compoName . '/' . $minorVersion . '/' . $raw . '">' . $nice;
-                    $docMenu .= '</a></div></li>';
+                    $docMenu .= sprintf(
+                        '<li>    
+                            <div class="hb leaf">
+                                <a href="/doc/%1$s/%2$s/%3$s">%4$s</a>
+                            </div>
+                        </li>',
+                        $compoName,
+                        $minorVersion,
+                        $raw,
+                        $nice
+                    );
                 }
-                $docMenu .= '<li><div class="hb leaf">;
-                $docMenu .= <a href="/doc/' . $compoName . '/' . $minorVersion . '/api/index.html">API</a></div></li>';
-                $docMenu .= '</ul></div></li>';
+                $docMenu .= sprintf(
+                    '        <li>
+                                <div class="hb leaf">
+                                    <a href="/doc/%1$s/%2$s/api/index.html">API</a>
+                                </div>
+                             </li>
+                          </ul>
+                       </div>
+                    </li>',
+                    $compoName,
+                    $minorVersion
+                );
             }
             $docMenu .= '</ul></div></li>';
         }
-        $docMenu .= '<ul>';
+        $docMenu .= '</ul>';
         \file_put_contents($this->getPaths()['doc'] . 'doctree.html', $docMenu);
         $data = \json_encode($packages, JSON_PRETTY_PRINT);
         $js = 'dataMenu = ' . $data . PHP_EOL . 'md5Hash = "' . uniqid('', true) . '"';

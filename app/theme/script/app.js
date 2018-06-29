@@ -105,10 +105,10 @@ $(function () {
         }
     }
 });
-$(document).ready(function() {
+$(document).ready(function () {
     hljs.initHighlightingOnLoad();
 
-    $('pre code').each(function(i, block) {
+    $('pre code').each(function (i, block) {
         hljs.highlightBlock(block);
     });
 });
