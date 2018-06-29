@@ -74,6 +74,7 @@ class RepositoryManager
             }
         }
         $this->getPackagesManager()->save($package);
+        $this->dataMenu($this->getPaths()['public'] . 'dist/dataMenu.js');
     }
 
     /**
