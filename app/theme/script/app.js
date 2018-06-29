@@ -1,6 +1,7 @@
 import 'bootstrap';
 import 'lodash';
 import hljs from "highlight.js";
+
 $(function () {
 
     let docfiles = (compoName, minor) => {

@@ -3,16 +3,17 @@
 namespace App\Manager;
 
 use App\Config\AuthsConfig;
-use App\Config\ComponentsConfig;
 use App\Config\PathsConfig;
 use App\Exception\ComponentStructureException;
+use App\Exception\DocApiGenerationException;
+use App\Exception\UnvalideHookException;
 use App\Model\Package;
 use App\Model\Version;
+use Exception;
 use League\CommonMark\Converter;
 use League\CommonMark\DocParser;
 use League\CommonMark\Environment;
 use League\CommonMark\HtmlRenderer;
-use ObjectivePHP\Html\Exception;
 use RuntimeException;
 use Symfony\Component\Finder\Finder;
 use Webuni\CommonMark\TableExtension\TableExtension;
@@ -52,19 +53,22 @@ class RepositoryManager
     /**
      * @param Package $package
      *
-     * @throws \Exception
+     * @throws UnvalideHookException
      */
     public function handlePing(Package $package): void
     {
         if ($this->getPackagesManager()->getPackage($package->getFullName())) {
-            throw new \Exception('The Package ' . $package->getFullName() . ' is allreadly registered. Aborting...');
+            throw new UnvalideHookException(
+                'The Package ' . $package->getFullName()
+                . ' is allreadly registered. Aborting...'
+            );
         }
         $package = $this->fetchPackageVersions($package);
         foreach ($package->getVersions() as $version) {
             try {
                 $repoPath = $this->fetchRepo($version->getTargz(), $package->getName());
                 $this->operate($repoPath, $version->getMinor(), $package);
-            } catch (\Exception $exception) {
+            } catch (Exception $exception) {
                 $this->report[] = $exception;
                 $package->removeVersion($version);
             }
@@ -78,7 +82,7 @@ class RepositoryManager
      *
      * @throws RuntimeException
      * @throws ComponentStructureException
-     * @throws \Exception
+     * @throws Exception
      */
     public function handleCreate(Package $package, $tag): void
     {
@@ -99,13 +103,19 @@ class RepositoryManager
      */
     public function fetchPackageVersions(Package $package): Package
     {
-        $tags = \GuzzleHttp\json_decode($this->getClientsManager()->getGithubClient()->get('/repos/' . $package->getFullName() . '/git/refs/tags')->getBody()->getContents());
+        $tags = \GuzzleHttp\json_decode(
+            $this->getClientsManager()
+                ->getGithubClient()
+                ->get('/repos/' . $package->getFullName() . '/git/refs/tags')
+                ->getBody()
+                ->getContents()
+        );
         foreach ($tags as $tag) {
             $tag = str_replace('refs/tags/', '', $tag->ref);
             if (version_compare(ltrim($tag, 'v'), $package->getMinVersion(), '>=')) {
                 try {
                     $this->addPackageVersion($package, $tag);
-                } catch (\Exception $exception) {
+                } catch (Exception $exception) {
                     $this->report[] = $exception;
                 }
             }
@@ -119,6 +129,7 @@ class RepositoryManager
      * @param mixed   $tag
      *
      * @return Package
+     * @throws \LogicException
      */
     public function addPackageVersion(Package $package, $tag): Package
     {
@@ -140,7 +151,7 @@ class RepositoryManager
     /**
      * @throws RuntimeException
      * @throws ComponentStructureException
-     * @throws \Exception
+     * @throws Exception
      */
     public function operateAll(): void
     {
@@ -191,15 +202,18 @@ class RepositoryManager
             $docMenu .= '</div><div class="bd"><ul>';
             foreach ($package as $minorVersion => $files) {
                 reset($package);
-                $docMenu .= '<li style="padding-left: 20px;" class="' . ($minorVersion === key($package) ? 'opened' : 'nojs') . '"><div class="hd"><i class="fa fa-angle-right fa-lg"></i>';
-                $docMenu .= '<a href="/doc/' . $compoName . '/' . $minorVersion . '/index.html">' . $minorVersion . '</a>';
-                $docMenu .= '</div><div class="bd"><ul>';
+                $docMenu .= '<li style="padding-left: 20px;" class="';
+                $docMenu .= ($minorVersion === key($package) ? 'opened' : 'nojs');
+                $docMenu .= '"><div class="hd"><i class="fa fa-angle-right fa-lg"></i>';
+                $docMenu .= '<a href="/doc/' . $compoName . '/' . $minorVersion . '/index.html">' . $minorVersion;
+                $docMenu .= '</a></div><div class="bd"><ul>';
                 foreach ($files as $nice => $raw) {
                     $docMenu .= '<li><div class="hb leaf">';
-                    $docMenu .= '<a href="/doc/' . $compoName . '/' . $minorVersion . '/' . $raw . '">' . $nice . '</a>';
-                    $docMenu .= '</div></li>';
+                    $docMenu .= '<a href="/doc/' . $compoName . '/' . $minorVersion . '/' . $raw . '">' . $nice;
+                    $docMenu .= '</a></div></li>';
                 }
-                $docMenu .= '<li><div class="hb leaf"><a href="/doc/' . $compoName . '/' . $minorVersion . '/api/index.html">API</a></div></li>';
+                $docMenu .= '<li><div class="hb leaf">;
+                $docMenu .= <a href="/doc/' . $compoName . '/' . $minorVersion . '/api/index.html">API</a></div></li>';
                 $docMenu .= '</ul></div></li>';
             }
             $docMenu .= '</ul></div></li>';
@@ -237,9 +251,10 @@ class RepositoryManager
      * @param string  $tag      Could be 2.0
      * @param Package $package
      *
+     * @throws \App\Exception\DocApiGenerationException
      * @throws RuntimeException
      * @throws ComponentStructureException
-     * @throws \Exception
+     * @throws Exception
      */
     protected function operate(string $repoPath, string $tag, Package $package): void
     {
@@ -334,15 +349,12 @@ class RepositoryManager
         );
 
         if (!$generationResult) {
-            throw new \Exception(
+            throw new DocApiGenerationException(
                 sprintf('Something went wrong while generating %s', $package->getName())
             );
         }
 
         $this->rmAll($this->getPaths()['tmp'] . '/' . $repoPath);
-        //        if (0 !== $code) {
-
-        //        }
         //              FOR THE SEARCH RECORDS
         //            $algoliaAuths = $this->getAuths()['algolia-louis-cuny'];
         //            $client = new \AlgoliaSearch\Client($algoliaAuths->getClientId(), $algoliaAuths->getClientKey());
