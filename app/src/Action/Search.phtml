@@ -30,23 +30,23 @@
                 $("#select-doc label ").click(function () {
                     switch ($(this).children().attr('name')) {
                         case 'doc':
-                            $('#part-api').hide()
-                            $('#part-doc').show()
-                            $('#select-doc').data('hitsPerPage', '8')
-                            break
+                            $('#part-api').hide();
+                            $('#part-doc').show();
+                            $('#select-doc').data('hitsPerPage', '8');
+                            break;
                         case 'api':
                             $('#part-doc').hide();
                             $('#part-api').show();
-                            $('#select-doc').data('hitsPerPage', '8')
-                            break
+                            $('#select-doc').data('hitsPerPage', '8');
+                            break;
                         case 'both':
                             $('#part-api').show();
                             $('#part-doc').show();
-                            $('#select-doc').data('hitsPerPage', '4')
+                            $('#select-doc').data('hitsPerPage', '4');
                             break;
                     }
                     //Start again to refresh
-                    searcher.searchApi.started = false
+                    searcher.searchApi.started = false;
                     searcher.searchApi.start()
                 })
             })

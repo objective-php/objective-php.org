@@ -3,7 +3,6 @@
 namespace App\Manager;
 
 use App\Model\Package;
-use ObjectivePHP\Html\Exception;
 
 class PackagesManager
 {

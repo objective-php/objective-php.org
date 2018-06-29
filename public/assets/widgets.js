@@ -3,14 +3,14 @@ $(function () {
 
         this.getRefinementListHeader = (name) => {
             return '<legend class="col-form-label-lg pt-0">' + util.capitalizeFirstLetter(name) + ' :</legend>'
-        }
+        };
         this.getRefinementListItem = (data) => {
             return ' <div class="form-check">\n' +
                 '        <label class="form-check-label" for="crli' + data.value + '">' +
                 '        <input class="form-check-input" type="checkbox" value="' + data.value + '" id="crli' + data.value + '" ' + (data.isRefined ? 'checked' : '') + '>\n' +
                 util.capitalizeFirstLetter(data.label) + '</label>' +
                 '</div>'
-        }
+        };
         this.getRefinementList = (name) => {
             return instantsearch.widgets.refinementList({
                 container: '#' + name + '-refinement-list',
@@ -21,15 +21,15 @@ $(function () {
                     item: this.getRefinementListItem
                 }
             })
-        }
+        };
 
         this.getHierarchicalMenuHeader = (name) => {
             return '<legend class="col-form-label-lg pt-0">' + _.capitalize(name) + ' :</legend>'
-        }
+        };
         this.getHierarchicalMenuItem = (data) => {
             return '<a href="' + data.url + '" class="facet-item ' + (data.isRefined ? 'active' : '') + '">' +
                 '<span class="facet-name"><i class="fa fa-angle-right"></i> > ' + _.capitalize(data.label) + ' </span class="facet-name"></a>';
-        }
+        };
         this.getHierarchicalMenu = (name) => {
             return instantsearch.widgets.hierarchicalMenu({
                 container: '#hierarchical-' + name,
@@ -41,19 +41,19 @@ $(function () {
                     item: this.getHierarchicalMenuItem
                 }
             })
-        }
+        };
         this.getHitsItemDoc = (data) => {
             return '<div class="hit"><div class="hit-content"><a href="' + data.link + '">' +
                 // '<p class="hit-name">' + data._highlightResult.name.value + '</p></a> ' +
                 // '<p class="hit-description">' + data._highlightResult.content + '</p>' +
                 '</div></div>';
-        }
+        };
         this.getHitsItemApi = (data) => {
             return '<div class="hit"><div class="hit-content"><a href="' + data.link + '">' +
                 '<p class="hit-name">' + data._highlightResult.name.value + '</p></a> ' +
                 // '<p class="hit-description">' + data._highlightResult.content + '</p>' +
                 '</div></div>';
-        }
+        };
         this.getHits = (name) => {
             return instantsearch.widgets.hits({
                 container: '#hits_' + name,
@@ -63,7 +63,7 @@ $(function () {
                     empty: "We didn't find any results for the search <em>\"{{query}}\"</em>"
                 }
             })
-        }
+        };
 
         this.getPagination = (name) => {
             return instantsearch.widgets.pagination({
@@ -75,7 +75,7 @@ $(function () {
                     active: 'active'
                 }
             })
-        }
+        };
 
         // this.hitsPerPageConnector =  instantsearch.connectors.connectHitsPerPage(
         //         function renderFn (renderOpts, isFirstRendering) {
@@ -103,7 +103,7 @@ $(function () {
                 urlSync: true,
                 searchFunction: (helper) => {
                     //Synchronize the query
-                    this.searchDoc.helper.setQuery(this.searchApi.helper.state.query)
+                    this.searchDoc.helper.setQuery(this.searchApi.helper.state.query);
                     //Synchronize the disjunctiveFacets
                     this.searchDoc.helper.state.disjunctiveFacets = this.searchApi.helper.state.disjunctiveFacets;
                     this.searchDoc.helper.state.disjunctiveFacetsRefinements = this.searchApi.helper.state.disjunctiveFacetsRefinements;
@@ -111,15 +111,15 @@ $(function () {
                     this.searchDoc.helper.state.hierarchicalFacets = this.searchApi.helper.state.hierarchicalFacets;
                     this.searchDoc.helper.state.hierarchicalFacetsRefinements = this.searchApi.helper.state.hierarchicalFacetsRefinements;
                     //Set hitsPerPage
-                    helper.setQueryParameter('hitsPerPage', $('#select-doc').data('hitsPerPage'))
-                    this.searchDoc.helper.setQueryParameter('hitsPerPage', $('#select-doc').data('hitsPerPage'))
+                    helper.setQueryParameter('hitsPerPage', $('#select-doc').data('hitsPerPage'));
+                    this.searchDoc.helper.setQueryParameter('hitsPerPage', $('#select-doc').data('hitsPerPage'));
 
                     helper.search();
                     this.searchDoc.helper.search();
                 },
                 searchParameters: {}
             }
-        )
+        );
 
 
         this.searchApi.addWidgets([
@@ -169,7 +169,7 @@ $(function () {
 // console.log(search.helper);
 // console.log(searchDoc.helper);
 
-    }
+    };
     ()
 })
 ;

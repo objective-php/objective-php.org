@@ -22,7 +22,6 @@ class AuthsConfig extends AbstractMultiComplexDirective implements IgnoreDefault
      */
     protected $id;
 
-
     /**
      * Host's client Id
      *

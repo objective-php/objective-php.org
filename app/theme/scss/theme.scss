@@ -79,7 +79,6 @@ a.nav-link.active {
 
   background-size: 100% 56px;
   overflow: auto;
-  height: 100%;
   background: #f2f2f2 local;
   padding: 10px 16px;
 
@@ -498,9 +497,7 @@ tt, code, pre {
 }
 
 code {
-  padding: 0;
-  padding-top: 0.2em;
-  padding-bottom: 0.2em;
+  padding: 0.2em 0;
   margin: 0;
   font-size: 85%;
   background-color: rgba(0, 0, 0, 0.04);
