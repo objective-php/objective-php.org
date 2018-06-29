@@ -7,6 +7,7 @@ use ObjectivePHP\Config\Directive\IgnoreDefaultInterface;
 
 /**
  * Class AuthsConfig
+ *
  * @package App\Config
  */
 class AuthsConfig extends AbstractMultiComplexDirective implements IgnoreDefaultInterface
@@ -16,7 +17,7 @@ class AuthsConfig extends AbstractMultiComplexDirective implements IgnoreDefault
     protected $key = self::KEY;
 
     /**
-     * @config-index "auth.id"
+     * @config-example-reference "auth.id"
      * @var string Correspond au id de l'host
      */
     protected $id;
@@ -65,11 +66,13 @@ class AuthsConfig extends AbstractMultiComplexDirective implements IgnoreDefault
 
     /**
      * @param string $id
+     *
      * @return AuthsConfig
      */
     public function setId(string $id): AuthsConfig
     {
         $this->id = $id;
+
         return $this;
     }
 
@@ -83,11 +86,13 @@ class AuthsConfig extends AbstractMultiComplexDirective implements IgnoreDefault
 
     /**
      * @param string $clientId
+     *
      * @return AuthsConfig
      */
     public function setClientId(string $clientId): AuthsConfig
     {
         $this->clientId = $clientId;
+
         return $this;
     }
 
@@ -101,11 +106,13 @@ class AuthsConfig extends AbstractMultiComplexDirective implements IgnoreDefault
 
     /**
      * @param string $clientKey
+     *
      * @return AuthsConfig
      */
     public function setClientKey(string $clientKey): AuthsConfig
     {
         $this->clientKey = $clientKey;
+
         return $this;
     }
 
@@ -119,11 +126,13 @@ class AuthsConfig extends AbstractMultiComplexDirective implements IgnoreDefault
 
     /**
      * @param string $adminKey
+     *
      * @return AuthsConfig
      */
     public function setAdminKey(string $adminKey): AuthsConfig
     {
         $this->adminKey = $adminKey;
+
         return $this;
     }
 }
